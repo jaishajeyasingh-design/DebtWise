@@ -9,6 +9,7 @@ import {
 } from 'lucide-react';
 import RecoveryTracker from '../../components/customer/RecoveryTracker';
 import ConsentModal from '../../components/customer/ConsentModal';
+import LLMExplanationCard from '../../components/common/LLMExplanationCard';
 
 export default function ConsentRecoveryPage({
   data,
@@ -25,6 +26,7 @@ export default function ConsentRecoveryPage({
   const governance = data?.governance || {};
   const consentGate = governance?.customer_consent_gate || {};
   const humanGate = governance?.human_approval_gate || {};
+  const explanation = data?.llm_explanation;
 
   const humanApprovalRequired =
     governance?.human_approval_required ??
@@ -77,6 +79,15 @@ export default function ConsentRecoveryPage({
               {selectedIntervention.description ||
                 'Intervention selected for customer review.'}
             </p>
+          </div>
+        )}
+
+        {explanation && (
+          <div className="mb-6">
+            <LLMExplanationCard
+              explanation={explanation}
+              mode="consent"
+            />
           </div>
         )}
 
@@ -153,9 +164,7 @@ export default function ConsentRecoveryPage({
         )}
       </div>
 
-      {data?.recovery_projection && (
-        <RecoveryTracker projectionData={data.recovery_projection} />
-      )}
+      <RecoveryTracker customer={data} />
 
       <div className="flex items-center justify-between">
         <button

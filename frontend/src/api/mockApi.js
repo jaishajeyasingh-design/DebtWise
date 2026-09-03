@@ -199,7 +199,7 @@ function buildRecoveryProjection(result) {
   };
 }
 
-function mapAnalysisToCustomerDetail(rawCustomer, result) {
+function mapAnalysisToCustomerDetail(rawCustomer, result, explanation = null) {
   const capacity = result.capacity;
   const risk = result.risk;
   const selected = mapCandidate(result.selected_intervention);
@@ -267,9 +267,43 @@ function mapAnalysisToCustomerDetail(rawCustomer, result) {
 
     next_steps: result.next_steps || [],
 
-    // Keep the complete backend response available for future UI features.
+    // Natural Language Explanation & Communication Layer (Presentation Only)
+    llm_explanation: explanation || null,
+
+    // Raw baseline input preserved for forward recovery simulation
+    raw_customer_input: rawCustomer,
+
+    // Keep the complete authoritative backend response unchanged.
     decision_response: result,
   };
+}
+
+async function explainDecision(decisionResponse) {
+  try {
+    return await request("/explain", {
+      method: "POST",
+      body: JSON.stringify(decisionResponse),
+    });
+  } catch (err) {
+    console.warn("Could not fetch LLM explanation from backend, using presentation fallback:", err);
+    return {
+      summary: decisionResponse?.explanation || "DebtWise evaluated your financial profile and generated a safe recovery plan.",
+      why_this_happened: `Identified ${(decisionResponse?.risk?.primary_cause || "financial distress").replaceAll("_", " ")} based on recent financial patterns.`,
+      what_we_can_do: decisionResponse?.selected_intervention
+        ? `DebtWise proposes '${decisionResponse.selected_intervention.title}' providing estimated monthly cash-flow relief.`
+        : "A specialist review is recommended.",
+      why_this_option_is_safer: "All options were evaluated against strict institutional safety rules (SC-001 through SC-008).",
+      affordability_context: `Calculated sustainable capacity is ₹${Number(decisionResponse?.capacity?.safe_emi || 0).toLocaleString("en-IN")}/month.`,
+      customer_message: "You remain in complete control. Your affirmative consent is required before any plan is activated.",
+      disclaimer: "This is an estimate based on current financial information, not a guarantee of future outcomes.",
+      metadata: {
+        provider: "client_fallback",
+        model: "client_fallback_v1",
+        fallback_used: true,
+        timestamp: new Date().toISOString(),
+      },
+    };
+  }
 }
 
 async function analyzeDemoCustomer(name) {
@@ -279,7 +313,8 @@ async function analyzeDemoCustomer(name) {
     body: JSON.stringify(customer),
   });
 
-  return mapAnalysisToCustomerDetail(customer, analysis);
+  const explanation = await explainDecision(analysis);
+  return mapAnalysisToCustomerDetail(customer, analysis, explanation);
 }
 
 export const api = {
@@ -345,7 +380,24 @@ export const api = {
       body: JSON.stringify(customer),
     });
 
-    return mapAnalysisToCustomerDetail(customer, analysis);
+    const explanation = await explainDecision(analysis);
+    return mapAnalysisToCustomerDetail(customer, analysis, explanation);
+  },
+
+  async explainDecision(decision) {
+    return explainDecision(decision);
+  },
+
+  async simulateRecovery({ customerInput, selectedInterventionId = null, horizonMonths = 6, scenario = "ADHERENT_RECOVERY" }) {
+    return request("/recovery/simulate", {
+      method: "POST",
+      body: JSON.stringify({
+        customer_input: customerInput,
+        selected_intervention_id: selectedInterventionId,
+        horizon_months: Number(horizonMonths),
+        scenario: scenario,
+      }),
+    });
   },
 
   async diagnoseDistress(customer) {

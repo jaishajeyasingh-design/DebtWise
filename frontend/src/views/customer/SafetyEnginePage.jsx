@@ -1,9 +1,11 @@
 import React from 'react';
 import { ArrowLeft, ArrowRight, ShieldCheck, XCircle, CheckCircle2 } from 'lucide-react';
 import SafetyRejection from '../../components/interventions/SafetyRejection';
+import LLMExplanationCard from '../../components/common/LLMExplanationCard';
 
 export default function SafetyEnginePage({ data, onBack, onNext }) {
   const rejection = data?.safety_rejection;
+  const explanation = data?.llm_explanation;
 
   if (!data) {
     return (
@@ -81,6 +83,15 @@ export default function SafetyEnginePage({ data, onBack, onNext }) {
             <p className="text-xs text-slate-400 mt-2">
               All generated options passed the available safety constraints.
             </p>
+          </div>
+        )}
+
+        {explanation && (
+          <div className="mt-6">
+            <LLMExplanationCard
+              explanation={explanation}
+              mode="safety"
+            />
           </div>
         )}
 

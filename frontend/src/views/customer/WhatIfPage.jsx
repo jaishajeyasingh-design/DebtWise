@@ -1,10 +1,12 @@
 import React from 'react';
 import { ArrowLeft, ArrowRight, SlidersHorizontal, ShieldCheck } from 'lucide-react';
+import LLMExplanationCard from '../../components/common/LLMExplanationCard';
 
 export default function WhatIfPage({ data, selectedIntervention, onBack, onNext }) {
   const capacity = data?.capacity || {};
   const currentEmi = Number(capacity.current_obligations ?? capacity.current_emi ?? 0);
   const safeEmi = Number(capacity.safe_emi ?? 0);
+  const explanation = data?.llm_explanation;
 
   const proposedEmi = Number(
     selectedIntervention?.estimated_emi_after ??
@@ -61,7 +63,7 @@ export default function WhatIfPage({ data, selectedIntervention, onBack, onNext 
                   Current EMI
                 </div>
                 <div className="text-2xl font-black text-white mt-2">
-                  ?{currentEmi.toLocaleString('en-IN', { maximumFractionDigits: 0 })}
+                  ₹{currentEmi.toLocaleString('en-IN', { maximumFractionDigits: 0 })}
                 </div>
               </div>
 
@@ -70,7 +72,7 @@ export default function WhatIfPage({ data, selectedIntervention, onBack, onNext 
                   Simulated EMI
                 </div>
                 <div className="text-2xl font-black text-violet-300 mt-2">
-                  ?{proposedEmi.toLocaleString('en-IN', { maximumFractionDigits: 0 })}
+                  ₹{proposedEmi.toLocaleString('en-IN', { maximumFractionDigits: 0 })}
                 </div>
               </div>
 
@@ -79,10 +81,19 @@ export default function WhatIfPage({ data, selectedIntervention, onBack, onNext 
                   Monthly Relief
                 </div>
                 <div className="text-2xl font-black text-emerald-300 mt-2">
-                  ?{monthlyRelief.toLocaleString('en-IN', { maximumFractionDigits: 0 })}
+                  ₹{monthlyRelief.toLocaleString('en-IN', { maximumFractionDigits: 0 })}
                 </div>
               </div>
             </div>
+
+            {explanation && (
+              <div className="mt-6">
+                <LLMExplanationCard
+                  explanation={explanation}
+                  mode="simulator"
+                />
+              </div>
+            )}
 
             <div className="mt-6 grid grid-cols-1 sm:grid-cols-2 gap-4">
               <div className="p-5 rounded-2xl bg-slate-950/80 border border-slate-800">
@@ -108,7 +119,7 @@ export default function WhatIfPage({ data, selectedIntervention, onBack, onNext 
                 <p className="text-sm text-slate-300 leading-relaxed">
                   Sustainable EMI boundary:{' '}
                   <strong className="text-emerald-300">
-                    ?{safeEmi.toLocaleString('en-IN', { maximumFractionDigits: 0 })}/mo
+                    ₹{safeEmi.toLocaleString('en-IN', { maximumFractionDigits: 0 })}/mo
                   </strong>
                 </p>
               </div>

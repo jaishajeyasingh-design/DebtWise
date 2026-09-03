@@ -3,7 +3,7 @@ FinShield Application Configuration
 Environment settings, API metadata, and system defaults.
 """
 import os
-from typing import List
+from typing import List, Optional
 from pydantic import BaseModel
 
 
@@ -26,6 +26,11 @@ class Settings(BaseModel):
     ]
     ENVIRONMENT: str = os.getenv("FINSHIELD_ENV", "development")
     LOG_LEVEL: str = os.getenv("LOG_LEVEL", "INFO")
+
+    # LLM Explanation & Communication Layer Configuration
+    ANTHROPIC_API_KEY: Optional[str] = os.getenv("ANTHROPIC_API_KEY", None)
+    ANTHROPIC_MODEL: str = os.getenv("ANTHROPIC_MODEL", os.getenv("LLM_MODEL", "claude-sonnet-4-20250514"))
+    LLM_TIMEOUT_SECONDS: float = float(os.getenv("LLM_TIMEOUT_SECONDS", "10.0"))
 
 
 settings = Settings()

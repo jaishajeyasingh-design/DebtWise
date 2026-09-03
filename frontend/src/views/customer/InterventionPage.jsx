@@ -1,6 +1,7 @@
 import React from 'react';
 import { ArrowLeft, ArrowRight, CheckCircle2, Shield, UserCheck } from 'lucide-react';
 import InterventionCard from '../../components/interventions/InterventionCard';
+import LLMExplanationCard from '../../components/common/LLMExplanationCard';
 
 export default function InterventionPage({
   data,
@@ -11,6 +12,7 @@ export default function InterventionPage({
 }) {
   const interventions = data?.safe_interventions || [];
   const recommendation = data?.selected_intervention || data?.recommendation;
+  const explanation = data?.llm_explanation;
 
   return (
     <div className="space-y-6 animate-fadeIn">
@@ -34,6 +36,15 @@ export default function InterventionPage({
             {interventions.length} SAFE OPTION{interventions.length === 1 ? '' : 'S'}
           </div>
         </div>
+
+        {explanation && (
+          <div className="mb-6">
+            <LLMExplanationCard
+              explanation={explanation}
+              mode="intervention"
+            />
+          </div>
+        )}
 
         {recommendation && (
           <div className="mb-6 p-5 rounded-2xl bg-cyan-500/5 border border-cyan-500/20">

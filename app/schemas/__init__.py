@@ -14,6 +14,19 @@ from app.schemas.intervention import (
     AuditRecord,
     DecisionResponse
 )
+from app.schemas.explanation import (
+    ExplanationRequest,
+    ExplanationResponse,
+    ExplanationMetadata
+)
+from app.schemas.recovery import (
+    RecoverySimulationRequest,
+    RecoverySimulationResponse,
+    TrajectoryPoint,
+    BeforeAfterDelta,
+    SimulationScenario,
+    RecoveryStatus
+)
 
 __all__ = [
     "CustomerInput",
@@ -27,5 +40,14 @@ __all__ = [
     "ConsentGate",
     "HumanApprovalGate",
     "AuditRecord",
-    "DecisionResponse"
+    "DecisionResponse",
+    "ExplanationRequest",
+    "ExplanationResponse",
+    "ExplanationMetadata",
+    "RecoverySimulationRequest",
+    "RecoverySimulationResponse",
+    "TrajectoryPoint",
+    "BeforeAfterDelta",
+    "SimulationScenario",
+    "RecoveryStatus"
 ]

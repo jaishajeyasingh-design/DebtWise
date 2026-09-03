@@ -2,9 +2,11 @@ import React from 'react';
 import { ArrowLeft, ArrowRight, BrainCircuit } from 'lucide-react';
 import DistressDiagnosis from '../../components/diagnosis/DistressDiagnosis';
 import SHAPFactors from '../../components/diagnosis/SHAPFactors';
+import LLMExplanationCard from '../../components/common/LLMExplanationCard';
 
 export default function DiagnosisPage({ data, onBack, onNext }) {
   const diagnosis = data?.diagnosis;
+  const explanation = data?.llm_explanation;
 
   if (!diagnosis) {
     return (
@@ -42,6 +44,15 @@ export default function DiagnosisPage({ data, onBack, onNext }) {
           diagnosis={diagnosis}
           showProbabilities={false}
         />
+
+        {explanation && (
+          <div className="mt-6">
+            <LLMExplanationCard
+              explanation={explanation}
+              mode="diagnosis"
+            />
+          </div>
+        )}
 
         <div className="my-8 border-t border-slate-800 pt-6">
           <SHAPFactors factors={diagnosis.top_factors || []} />

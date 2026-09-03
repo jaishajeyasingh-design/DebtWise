@@ -6,7 +6,9 @@ import {
   PhoneCall,
   User,
   ChevronLeft,
-  ChevronRight
+  ChevronRight,
+  Sparkles,
+  RefreshCw
 } from 'lucide-react';
 
 import { api } from '../api/mockApi';
@@ -29,17 +31,36 @@ const STEPS = [
   { id: 7, label: 'Audit', sub: 'Governance' }
 ];
 
-export default function CustomerJourney({ onReturnToDashboard }) {
+export default function CustomerJourney({
+  customerData: initialCustomerData = null,
+  onReturnToDashboard,
+  onNewAssessment
+}) {
   const [currentStep, setCurrentStep] = useState(1);
-  const [customerData, setCustomerData] = useState(null);
-  const [selectedIntervention, setSelectedIntervention] = useState(null);
+  const [customerData, setCustomerData] = useState(initialCustomerData);
+  const [selectedIntervention, setSelectedIntervention] = useState(
+    initialCustomerData?.selected_intervention ||
+    initialCustomerData?.safe_interventions?.[0] ||
+    null
+  );
   const [isConsentModalOpen, setIsConsentModalOpen] = useState(false);
   const [consentGranted, setConsentGranted] = useState(false);
   const [humanHelpRequested, setHumanHelpRequested] = useState(false);
-  const [loading, setLoading] = useState(true);
+  const [loading, setLoading] = useState(!initialCustomerData);
   const [error, setError] = useState(null);
 
   useEffect(() => {
+    if (initialCustomerData) {
+      setCustomerData(initialCustomerData);
+      const recommended =
+        initialCustomerData?.selected_intervention ||
+        initialCustomerData?.safe_interventions?.[0] ||
+        null;
+      setSelectedIntervention(recommended);
+      setLoading(false);
+      return;
+    }
+
     let mounted = true;
 
     async function loadCustomer() {
@@ -60,7 +81,7 @@ export default function CustomerJourney({ onReturnToDashboard }) {
 
         setSelectedIntervention(recommended);
       } catch (err) {
-        console.error('Failed to load Priya demo:', err);
+        console.error('Failed to load customer details:', err);
 
         if (mounted) {
           setError('Unable to load the live customer analysis.');
@@ -77,7 +98,7 @@ export default function CustomerJourney({ onReturnToDashboard }) {
     return () => {
       mounted = false;
     };
-  }, []);
+  }, [initialCustomerData]);
 
   const goNext = () => {
     setCurrentStep((step) => Math.min(7, step + 1));
@@ -129,7 +150,7 @@ export default function CustomerJourney({ onReturnToDashboard }) {
             <HeartHandshake className="w-6 h-6 text-cyan-400 animate-pulse" />
           </div>
           <h2 className="text-xl font-bold text-white">
-            Loading Priya's DebtWise Analysis
+            Loading Customer DebtWise Analysis
           </h2>
           <p className="text-xs font-mono text-slate-400 mt-2">
             Running diagnosis, affordability, safety and intervention engines...
@@ -150,22 +171,34 @@ export default function CustomerJourney({ onReturnToDashboard }) {
             {error || 'No customer data was returned by the backend.'}
           </p>
 
-          <button
-            onClick={onReturnToDashboard}
-            className="mt-6 px-5 py-2.5 rounded-xl bg-slate-800 hover:bg-slate-700 text-white text-xs font-mono"
-          >
-            Return to Bank Dashboard
-          </button>
+          <div className="flex items-center justify-center gap-3 mt-6">
+            {onNewAssessment && (
+              <button
+                onClick={onNewAssessment}
+                className="px-5 py-2.5 rounded-xl bg-cyan-500 hover:bg-cyan-400 text-slate-950 font-bold text-xs font-mono"
+              >
+                New Assessment
+              </button>
+            )}
+            <button
+              onClick={onReturnToDashboard}
+              className="px-5 py-2.5 rounded-xl bg-slate-800 hover:bg-slate-700 text-white text-xs font-mono"
+            >
+              Return to Bank Dashboard
+            </button>
+          </div>
         </div>
       </div>
     );
   }
 
-  const customer = customerData.customer || {};
-  const firstName = customer.first_name || 'Priya';
+  const customer = customerData.customer || customerData || {};
+  const customerName = customerData.name || customer.name || 'Customer';
+  const customerId = customerData.customer_id || customer.customer_id || 'CUST_DEMO';
+  const diagnosisCause = customerData.diagnosis?.primary_cause || 'DISTRESS';
 
   return (
-    <div className="max-w-5xl mx-auto px-4 sm:px-6 py-6 sm:py-8 space-y-5">
+    <div className="max-w-5xl mx-auto px-4 sm:px-6 py-6 sm:py-8 space-y-5 animate-fadeIn">
 
       {/* Customer Header */}
       <div className="glass-panel rounded-2xl p-4 sm:p-5 border border-slate-700/80 bg-slate-950/70">
@@ -178,25 +211,40 @@ export default function CustomerJourney({ onReturnToDashboard }) {
 
             <div>
               <div className="font-bold text-white text-sm sm:text-base flex items-center gap-2 flex-wrap">
-                <span>{customer.name || 'Priya Sharma'}</span>
+                <span>{customerName}</span>
                 <span className="px-2 py-0.5 rounded bg-cyan-500/20 text-cyan-300 font-mono text-[10px] font-bold">
-                  GOLDEN DEMO
+                  {diagnosisCause.replace(/_/g, ' ')}
+                </span>
+                <span className="px-2 py-0.5 rounded bg-slate-800 text-slate-400 font-mono text-[10px]">
+                  REAL ML RESPONSE
                 </span>
               </div>
 
               <div className="text-xs font-mono text-slate-400 mt-0.5">
-                {customer.customer_id || 'CUST_PRIYA_34'} · {firstName}'s Financial Recovery Journey
+                {customerId} · Personalized Recovery Journey
               </div>
             </div>
           </div>
 
-          <button
-            onClick={onReturnToDashboard}
-            className="text-xs font-mono text-slate-400 hover:text-cyan-400 transition flex items-center gap-2 self-start lg:self-center"
-          >
-            <ArrowLeft className="w-3.5 h-3.5" />
-            Bank Operations Console
-          </button>
+          <div className="flex items-center gap-2 self-start lg:self-center flex-wrap">
+            {onNewAssessment && (
+              <button
+                onClick={onNewAssessment}
+                className="text-xs font-mono px-3 py-1.5 rounded-lg bg-slate-800 hover:bg-slate-700 text-slate-300 transition flex items-center gap-1.5"
+              >
+                <RefreshCw className="w-3.5 h-3.5" />
+                <span>New Assessment</span>
+              </button>
+            )}
+
+            <button
+              onClick={onReturnToDashboard}
+              className="text-xs font-mono text-slate-400 hover:text-cyan-400 transition flex items-center gap-1.5 px-3 py-1.5 rounded-lg border border-slate-800 hover:border-slate-700"
+            >
+              <ArrowLeft className="w-3.5 h-3.5" />
+              <span>Bank Console</span>
+            </button>
+          </div>
         </div>
       </div>
 
@@ -238,7 +286,7 @@ export default function CustomerJourney({ onReturnToDashboard }) {
       {currentStep === 1 && (
         <DiagnosisPage
           data={customerData}
-          onBack={onReturnToDashboard}
+          onBack={onNewAssessment || onReturnToDashboard}
           onNext={goNext}
         />
       )}
