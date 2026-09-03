@@ -77,7 +77,11 @@ export default function CustomerIntelligence({
 
   const handleExecuteAnalysis = () => {
     if (onAnalyzeCustomer && selectedCustomer) {
-      onAnalyzeCustomer(selectedCustomer);
+      onAnalyzeCustomer({
+        ...selectedCustomer,
+        presetKey: selectedPresetKey,
+        isCustomized: false,
+      });
     }
   };
 
