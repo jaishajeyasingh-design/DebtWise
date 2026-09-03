@@ -1,0 +1,69 @@
+{
+  "version": "1.0.0",
+  "model_type": "XGBoost Multiclass Distress Classifier",
+  "classes": [
+    "INCOME_SHOCK",
+    "DEBT_OVERLOAD",
+    "CASH_FLOW_MISMATCH",
+    "EXPENSE_SHOCK",
+    "STRUCTURAL_DISTRESS"
+  ],
+  "class_to_idx": {
+    "INCOME_SHOCK": 0,
+    "DEBT_OVERLOAD": 1,
+    "CASH_FLOW_MISMATCH": 2,
+    "EXPENSE_SHOCK": 3,
+    "STRUCTURAL_DISTRESS": 4
+  },
+  "idx_to_class": {
+    "0": "INCOME_SHOCK",
+    "1": "DEBT_OVERLOAD",
+    "2": "CASH_FLOW_MISMATCH",
+    "3": "EXPENSE_SHOCK",
+    "4": "STRUCTURAL_DISTRESS"
+  },
+  "features": [
+    "debt_to_income_ratio",
+    "expense_to_income_ratio",
+    "obligation_to_income_ratio",
+    "essential_expense_ratio",
+    "income_volatility",
+    "savings_decline_rate",
+    "debt_growth_rate",
+    "expense_growth_rate",
+    "payment_delay_rate",
+    "overdraft_frequency",
+    "credit_utilization",
+    "cash_flow_mismatch_score",
+    "liquid_buffer_months",
+    "discretionary_spend_ratio",
+    "missed_payment_count",
+    "min_payment_only_ratio"
+  ],
+  "core_features": [
+    "debt_to_income_ratio",
+    "expense_to_income_ratio",
+    "obligation_to_income_ratio",
+    "essential_expense_ratio",
+    "income_volatility",
+    "savings_decline_rate",
+    "debt_growth_rate",
+    "expense_growth_rate",
+    "payment_delay_rate",
+    "overdraft_frequency",
+    "credit_utilization",
+    "cash_flow_mismatch_score"
+  ],
+  "num_features": 16,
+  "hyperparameters": {
+    "n_estimators": 150,
+    "max_depth": 5,
+    "learning_rate": 0.08,
+    "subsample": 0.85,
+    "colsample_bytree": 0.85,
+    "objective": "multi:softprob",
+    "num_class": 5,
+    "random_state": 42,
+    "eval_metric": "mlogloss"
+  }
+}

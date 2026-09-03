@@ -1,0 +1,77 @@
+{
+  "accuracy": 1.0,
+  "macro_f1": 1.0,
+  "weighted_f1": 1.0,
+  "per_class_metrics": {
+    "INCOME_SHOCK": {
+      "precision": 1.0,
+      "recall": 1.0,
+      "f1_score": 1.0
+    },
+    "DEBT_OVERLOAD": {
+      "precision": 1.0,
+      "recall": 1.0,
+      "f1_score": 1.0
+    },
+    "CASH_FLOW_MISMATCH": {
+      "precision": 1.0,
+      "recall": 1.0,
+      "f1_score": 1.0
+    },
+    "EXPENSE_SHOCK": {
+      "precision": 1.0,
+      "recall": 1.0,
+      "f1_score": 1.0
+    },
+    "STRUCTURAL_DISTRESS": {
+      "precision": 1.0,
+      "recall": 1.0,
+      "f1_score": 1.0
+    }
+  },
+  "confusion_matrix": {
+    "INCOME_SHOCK": {
+      "INCOME_SHOCK": 240,
+      "DEBT_OVERLOAD": 0,
+      "CASH_FLOW_MISMATCH": 0,
+      "EXPENSE_SHOCK": 0,
+      "STRUCTURAL_DISTRESS": 0
+    },
+    "DEBT_OVERLOAD": {
+      "INCOME_SHOCK": 0,
+      "DEBT_OVERLOAD": 240,
+      "CASH_FLOW_MISMATCH": 0,
+      "EXPENSE_SHOCK": 0,
+      "STRUCTURAL_DISTRESS": 0
+    },
+    "CASH_FLOW_MISMATCH": {
+      "INCOME_SHOCK": 0,
+      "DEBT_OVERLOAD": 0,
+      "CASH_FLOW_MISMATCH": 240,
+      "EXPENSE_SHOCK": 0,
+      "STRUCTURAL_DISTRESS": 0
+    },
+    "EXPENSE_SHOCK": {
+      "INCOME_SHOCK": 0,
+      "DEBT_OVERLOAD": 0,
+      "CASH_FLOW_MISMATCH": 0,
+      "EXPENSE_SHOCK": 240,
+      "STRUCTURAL_DISTRESS": 0
+    },
+    "STRUCTURAL_DISTRESS": {
+      "INCOME_SHOCK": 0,
+      "DEBT_OVERLOAD": 0,
+      "CASH_FLOW_MISMATCH": 0,
+      "EXPENSE_SHOCK": 0,
+      "STRUCTURAL_DISTRESS": 240
+    }
+  },
+  "classes": [
+    "INCOME_SHOCK",
+    "DEBT_OVERLOAD",
+    "CASH_FLOW_MISMATCH",
+    "EXPENSE_SHOCK",
+    "STRUCTURAL_DISTRESS"
+  ],
+  "total_test_samples": 1200
+}
