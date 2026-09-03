@@ -164,9 +164,7 @@ export default function ConsentRecoveryPage({
         )}
       </div>
 
-      {data?.recovery_projection && (
-        <RecoveryTracker projectionData={data.recovery_projection} />
-      )}
+      <RecoveryTracker customer={data} />
 
       <div className="flex items-center justify-between">
         <button

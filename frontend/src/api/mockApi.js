@@ -270,6 +270,9 @@ function mapAnalysisToCustomerDetail(rawCustomer, result, explanation = null) {
     // Natural Language Explanation & Communication Layer (Presentation Only)
     llm_explanation: explanation || null,
 
+    // Raw baseline input preserved for forward recovery simulation
+    raw_customer_input: rawCustomer,
+
     // Keep the complete authoritative backend response unchanged.
     decision_response: result,
   };
@@ -383,6 +386,18 @@ export const api = {
 
   async explainDecision(decision) {
     return explainDecision(decision);
+  },
+
+  async simulateRecovery({ customerInput, selectedInterventionId = null, horizonMonths = 6, scenario = "ADHERENT_RECOVERY" }) {
+    return request("/recovery/simulate", {
+      method: "POST",
+      body: JSON.stringify({
+        customer_input: customerInput,
+        selected_intervention_id: selectedInterventionId,
+        horizon_months: Number(horizonMonths),
+        scenario: scenario,
+      }),
+    });
   },
 
   async diagnoseDistress(customer) {

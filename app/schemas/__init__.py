@@ -19,6 +19,14 @@ from app.schemas.explanation import (
     ExplanationResponse,
     ExplanationMetadata
 )
+from app.schemas.recovery import (
+    RecoverySimulationRequest,
+    RecoverySimulationResponse,
+    TrajectoryPoint,
+    BeforeAfterDelta,
+    SimulationScenario,
+    RecoveryStatus
+)
 
 __all__ = [
     "CustomerInput",
@@ -35,5 +43,11 @@ __all__ = [
     "DecisionResponse",
     "ExplanationRequest",
     "ExplanationResponse",
-    "ExplanationMetadata"
+    "ExplanationMetadata",
+    "RecoverySimulationRequest",
+    "RecoverySimulationResponse",
+    "TrajectoryPoint",
+    "BeforeAfterDelta",
+    "SimulationScenario",
+    "RecoveryStatus"
 ]
