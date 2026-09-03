@@ -102,7 +102,7 @@ class SafetyFilter:
                     f"burden without resolving structural cash deficit."
                 )
                 rejection_reasons.append(reason_003)
-                safer_alt = "Recommend Level 3 Credit Freeze + Level 5 Tenor Restructuring or Level 4 Temporary Relief."
+                safer_alt = "Recommend Level 3 Customer-Initiated Soft Credit-Line Freeze + Level 5 Tenor Restructuring or Level 4 Temporary Relief."
             elif capacity.liquid_buffer_months < MIN_SAVINGS_FOR_CONSOLIDATION_MONTHS:
                 sc003_passed = False
                 reason_003 = (
