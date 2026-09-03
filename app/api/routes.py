@@ -8,8 +8,10 @@ from fastapi import APIRouter, HTTPException, status, Path
 from app.schemas.customer import CustomerInput
 from app.schemas.diagnosis import DiagnosisResult
 from app.schemas.intervention import DecisionResponse
+from app.schemas.explanation import ExplanationResponse
 from app.services.diagnosis_service import DiagnosisService
 from app.services.decision_engine import DecisionEngine
+from app.services.explanation_service import ExplanationService
 from app.config import settings
 from finshield_ml.demo_customers import get_demo_customer, DEMO_CUSTOMERS
 from finshield_ml.config import MODEL_FILE
@@ -114,4 +116,25 @@ async def analyze_customer(customer: CustomerInput) -> DecisionResponse:
         raise HTTPException(
             status_code=status.HTTP_500_INTERNAL_SERVER_ERROR,
             detail=f"Error analyzing customer distress pipeline: {str(e)}"
+        )
+
+
+@api_router.post(
+    "/explain",
+    response_model=ExplanationResponse,
+    summary="Generate Plain-English Post-Decision Explanation",
+    response_description="Translates structured decision engine output into empathetic, non-judgmental customer communication."
+)
+async def explain_decision(decision: DecisionResponse) -> ExplanationResponse:
+    """
+    Dedicated post-decision explanation endpoint.
+    Accepts authoritative DecisionResponse and returns structured customer communication.
+    Has zero authority over financial calculations, safety filters, or intervention selection.
+    """
+    try:
+        return ExplanationService.generate_explanation(decision)
+    except Exception as e:
+        raise HTTPException(
+            status_code=status.HTTP_500_INTERNAL_SERVER_ERROR,
+            detail=f"Error generating decision explanation: {str(e)}"
         )

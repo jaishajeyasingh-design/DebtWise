@@ -1,6 +1,7 @@
 import React from 'react';
 import { ArrowLeft, ArrowRight, Shield, Wallet } from 'lucide-react';
 import CapacityCard from '../../components/capacity/CapacityCard';
+import LLMExplanationCard from '../../components/common/LLMExplanationCard';
 
 export default function AffordabilityPage({ data, onBack, onNext }) {
   if (!data) {
@@ -15,6 +16,7 @@ export default function AffordabilityPage({ data, onBack, onNext }) {
 
   const capacity = data.capacity || {};
   const safeEmi = Number(capacity.safe_emi ?? 0);
+  const explanation = data.llm_explanation;
 
   return (
     <div className="space-y-6 animate-fadeIn">
@@ -38,12 +40,21 @@ export default function AffordabilityPage({ data, onBack, onNext }) {
               Sustainable EMI
             </div>
             <div className="text-xl font-black text-emerald-300">
-              ?{safeEmi.toLocaleString('en-IN', { maximumFractionDigits: 0 })}/mo
+              ₹{safeEmi.toLocaleString('en-IN', { maximumFractionDigits: 0 })}/mo
             </div>
           </div>
         </div>
 
         <CapacityCard customer={data} />
+
+        {explanation && (
+          <div className="mt-6">
+            <LLMExplanationCard
+              explanation={explanation}
+              mode="affordability"
+            />
+          </div>
+        )}
 
         <div className="grid grid-cols-1 sm:grid-cols-2 gap-4 mt-6">
           <div className="p-4 rounded-xl bg-slate-950/80 border border-slate-800">

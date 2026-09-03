@@ -7,6 +7,7 @@ from app.services.severity_engine import SeverityEngine
 from app.services.intervention_engine import InterventionEngine
 from app.services.safety_filter import SafetyFilter
 from app.services.decision_engine import DecisionEngine
+from app.services.explanation_service import ExplanationService
 
 __all__ = [
     "DiagnosisService",
@@ -14,5 +15,6 @@ __all__ = [
     "SeverityEngine",
     "InterventionEngine",
     "SafetyFilter",
-    "DecisionEngine"
+    "DecisionEngine",
+    "ExplanationService"
 ]

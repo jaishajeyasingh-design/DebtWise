@@ -14,6 +14,11 @@ from app.schemas.intervention import (
     AuditRecord,
     DecisionResponse
 )
+from app.schemas.explanation import (
+    ExplanationRequest,
+    ExplanationResponse,
+    ExplanationMetadata
+)
 
 __all__ = [
     "CustomerInput",
@@ -27,5 +32,8 @@ __all__ = [
     "ConsentGate",
     "HumanApprovalGate",
     "AuditRecord",
-    "DecisionResponse"
+    "DecisionResponse",
+    "ExplanationRequest",
+    "ExplanationResponse",
+    "ExplanationMetadata"
 ]
