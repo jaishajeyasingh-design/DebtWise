@@ -73,6 +73,7 @@ export default function InterventionPage({
               <InterventionCard
                 key={intv.id}
                 intervention={intv}
+                capacity={data?.capacity}
                 isSelected={selectedIntervention?.id === intv.id}
                 onSelect={onSelect}
               />
