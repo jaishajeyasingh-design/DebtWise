@@ -334,7 +334,7 @@ export default function CustomerJourney({ onReturnToDashboard }) {
             </p>
 
             <div className="space-y-4">
-              {PRIYA_DEMO_DATA.safe_interventions.map((intv) => (
+              {(PRIYA_DEMO_DATA.safe_interventions || []).map((intv) => (
                 <InterventionCard
                   key={intv.id}
                   intervention={intv}
