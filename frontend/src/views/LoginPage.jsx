@@ -35,7 +35,11 @@ export default function LoginPage({
   const handleDirectPresetAnalyze = (key) => {
     const preset = DEMO_PRESETS[key];
     if (preset && onQuickAnalyze) {
-      onQuickAnalyze(preset);
+      onQuickAnalyze({
+        ...preset,
+        presetKey: key,
+        isCustomized: false,
+      });
     }
   };
 

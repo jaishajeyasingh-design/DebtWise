@@ -41,7 +41,7 @@ export default function ConsentModal({
           </div>
           <div>
             <div className="flex items-center gap-2 font-mono text-xs text-cyan-400 uppercase tracking-wider">
-              <span>Step 08 • Customer Informed Consent</span>
+              <span>Governance Gate • Customer Informed Consent</span>
             </div>
             <h3 className="text-2xl font-bold text-white mt-0.5">Review & Confirm Your Choice</h3>
           </div>
