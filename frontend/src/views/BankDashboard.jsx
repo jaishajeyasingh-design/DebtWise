@@ -1,279 +1,125 @@
-import React, { useState, useEffect } from 'react';
+import React, { useEffect, useMemo, useState } from 'react';
 import {
-  Users,
   AlertTriangle,
-  Zap,
-  TrendingUp,
-  ShieldCheck,
-  Search,
-  Filter,
   ArrowRight,
-  Eye,
-  Sliders,
-  CheckCircle,
+  CheckCircle2,
+  ChevronRight,
+  Clock3,
+  Search,
+  ShieldCheck,
+  Sparkles,
+  UserRound,
   XCircle,
-  FileText,
-  Clock,
-  ChevronRight
 } from 'lucide-react';
 
-import {
-  ResponsiveContainer,
-  PieChart,
-  Pie,
-  Cell,
-  Tooltip
-} from 'recharts';
-
-import { api, PORTFOLIO_STATS } from '../api/mockApi';
-
+import { api } from '../api/mockApi';
 import RiskBadge from '../components/common/RiskBadge';
-import DistressDiagnosis from '../components/diagnosis/DistressDiagnosis';
-import SHAPFactors from '../components/diagnosis/SHAPFactors';
-import CapacityCard from '../components/capacity/CapacityCard';
-import InterventionCard from '../components/interventions/InterventionCard';
-import SafetyRejection from '../components/interventions/SafetyRejection';
-import AuditTimeline from '../components/audit/AuditTimeline';
-import WhatIfSimulator from '../components/simulator/WhatIfSimulator';
+
+const CAUSE_LABELS = {
+  EXPENSE_SHOCK: 'Expense Shock',
+  DEBT_OVERLOAD: 'Debt Overload',
+  INCOME_SHOCK: 'Income Shock',
+  CASH_FLOW_MISMATCH: 'Cash-Flow Mismatch',
+  STRUCTURAL_DISTRESS: 'Structural Distress',
+};
+
+const money = (value) =>
+  `₹${Number(value || 0).toLocaleString('en-IN', {
+    maximumFractionDigits: 0,
+  })}`;
+
+const pct = (value) => `${Math.round(Number(value || 0) * 100)}%`;
 
 export default function BankDashboard({ onOpenPriyaDemo }) {
-  const [stats, setStats] = useState({
-    ...PORTFOLIO_STATS,
-    cause_distribution: PORTFOLIO_STATS?.cause_distribution || [
-      {
-        name: 'Expense Shock',
-        count: 1200,
-        percentage: 20,
-        color: '#f59e0b'
-      },
-      {
-        name: 'Debt Overload',
-        count: 1200,
-        percentage: 20,
-        color: '#ef4444'
-      },
-      {
-        name: 'Income Shock',
-        count: 1200,
-        percentage: 20,
-        color: '#8b5cf6'
-      },
-      {
-        name: 'Cash-Flow Mismatch',
-        count: 1200,
-        percentage: 20,
-        color: '#06b6d4'
-      },
-      {
-        name: 'Structural Distress',
-        count: 1200,
-        percentage: 20,
-        color: '#64748b'
-      }
-    ]
-  });
-
   const [queue, setQueue] = useState([]);
-
-  const [searchQuery, setSearchQuery] = useState('');
-  const [selectedTierFilter, setSelectedTierFilter] = useState('ALL');
-  const [selectedCauseFilter, setSelectedCauseFilter] = useState('ALL');
-
   const [selectedCustomerId, setSelectedCustomerId] =
     useState('CUST_PRIYA_34');
-
   const [customerDetail, setCustomerDetail] = useState(null);
-  const [loadingDetail, setLoadingDetail] = useState(false);
+  const [searchQuery, setSearchQuery] = useState('');
+  const [selectedTier, setSelectedTier] = useState('ALL');
   const [loadingQueue, setLoadingQueue] = useState(true);
+  const [loadingDetail, setLoadingDetail] = useState(false);
 
-  const [activeTab, setActiveTab] = useState('diagnosis');
-
-  /*
-   * Load portfolio statistics + real backend demo customers.
-   */
   useEffect(() => {
     loadDashboard();
   }, []);
 
-  /*
-   * Load selected customer whenever the selection changes.
-   */
   useEffect(() => {
-    if (selectedCustomerId) {
-      loadCustomer(selectedCustomerId);
-    }
+    if (selectedCustomerId) loadCustomer(selectedCustomerId);
   }, [selectedCustomerId]);
 
   const loadDashboard = async () => {
     setLoadingQueue(true);
 
     try {
-      /*
-       * Portfolio stats are currently synthetic/demo-level.
-       */
-      try {
-        const portfolioStats = await api.getPortfolioStats();
-
-        if (portfolioStats) {
-          setStats({
-            ...portfolioStats,
-            cause_distribution:
-              portfolioStats.cause_distribution || []
-          });
-        }
-      } catch (error) {
-        console.warn(
-          'Portfolio stats unavailable, using demo statistics.',
-          error
-        );
-      }
-
-      /*
-       * Backend exposes four canonical demo customers.
-       * Analyze each one so the queue uses the same decision engine
-       * as the customer inspector.
-       */
       const customers = await api.getDemoCustomers();
 
-      const analyzedCustomers = await Promise.all(
+      const analyzed = await Promise.all(
         customers.map(async (customer) => {
           try {
             const detail = await api.analyzeCustomer(customer);
-
-            const riskLevel =
-              detail?.diagnosis?.severity ||
-              customer?.risk_level ||
-              'HIGH';
-
-            const distressCause =
-              detail?.diagnosis?.primary_cause ||
-              'UNKNOWN';
-
-            const tier =
-              detail?.governance?.tier ||
-              detail?.decision_response?.tier ||
-              'TIER_B';
-
-            const sustainableCapacity =
-              detail?.capacity?.safe_emi ??
-              detail?.sustainable_repayment_capacity ??
-              0;
+            const diagnosis = detail?.diagnosis || {};
+            const capacity = detail?.capacity || {};
+            const governance = detail?.governance || {};
 
             return {
-              id:
-                customer.customer_id ||
-                customer.id,
-
+              id: customer.customer_id || customer.id,
               name:
                 customer.name ||
                 customer.customer_name ||
                 'Unknown Customer',
-
               account_number:
-                customer.account_number ||
-                'DEMO-ACCOUNT',
-
-              age: customer.age,
-
-              salary_day:
-                customer.salary_day ||
-                customer.income_day ||
-                1,
-
-              emi_due_day:
-                customer.emi_due_day ||
-                customer.payment_due_day ||
-                1,
-
-              risk_level: riskLevel,
-
-              distress_cause: distressCause,
-
-              automation_tier: tier,
-
-              sustainable_capacity: Number(
-                sustainableCapacity || 0
-              ),
-
-              status:
-                detail?.governance?.is_executable
-                  ? 'READY'
-                  : 'REVIEW',
-
-              detail
-            };
-          } catch (error) {
-            console.error(
-              `Failed to analyze ${customer?.name}:`,
-              error
-            );
-
-            return {
-              id:
-                customer.customer_id ||
-                customer.id,
-
-              name:
-                customer.name ||
-                customer.customer_name ||
-                'Unknown Customer',
-
-              account_number:
-                customer.account_number ||
-                'DEMO-ACCOUNT',
-
-              age: customer.age,
-
-              salary_day:
-                customer.salary_day ||
-                customer.income_day ||
-                1,
-
-              emi_due_day:
-                customer.emi_due_day ||
-                customer.payment_due_day ||
-                1,
-
+                customer.account_number || 'DEMO-ACCOUNT',
               risk_level:
-                customer.risk_level ||
-                'HIGH',
-
+                diagnosis.severity || customer.risk_level || 'HIGH',
               distress_cause:
+                diagnosis.primary_cause ||
                 customer.distress_cause ||
                 'UNKNOWN',
-
               automation_tier:
-                customer.automation_tier ||
+                governance.tier ||
+                detail?.decision_response?.tier ||
                 'TIER_B',
-
+              sustainable_capacity: Number(
+                capacity.safe_emi ??
+                  detail?.sustainable_repayment_capacity ??
+                  0
+              ),
+              detail,
+            };
+          } catch (error) {
+            console.error(`Failed to analyze ${customer?.name}:`, error);
+            return {
+              id: customer.customer_id || customer.id,
+              name:
+                customer.name ||
+                customer.customer_name ||
+                'Unknown Customer',
+              account_number:
+                customer.account_number || 'DEMO-ACCOUNT',
+              risk_level: customer.risk_level || 'HIGH',
+              distress_cause: customer.distress_cause || 'UNKNOWN',
+              automation_tier: customer.automation_tier || 'TIER_B',
               sustainable_capacity: Number(
                 customer.sustainable_capacity || 0
               ),
-
-              status: 'REVIEW'
+              detail: null,
             };
           }
         })
       );
 
-      setQueue(analyzedCustomers);
+      setQueue(analyzed);
 
-      /*
-       * Always default to Priya if available.
-       */
-      const priya = analyzedCustomers.find(
+      const priya = analyzed.find(
         (customer) =>
           customer.id === 'CUST_PRIYA_34' ||
-          customer.name?.toLowerCase().includes('priya')
+          customer.name.toLowerCase().includes('priya')
       );
 
-      if (priya) {
-        setSelectedCustomerId(priya.id);
-      } else if (analyzedCustomers.length > 0) {
-        setSelectedCustomerId(analyzedCustomers[0].id);
-      }
+      setSelectedCustomerId(priya?.id || analyzed[0]?.id || null);
     } catch (error) {
-      console.error('Failed to load DebtWise dashboard:', error);
+      console.error('Failed to load DebtWise operations console:', error);
       setQueue([]);
     } finally {
       setLoadingQueue(false);
@@ -284,933 +130,682 @@ export default function BankDashboard({ onOpenPriyaDemo }) {
     setLoadingDetail(true);
 
     try {
-      /*
-       * If queue already contains the fully analyzed customer,
-       * use it immediately.
-       */
-      const queueCustomer = queue.find(
-        (customer) => customer.id === id
-      );
+      const queued = queue.find((customer) => customer.id === id);
 
-      if (queueCustomer?.detail) {
-        setCustomerDetail(queueCustomer.detail);
-        setLoadingDetail(false);
+      if (queued?.detail) {
+        setCustomerDetail(queued.detail);
         return;
       }
 
       const data = await api.getCustomerDetails(id);
       setCustomerDetail(data);
     } catch (error) {
-      console.error(
-        `Failed to load customer ${id}:`,
-        error
-      );
-
+      console.error(`Failed to load customer ${id}:`, error);
       setCustomerDetail(null);
     } finally {
       setLoadingDetail(false);
     }
   };
 
-  /*
-   * Filter queue.
-   */
-  const filteredQueue = queue.filter((cust) => {
-    const name =
-      cust.name?.toLowerCase() || '';
+  const filteredQueue = useMemo(() => {
+    const query = searchQuery.toLowerCase();
 
-    const id =
-      cust.id?.toLowerCase() || '';
+    return queue.filter((customer) => {
+      const matchesSearch =
+        customer.name.toLowerCase().includes(query) ||
+        customer.id.toLowerCase().includes(query);
 
-    const matchesSearch =
-      name.includes(searchQuery.toLowerCase()) ||
-      id.includes(searchQuery.toLowerCase());
+      const matchesTier =
+        selectedTier === 'ALL' ||
+        customer.automation_tier === selectedTier;
 
-    const tier =
-      cust.automation_tier || '';
+      return matchesSearch && matchesTier;
+    });
+  }, [queue, searchQuery, selectedTier]);
 
-    const cause =
-      cust.distress_cause || '';
+  const selectedCustomer = queue.find(
+    (customer) => customer.id === selectedCustomerId
+  );
 
-    const matchesTier =
-      selectedTierFilter === 'ALL' ||
-      tier.includes(
-        selectedTierFilter.replace('Tier ', 'TIER_')
-      );
+  const diagnosis = customerDetail?.diagnosis || {};
+  const capacity = customerDetail?.capacity || {};
+  const governance = customerDetail?.governance || {};
+  const selectedIntervention =
+    customerDetail?.selected_intervention ||
+    customerDetail?.decision_response?.selected_intervention ||
+    customerDetail?.safe_interventions?.[0];
 
-    const matchesCause =
-      selectedCauseFilter === 'ALL' ||
-      cause === selectedCauseFilter;
+  const rejectedCandidates =
+    customerDetail?.candidates?.filter(
+      (candidate) =>
+        candidate.status === 'REJECTED' ||
+        candidate.approved === false ||
+        candidate.is_approved === false
+    ) || [];
 
-    return (
-      matchesSearch &&
-      matchesTier &&
-      matchesCause
-    );
-  });
+  const criticalCount = queue.filter(
+    (customer) => customer.risk_level === 'CRITICAL'
+  ).length;
+
+  const tierACount = queue.filter(
+    (customer) => customer.automation_tier === 'TIER_A'
+  ).length;
+
+  const reviewCount = queue.filter(
+    (customer) => customer.automation_tier !== 'TIER_A'
+  ).length;
+
+  const causeCounts = queue.reduce((acc, customer) => {
+    acc[customer.distress_cause] =
+      (acc[customer.distress_cause] || 0) + 1;
+    return acc;
+  }, {});
 
   return (
-    <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-8 space-y-8">
-
-      {/* ========================================================= */}
-      {/* TOP BANNER */}
-      {/* ========================================================= */}
-
-      <div className="flex flex-col md:flex-row md:items-center justify-between gap-4 glass-panel rounded-2xl p-6 border border-slate-700/80 bg-gradient-to-r from-slate-950 via-slate-900 to-blue-950/40">
-
-        <div>
-          <div className="flex items-center gap-2 font-mono text-xs text-cyan-400 uppercase tracking-wider mb-1">
-            <span className="w-2 h-2 rounded-full bg-cyan-400"></span>
-
-            DebtWise Operations Console • Real-Time Triage
-          </div>
-
-          <h1 className="text-2xl sm:text-3xl font-black text-white tracking-tight">
-            Financial Distress Intervention Dashboard
-          </h1>
-
-          <p className="text-xs sm:text-sm text-slate-300 mt-1 max-w-2xl">
-            Proactive triage queue separating low-risk automated
-            interventions from officer-reviewed relief concessions.
-          </p>
-        </div>
-
-        <button
-          onClick={onOpenPriyaDemo}
-          className="px-5 py-3 rounded-xl bg-gradient-to-r from-cyan-400 to-emerald-400 hover:from-cyan-300 hover:to-emerald-300 text-slate-950 font-bold text-xs sm:text-sm flex items-center justify-center gap-2 shadow-[0_0_20px_rgba(0,240,255,0.25)] transition shrink-0"
-        >
-          <span>Launch Priya Golden Demo</span>
-          <ArrowRight className="w-4 h-4" />
-        </button>
-      </div>
-
-
-      {/* ========================================================= */}
-      {/* KPI STATS */}
-      {/* ========================================================= */}
-
-      <div className="grid grid-cols-2 lg:grid-cols-5 gap-4">
-
-        <div className="glass-card rounded-2xl p-4">
-          <div className="text-[11px] font-mono text-slate-400 uppercase">
-            Monitored Accounts
-          </div>
-
-          <div className="text-2xl font-mono font-bold text-white mt-1">
-            14,850
-          </div>
-
-          <div className="text-[11px] text-emerald-400 mt-0.5">
-            Synthetic demo telemetry
-          </div>
-        </div>
-
-
-        <div className="glass-card rounded-2xl p-4 border-rose-500/30">
-          <div className="text-[11px] font-mono text-rose-300 uppercase">
-            Active Distress Cases
-          </div>
-
-          <div className="text-2xl font-mono font-bold text-rose-400 mt-1">
-            342
-          </div>
-
-          <div className="text-[11px] text-rose-300/80 mt-0.5">
-            Early detected cases
-          </div>
-        </div>
-
-
-        <div className="glass-card rounded-2xl p-4 border-emerald-500/30">
-          <div className="text-[11px] font-mono text-emerald-300 uppercase">
-            Tier A Auto Rate
-          </div>
-
-          <div className="text-2xl font-mono font-bold text-emerald-400 mt-1">
-            58.4%
-          </div>
-
-          <div className="text-[11px] text-emerald-300/80 mt-0.5">
-            Self-resolved post-consent
-          </div>
-        </div>
-
-
-        <div className="glass-card rounded-2xl p-4 border-blue-500/30">
-          <div className="text-[11px] font-mono text-blue-300 uppercase">
-            Cure Rate Lift
-          </div>
-
-          <div className="text-2xl font-mono font-bold text-blue-400 mt-1">
-            +41.2%
-          </div>
-
-          <div className="text-[11px] text-blue-300/80 mt-0.5">
-            vs traditional collections
-          </div>
-        </div>
-
-
-        <div className="glass-card rounded-2xl p-4 border-cyan-500/30 col-span-2 lg:col-span-1">
-          <div className="text-[11px] font-mono text-cyan-300 uppercase">
-            Defaults Prevented
-          </div>
-
-          <div className="text-2xl font-mono font-bold text-cyan-400 mt-1">
-            ₹4.82 Cr
-          </div>
-
-          <div className="text-[11px] text-cyan-300/80 mt-0.5">
-            Preserved balance volume
-          </div>
-        </div>
-
-      </div>
-
-
-      {/* ========================================================= */}
-      {/* PORTFOLIO BREAKDOWN */}
-      {/* ========================================================= */}
-
-      <div className="grid grid-cols-1 lg:grid-cols-3 gap-6">
-
-        {/* CAUSE DISTRIBUTION */}
-
-        <div className="glass-panel rounded-2xl p-6 border border-slate-700/60 lg:col-span-2 flex flex-col justify-between">
-
-          <div className="flex justify-between items-center mb-4">
-
-            <div>
-              <div className="text-xs font-mono text-cyan-400 uppercase">
-                AI Diagnosis Telemetry
-              </div>
-
-              <h4 className="text-lg font-bold text-white">
-                Portfolio Distress Cause Breakdown
-              </h4>
-            </div>
-
-            <span className="text-xs font-mono text-slate-400">
-              342 Flagged Accounts
-            </span>
-
-          </div>
-
-
-          <div className="grid grid-cols-1 sm:grid-cols-2 gap-4 items-center">
-
-            <div className="h-44 w-full">
-
-              <ResponsiveContainer width="100%" height="100%">
-
-                <PieChart>
-
-                  <Pie
-                    data={stats?.cause_distribution || []}
-                    cx="50%"
-                    cy="50%"
-                    innerRadius={45}
-                    outerRadius={70}
-                    paddingAngle={3}
-                    dataKey="count"
-                  >
-
-                    {(stats?.cause_distribution || []).map(
-                      (entry, index) => (
-                        <Cell
-                          key={`cell-${index}`}
-                          fill={entry.color}
-                        />
-                      )
-                    )}
-
-                  </Pie>
-
-                  <Tooltip
-                    content={({ active, payload }) => {
-
-                      if (
-                        active &&
-                        payload &&
-                        payload.length
-                      ) {
-                        return (
-                          <div className="p-2.5 rounded-lg bg-slate-950 border border-slate-700 text-xs font-mono">
-
-                            <div className="text-white font-bold">
-                              {payload[0].name}
-                            </div>
-
-                            <div className="text-cyan-400">
-                              {payload[0].value} customers
-                              {' '}
-                              (
-                              {payload[0].payload?.percentage || 0}
-                              %)
-                            </div>
-
-                          </div>
-                        );
-                      }
-
-                      return null;
-                    }}
-                  />
-
-                </PieChart>
-
-              </ResponsiveContainer>
-
-            </div>
-
-
-            <div className="space-y-2 text-xs">
-
-              {(stats?.cause_distribution || []).map(
-                (item) => (
-
-                  <div
-                    key={item.name}
-                    className="flex items-center justify-between p-2 rounded-lg bg-slate-900/50 border border-slate-800"
-                  >
-
-                    <div className="flex items-center gap-2">
-
-                      <span
-                        className="w-2.5 h-2.5 rounded-full"
-                        style={{
-                          backgroundColor: item.color
-                        }}
-                      />
-
-                      <span className="text-slate-200 font-semibold">
-                        {item.name}
-                      </span>
-
-                    </div>
-
-                    <div className="font-mono text-slate-400">
-
-                      <strong className="text-white">
-                        {item.count}
-                      </strong>
-
-                      {' '}
-                      ({item.percentage}%)
-
-                    </div>
-
-                  </div>
-
-                )
-              )}
-
-            </div>
-
-          </div>
-
-        </div>
-
-
-        {/* AUTOMATION TIERS */}
-
-        <div className="glass-panel rounded-2xl p-6 border border-slate-700/60 flex flex-col justify-between">
-
+    <div className="max-w-[1500px] mx-auto px-4 sm:px-6 lg:px-8 py-6 space-y-5">
+      {/* HEADER */}
+      <section className="glass-panel rounded-2xl border border-slate-700/70 bg-slate-950/70 p-5">
+        <div className="flex flex-col lg:flex-row lg:items-center justify-between gap-4">
           <div>
-
-            <div className="text-xs font-mono text-emerald-400 uppercase">
-              Responsible AI Framework
+            <div className="flex items-center gap-2 text-[11px] font-mono uppercase tracking-[0.18em] text-cyan-400">
+              <span className="w-2 h-2 rounded-full bg-emerald-400" />
+              DebtWise Operations
             </div>
-
-            <h4 className="text-lg font-bold text-white mb-3">
-              Automation Boundary Tiers
-            </h4>
-
-            <p className="text-xs text-slate-400 leading-relaxed mb-4">
-              Hardcoded architectural boundaries dictating
-              automated execution vs officer sign-off.
+            <h1 className="text-2xl sm:text-3xl font-black text-white mt-1">
+              Who needs attention right now?
+            </h1>
+            <p className="text-sm text-slate-400 mt-1">
+              Triage distressed customers, understand the reason, and review
+              the safest next action.
             </p>
-
           </div>
 
-
-          <div className="space-y-3 text-xs">
-
-            <div className="p-3 rounded-xl bg-emerald-500/10 border border-emerald-500/30 flex items-center justify-between">
-
-              <div>
-                <strong className="text-emerald-400 block font-mono">
-                  Tier A (58.4%)
-                </strong>
-
-                <span className="text-slate-300 text-[11px]">
-                  Reversible actions after consent
-                </span>
-              </div>
-
-              <span className="font-mono text-emerald-400 font-bold text-base">
-                200
-              </span>
-
+          <div className="flex items-center gap-2">
+            <div className="hidden sm:flex items-center gap-2 px-3 py-2 rounded-xl border border-slate-700 bg-slate-900/70 text-[11px] font-mono text-slate-300">
+              <span className="w-2 h-2 rounded-full bg-emerald-400" />
+              XGBoost + SHAP Live
             </div>
 
-
-            <div className="p-3 rounded-xl bg-amber-500/10 border border-amber-500/30 flex items-center justify-between">
-
-              <div>
-                <strong className="text-amber-400 block font-mono">
-                  Tier B (32.1%)
-                </strong>
-
-                <span className="text-slate-300 text-[11px]">
-                  AI prepares, Officer approves
-                </span>
-              </div>
-
-              <span className="font-mono text-amber-400 font-bold text-base">
-                110
-              </span>
-
-            </div>
-
-
-            <div className="p-3 rounded-xl bg-rose-500/10 border border-rose-500/30 flex items-center justify-between">
-
-              <div>
-                <strong className="text-rose-400 block font-mono">
-                  Tier C (9.5%)
-                </strong>
-
-                <span className="text-slate-300 text-[11px]">
-                  Human Hardship Specialist only
-                </span>
-              </div>
-
-              <span className="font-mono text-rose-400 font-bold text-base">
-                32
-              </span>
-
-            </div>
-
+            <button
+              onClick={onOpenPriyaDemo}
+              className="px-4 py-2.5 rounded-xl bg-cyan-400 hover:bg-cyan-300 text-slate-950 font-bold text-xs flex items-center gap-2 transition"
+            >
+              Open Priya Demo
+              <ArrowRight className="w-4 h-4" />
+            </button>
           </div>
-
         </div>
+      </section>
 
-      </div>
+      {/* KPI STRIP */}
+      <section className="grid grid-cols-2 lg:grid-cols-4 gap-3">
+        <Metric
+          label="Active demo cases"
+          value={queue.length}
+          detail="Backend-analyzed customers"
+          icon={<UserRound className="w-4 h-4" />}
+        />
+        <Metric
+          label="Critical"
+          value={criticalCount}
+          detail="Immediate attention"
+          tone="rose"
+          icon={<AlertTriangle className="w-4 h-4" />}
+        />
+        <Metric
+          label="Tier A"
+          value={tierACount}
+          detail="Consent-based reversible actions"
+          tone="emerald"
+          icon={<ZapIcon />}
+        />
+        <Metric
+          label="Officer review"
+          value={reviewCount}
+          detail="Human approval boundary"
+          tone="amber"
+          icon={<ShieldCheck className="w-4 h-4" />}
+        />
+      </section>
 
-
-      {/* ========================================================= */}
-      {/* MAIN WORK AREA */}
-      {/* ========================================================= */}
-
-      <div className="grid grid-cols-1 lg:grid-cols-12 gap-6 items-start">
-
-
-        {/* ======================================================= */}
-        {/* CUSTOMER QUEUE */}
-        {/* ======================================================= */}
-
-        <div className="lg:col-span-5 glass-panel rounded-2xl p-6 border border-slate-700/60 space-y-4">
-
-          <div className="flex items-center justify-between">
-
+      {/* MAIN WORKSPACE */}
+      <section className="grid grid-cols-1 xl:grid-cols-[360px_minmax(0,1fr)] gap-5 items-start">
+        {/* TRIAGE */}
+        <aside className="glass-panel rounded-2xl border border-slate-700/70 p-4 xl:sticky xl:top-24">
+          <div className="flex items-center justify-between mb-3">
             <div>
-
-              <div className="text-xs font-mono text-cyan-400 uppercase">
-                Triage Queue
+              <div className="text-[10px] font-mono uppercase tracking-widest text-cyan-400">
+                Triage queue
               </div>
-
-              <h3 className="text-xl font-bold text-white">
-                High-Risk Customer Queue
-              </h3>
-
+              <h2 className="text-lg font-bold text-white">
+                High-risk customers
+              </h2>
             </div>
-
-            <span className="px-2.5 py-0.5 rounded-full bg-slate-800 border border-slate-700 text-xs font-mono text-slate-300">
-              {filteredQueue.length} Active
+            <span className="px-2 py-1 rounded-lg bg-slate-800 border border-slate-700 text-[10px] font-mono text-slate-300">
+              {filteredQueue.length} shown
             </span>
-
           </div>
 
-
-          {/* SEARCH */}
-
-          <div className="space-y-2">
-
-            <div className="relative">
-
-              <Search className="w-4 h-4 absolute left-3 top-3 text-slate-400" />
-
-              <input
-                type="text"
-                placeholder="Search by customer name or ID..."
-                value={searchQuery}
-                onChange={(e) =>
-                  setSearchQuery(e.target.value)
-                }
-                className="w-full pl-9 pr-3 py-2 rounded-xl bg-slate-900/80 border border-slate-700 text-xs text-white placeholder-slate-500 focus:outline-none focus:border-cyan-400"
-              />
-
-            </div>
-
-
-            {/* TIER FILTER */}
-
-            <div className="flex items-center gap-1 overflow-x-auto pb-1 text-xs">
-
-              {['ALL', 'Tier A', 'Tier B', 'Tier C'].map(
-                (tier) => (
-
-                  <button
-                    key={tier}
-                    onClick={() =>
-                      setSelectedTierFilter(tier)
-                    }
-                    className={`px-3 py-1 rounded-lg font-mono text-[11px] whitespace-nowrap transition ${selectedTierFilter === tier
-                        ? 'bg-cyan-500/20 text-cyan-300 border border-cyan-500/40 font-bold'
-                        : 'bg-slate-900 text-slate-400 hover:text-white border border-slate-800'
-                      }`}
-                  >
-                    {tier}
-                  </button>
-
-                )
-              )}
-
-            </div>
-
+          <div className="relative mb-3">
+            <Search className="w-4 h-4 absolute left-3 top-3 text-slate-500" />
+            <input
+              value={searchQuery}
+              onChange={(e) => setSearchQuery(e.target.value)}
+              placeholder="Search name or customer ID"
+              className="w-full pl-9 pr-3 py-2.5 rounded-xl bg-slate-950/80 border border-slate-700 text-xs text-white placeholder-slate-600 focus:outline-none focus:border-cyan-400"
+            />
           </div>
 
+          <div className="flex gap-1.5 mb-4">
+            {['ALL', 'TIER_A', 'TIER_B', 'TIER_C'].map((tier) => (
+              <button
+                key={tier}
+                onClick={() => setSelectedTier(tier)}
+                className={`px-2.5 py-1.5 rounded-lg text-[10px] font-mono border transition ${
+                  selectedTier === tier
+                    ? 'bg-cyan-500/15 border-cyan-500/40 text-cyan-300'
+                    : 'bg-slate-900 border-slate-800 text-slate-500 hover:text-white'
+                }`}
+              >
+                {tier === 'ALL' ? 'All' : tier.replace('_', ' ')}
+              </button>
+            ))}
+          </div>
 
-          {/* QUEUE */}
-
-          <div className="space-y-2.5 max-h-[600px] overflow-y-auto pr-1">
-
+          <div className="space-y-2 max-h-[620px] overflow-y-auto pr-1">
             {loadingQueue ? (
-
-              <div className="p-8 text-center text-slate-400 text-sm font-mono">
-                Loading AI triage queue...
+              <div className="p-8 text-center text-slate-500 text-xs font-mono">
+                Running decision engine...
               </div>
-
             ) : filteredQueue.length === 0 ? (
-
-              <div className="p-8 text-center text-slate-400 text-sm">
-                No customers match the current filters.
+              <div className="p-8 text-center text-slate-500 text-xs">
+                No matching customers.
               </div>
-
             ) : (
-
-              filteredQueue.map((cust) => {
-
-                const isSelected =
-                  cust.id === selectedCustomerId;
+              filteredQueue.map((customer) => {
+                const selected = customer.id === selectedCustomerId;
 
                 return (
-
-                  <div
-                    key={cust.id}
-                    onClick={() =>
-                      setSelectedCustomerId(cust.id)
-                    }
-                    className={`p-4 rounded-xl border transition-all cursor-pointer ${isSelected
-                        ? 'bg-cyan-500/15 border-cyan-400 shadow-[0_0_20px_rgba(0,240,255,0.12)]'
-                        : 'bg-slate-900/50 border-slate-800 hover:border-slate-700'
-                      }`}
+                  <button
+                    key={customer.id}
+                    onClick={() => setSelectedCustomerId(customer.id)}
+                    className={`w-full text-left p-3.5 rounded-xl border transition ${
+                      selected
+                        ? 'bg-cyan-500/10 border-cyan-400/70'
+                        : 'bg-slate-950/45 border-slate-800 hover:border-slate-700'
+                    }`}
                   >
-
-                    <div className="flex items-start justify-between gap-2 mb-2">
-
-                      <div>
-
-                        <div className="font-bold text-white text-sm flex items-center gap-2">
-
-                          <span>
-                            {cust.name}
+                    <div className="flex items-start justify-between gap-3">
+                      <div className="min-w-0">
+                        <div className="flex items-center gap-2">
+                          <span className="font-bold text-white text-sm truncate">
+                            {customer.name}
                           </span>
-
-                          {cust.id === 'CUST_PRIYA_34' && (
-
-                            <span className="px-1.5 py-0.5 rounded bg-cyan-500/20 text-cyan-300 font-mono text-[9px] font-bold">
-                              HERO DEMO
+                          {customer.id === 'CUST_PRIYA_34' && (
+                            <span className="px-1.5 py-0.5 rounded bg-cyan-500/15 text-cyan-300 text-[8px] font-mono font-bold">
+                              DEMO
                             </span>
-
                           )}
-
                         </div>
-
-                        <div className="text-[11px] font-mono text-slate-400">
-
-                          {cust.id}
-
-                          {' • '}
-
-                          {cust.account_number}
-
+                        <div className="text-[10px] font-mono text-slate-500 mt-0.5">
+                          {customer.id}
                         </div>
-
                       </div>
-
-                      <RiskBadge
-                        type="risk"
-                        value={cust.risk_level}
-                      />
-
+                      <RiskBadge type="risk" value={customer.risk_level} />
                     </div>
 
-
-                    {/* DIAGNOSIS + CAPACITY */}
-
-                    <div className="grid grid-cols-2 gap-2 text-xs py-2 my-1 border-t border-slate-800/80">
-
+                    <div className="grid grid-cols-2 gap-3 mt-3 pt-3 border-t border-slate-800">
                       <div>
-
-                        <span className="text-[10px] font-mono text-slate-500 block uppercase">
-                          Diagnosed Cause
-                        </span>
-
-                        <span className="font-semibold text-cyan-300 truncate block">
-
-                          {(cust.distress_cause || 'UNKNOWN')
-                            .replace(/_/g, ' ')}
-
-                        </span>
-
+                        <div className="text-[9px] font-mono uppercase text-slate-600">
+                          Root cause
+                        </div>
+                        <div className="text-xs font-semibold text-cyan-300 mt-1 truncate">
+                          {CAUSE_LABELS[customer.distress_cause] ||
+                            customer.distress_cause}
+                        </div>
                       </div>
-
-
                       <div className="text-right">
-
-                        <span className="text-[10px] font-mono text-slate-500 block uppercase">
-                          Sustainable Cap
-                        </span>
-
-                        <span className="font-mono font-bold text-emerald-400">
-
-                          ₹
-                          {Number(
-                            cust.sustainable_capacity || 0
-                          ).toLocaleString('en-IN')}
-
-                          /mo
-
-                        </span>
-
+                        <div className="text-[9px] font-mono uppercase text-slate-600">
+                          Safe EMI
+                        </div>
+                        <div className="text-xs font-mono font-bold text-emerald-400 mt-1">
+                          {money(customer.sustainable_capacity)}/mo
+                        </div>
                       </div>
-
                     </div>
 
-
-                    <div className="flex items-center justify-between text-[11px] font-mono pt-1 text-slate-400">
-
+                    <div className="flex items-center justify-between mt-3">
                       <RiskBadge
                         type="tier"
-                        value={cust.automation_tier}
+                        value={customer.automation_tier}
                       />
-
-                      <span className="text-slate-400 flex items-center gap-1 text-[10px]">
-
-                        {cust.status}
-
+                      <span className="text-[10px] text-slate-500 flex items-center gap-1">
+                        Review
                         <ChevronRight className="w-3 h-3 text-cyan-400" />
-
                       </span>
-
                     </div>
-
-                  </div>
-
+                  </button>
                 );
-
               })
-
             )}
-
           </div>
+        </aside>
 
-        </div>
-
-
-        {/* ======================================================= */}
-        {/* CUSTOMER INSPECTOR */}
-        {/* ======================================================= */}
-
-        <div className="lg:col-span-7 space-y-6">
-
+        {/* DECISION SNAPSHOT */}
+        <main className="space-y-5">
           {loadingDetail ? (
-
-            <div className="glass-panel rounded-2xl p-12 text-center text-slate-400">
-
-              <div className="text-cyan-400 font-mono text-sm mb-2">
+            <div className="glass-panel rounded-2xl border border-slate-700/70 p-12 text-center">
+              <div className="text-cyan-400 font-mono text-xs">
                 RUNNING DEBTWISE DECISION ENGINE
               </div>
-
-              <div className="text-xs">
+              <div className="text-slate-500 text-xs mt-2">
                 Diagnosis → Capacity → Safety → Recommendation
               </div>
-
             </div>
+          ) : !customerDetail ? (
+            <div className="glass-panel rounded-2xl border border-slate-700/70 p-12 text-center text-slate-500 text-sm">
+              Select a customer to inspect the decision snapshot.
+            </div>
+          ) : (
+            <>
+              {/* CUSTOMER */}
+              <div className="glass-panel rounded-2xl border border-slate-700/70 p-5 bg-slate-950/55">
+                <div className="flex flex-col md:flex-row md:items-start justify-between gap-4">
+                  <div>
+                    <div className="flex items-center gap-2">
+                      <span className="text-[10px] font-mono text-cyan-400">
+                        {customerDetail.customer_id}
+                      </span>
+                      <RiskBadge
+                        type="risk"
+                        value={
+                          diagnosis.severity ||
+                          selectedCustomer?.risk_level ||
+                          'HIGH'
+                        }
+                      />
+                    </div>
+                    <h2 className="text-2xl font-black text-white mt-1">
+                      {customerDetail.name || selectedCustomer?.name}
+                    </h2>
+                    <p className="text-xs text-slate-500 mt-1">
+                      Decision snapshot — only the information needed for the
+                      next action.
+                    </p>
+                  </div>
 
-          ) : customerDetail ? (
+                  {customerDetail.customer_id === 'CUST_PRIYA_34' && (
+                    <button
+                      onClick={onOpenPriyaDemo}
+                      className="px-3.5 py-2 rounded-xl border border-cyan-500/40 bg-cyan-500/10 text-cyan-300 text-xs font-bold flex items-center gap-2"
+                    >
+                      Full customer journey
+                      <ArrowRight className="w-3.5 h-3.5" />
+                    </button>
+                  )}
+                </div>
+              </div>
 
-            <div className="space-y-6">
+              {/* FOUR ANSWERS */}
+              <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
+                <SnapshotCard
+                  eyebrow="01 · WHY"
+                  title="Root cause"
+                  value={
+                    CAUSE_LABELS[diagnosis.primary_cause] ||
+                    diagnosis.primary_cause ||
+                    'Unknown'
+                  }
+                  detail={
+                    diagnosis.top_factors?.[0]?.feature
+                      ? `Top driver: ${diagnosis.top_factors[0].feature}`
+                      : 'Model diagnosis available'
+                  }
+                  icon={<Sparkles className="w-4 h-4" />}
+                />
 
+                <SnapshotCard
+                  eyebrow="02 · CAPACITY"
+                  title="Sustainable EMI"
+                  value={`${money(capacity.safe_emi)}/mo`}
+                  detail={`Current obligations ${money(
+                    capacity.current_obligations
+                  )}/mo`}
+                  tone="emerald"
+                  icon={<CheckCircle2 className="w-4 h-4" />}
+                />
 
-              {/* PROFILE */}
+                <SnapshotCard
+                  eyebrow="03 · SAFETY"
+                  title={
+                    rejectedCandidates.length
+                      ? `${rejectedCandidates.length} unsafe option${
+                          rejectedCandidates.length > 1 ? 's' : ''
+                        } blocked`
+                      : 'Safety checks passed'
+                  }
+                  value={
+                    rejectedCandidates.length
+                      ? 'Filtered before recommendation'
+                      : 'No unsafe candidate selected'
+                  }
+                  detail={
+                    rejectedCandidates.length
+                      ? 'See the rejected option below'
+                      : 'Responsible-lending constraints enforced'
+                  }
+                  tone={rejectedCandidates.length ? 'rose' : 'cyan'}
+                  icon={
+                    rejectedCandidates.length ? (
+                      <XCircle className="w-4 h-4" />
+                    ) : (
+                      <ShieldCheck className="w-4 h-4" />
+                    )
+                  }
+                />
 
-              <div className="glass-panel rounded-2xl p-6 border border-slate-700/80 bg-slate-900/80 flex flex-col sm:flex-row sm:items-center justify-between gap-4">
+                <SnapshotCard
+                  eyebrow="04 · NEXT ACTION"
+                  title="Recommended intervention"
+                  value={selectedIntervention?.name || 'Review case'}
+                  detail={
+                    selectedIntervention?.description ||
+                    'Open the case for intervention details.'
+                  }
+                  tone="amber"
+                  icon={<ArrowRight className="w-4 h-4" />}
+                />
+              </div>
 
-                <div>
-
-                  <div className="flex items-center gap-2">
-
-                    <span className="text-xs font-mono text-cyan-400 font-bold">
-                      {customerDetail.customer_id}
+              {/* ACTION PANEL */}
+              <div className="grid grid-cols-1 lg:grid-cols-[1.35fr_.65fr] gap-4">
+                <section className="glass-panel rounded-2xl border border-slate-700/70 p-5">
+                  <div className="flex items-center justify-between mb-4">
+                    <div>
+                      <div className="text-[10px] font-mono uppercase tracking-widest text-cyan-400">
+                        Recommended path
+                      </div>
+                      <h3 className="text-lg font-bold text-white mt-1">
+                        Safest effective next step
+                      </h3>
+                    </div>
+                    <span className="px-2 py-1 rounded-lg bg-slate-900 border border-slate-700 text-[10px] font-mono text-slate-400">
+                      {governance.tier || selectedCustomer?.automation_tier}
                     </span>
+                  </div>
 
-                    <RiskBadge
-                      type="risk"
+                  {selectedIntervention ? (
+                    <div className="rounded-xl border border-cyan-500/30 bg-cyan-500/5 p-4">
+                      <div className="text-sm font-bold text-white">
+                        {selectedIntervention.name}
+                      </div>
+                      <p className="text-xs text-slate-400 mt-1 leading-relaxed">
+                        {selectedIntervention.description ||
+                          'Selected after affordability and safety checks.'}
+                      </p>
+
+                      <div className="grid grid-cols-2 sm:grid-cols-4 gap-2 mt-4">
+                        <MiniStat
+                          label="After EMI"
+                          value={
+                            selectedIntervention.estimated_emi_after != null
+                              ? `${money(
+                                  selectedIntervention.estimated_emi_after
+                                )}/mo`
+                              : '—'
+                          }
+                        />
+                        <MiniStat
+                          label="Consent"
+                          value={
+                            governance.customer_consent_required
+                              ? 'Required'
+                              : 'Not required'
+                          }
+                        />
+                        <MiniStat
+                          label="Human"
+                          value={
+                            governance.human_approval_required
+                              ? 'Required'
+                              : 'Not required'
+                          }
+                        />
+                        <MiniStat
+                          label="Execution"
+                          value={
+                            governance.is_executable ? 'Ready' : 'Blocked'
+                          }
+                        />
+                      </div>
+                    </div>
+                  ) : (
+                    <div className="rounded-xl border border-slate-800 p-4 text-sm text-slate-500">
+                      No intervention selected yet.
+                    </div>
+                  )}
+
+                  {customerDetail.customer_id === 'CUST_PRIYA_34' && (
+                    <button
+                      onClick={onOpenPriyaDemo}
+                      className="mt-4 w-full px-4 py-3 rounded-xl bg-cyan-400 hover:bg-cyan-300 text-slate-950 font-bold text-xs flex items-center justify-center gap-2"
+                    >
+                      Review complete Priya decision
+                      <ArrowRight className="w-4 h-4" />
+                    </button>
+                  )}
+                </section>
+
+                <section className="glass-panel rounded-2xl border border-slate-700/70 p-5">
+                  <div className="text-[10px] font-mono uppercase tracking-widest text-amber-400">
+                    Governance
+                  </div>
+                  <h3 className="text-lg font-bold text-white mt-1">
+                    Execution boundary
+                  </h3>
+
+                  <div className="space-y-2 mt-4">
+                    <Gate
+                      icon={<UserRound className="w-3.5 h-3.5" />}
+                      label="Customer consent"
                       value={
-                        customerDetail.diagnosis?.severity ||
-                        customerDetail.risk_level
+                        governance.customer_consent_required
+                          ? governance.customer_consent_status ||
+                            'PENDING'
+                          : 'Not required'
                       }
                     />
-
+                    <Gate
+                      icon={<ShieldCheck className="w-3.5 h-3.5" />}
+                      label="Human approval"
+                      value={
+                        governance.human_approval_required
+                          ? governance.human_approval_status ||
+                            'PENDING'
+                          : 'Not required'
+                      }
+                    />
+                    <Gate
+                      icon={<Clock3 className="w-3.5 h-3.5" />}
+                      label="Execution"
+                      value={
+                        governance.is_executable ? 'READY' : 'BLOCKED'
+                      }
+                    />
                   </div>
 
-                  <h2 className="text-2xl font-bold text-white mt-1">
-                    {customerDetail.name}
-                  </h2>
+                  <p className="text-[10px] text-slate-600 mt-4 leading-relaxed">
+                    Contractual changes and higher-risk actions remain behind
+                    explicit governance gates.
+                  </p>
+                </section>
+              </div>
 
-                  <div className="text-xs text-slate-400 font-mono mt-0.5">
-
-                    Age: {customerDetail.age ?? '—'}
-
-                    {' • '}
-
-                    Salary Day:{' '}
-                    {customerDetail.salary_day ?? '—'}
-
-                    {' • '}
-
-                    EMI Due:{' '}
-                    {customerDetail.emi_due_day ?? '—'}
-
+              {/* SAFETY CALLOUT */}
+              {rejectedCandidates.length > 0 && (
+                <section className="rounded-2xl border border-rose-500/40 bg-rose-500/5 p-5">
+                  <div className="flex items-center gap-2 text-rose-300 text-[10px] font-mono uppercase tracking-widest">
+                    <XCircle className="w-4 h-4" />
+                    Safety engine intervention
                   </div>
 
-                </div>
-
-
-                <div className="flex items-center gap-2">
-
-                  {customerDetail.customer_id ===
-                    'CUST_PRIYA_34' && (
-
-                      <button
-                        onClick={onOpenPriyaDemo}
-                        className="px-4 py-2 rounded-xl bg-cyan-500/20 hover:bg-cyan-500/30 text-cyan-300 border border-cyan-500/40 text-xs font-bold font-mono flex items-center gap-1.5 transition"
+                  <div className="mt-3 space-y-2">
+                    {rejectedCandidates.slice(0, 2).map((candidate) => (
+                      <div
+                        key={candidate.id}
+                        className="rounded-xl bg-slate-950/50 border border-rose-500/20 p-3"
                       >
-                        <span>
-                          Simulate Customer View
-                        </span>
-
-                        <ArrowRight className="w-3.5 h-3.5" />
-                      </button>
-
-                    )}
-
-                </div>
-
-              </div>
-
-
-              {/* TABS */}
-
-              <div className="flex items-center gap-2 border-b border-slate-800 pb-2 text-xs font-mono overflow-x-auto">
-
-                {[
-                  {
-                    id: 'diagnosis',
-                    label: '1. AI Diagnosis & SHAP'
-                  },
-                  {
-                    id: 'interventions',
-                    label: '2. Interventions & Safety'
-                  },
-                  {
-                    id: 'simulator',
-                    label: '3. What-If Simulator'
-                  },
-                  {
-                    id: 'audit',
-                    label: '4. Compliance Audit Trail'
-                  }
-                ].map((tab) => (
-
-                  <button
-                    key={tab.id}
-                    onClick={() =>
-                      setActiveTab(tab.id)
-                    }
-                    className={`px-3.5 py-2 rounded-lg transition whitespace-nowrap ${activeTab === tab.id
-                        ? 'bg-cyan-500/20 text-cyan-300 font-bold border border-cyan-500/40'
-                        : 'text-slate-400 hover:text-white'
-                      }`}
-                  >
-                    {tab.label}
-                  </button>
-
-                ))}
-
-              </div>
-
-
-              {/* ================================================= */}
-              {/* TAB 1 — DIAGNOSIS */}
-              {/* ================================================= */}
-
-              {activeTab === 'diagnosis' && (
-
-                <div className="space-y-6">
-
-                  <DistressDiagnosis
-                    diagnosis={
-                      customerDetail.diagnosis
-                    }
-                  />
-
-                  <SHAPFactors
-                    factors={
-                      customerDetail.diagnosis
-                        ?.top_factors || []
-                    }
-                  />
-
-                  <CapacityCard
-                    customer={customerDetail}
-                  />
-
-                </div>
-
-              )}
-
-
-              {/* ================================================= */}
-              {/* TAB 2 — INTERVENTIONS */}
-              {/* ================================================= */}
-
-              {activeTab === 'interventions' && (
-
-                <div className="space-y-6">
-
-                  <SafetyRejection
-                    rejectionData={
-                      customerDetail.safety_rejection
-                    }
-                  />
-
-
-                  <div>
-
-                    <h4 className="text-lg font-bold text-white mb-3">
-                      Safe Candidate Interventions
-                    </h4>
-
-                    <div className="space-y-4">
-
-                      {(
-                        customerDetail.safe_interventions ||
-                        []
-                      ).length === 0 ? (
-
-                        <div className="p-6 rounded-xl bg-slate-900/60 border border-slate-800 text-sm text-slate-400">
-                          No intervention candidates are
-                          currently available.
+                        <div className="text-sm font-bold text-slate-200 line-through">
+                          {candidate.name || candidate.intervention_name}
                         </div>
-
-                      ) : (
-
-                        (
-                          customerDetail.safe_interventions ||
-                          []
-                        ).map((intv) => (
-
-                          <InterventionCard
-                            key={intv.id}
-                            intervention={intv}
-                            showAction={false}
-                          />
-
-                        ))
-
-                      )}
-
-                    </div>
-
+                        <div className="text-xs text-rose-200/80 mt-1">
+                          Rejected before recommendation by the DebtWise
+                          safety layer.
+                        </div>
+                      </div>
+                    ))}
                   </div>
-
-                </div>
-
+                </section>
               )}
 
-
-              {/* ================================================= */}
-              {/* TAB 3 — WHAT IF */}
-              {/* ================================================= */}
-
-              {activeTab === 'simulator' && (
-
-                <div className="space-y-6">
-
-                  <WhatIfSimulator
-                    initialIncome={
-                      customerDetail.current_monthly_income
-                    }
-                    initialObligations={
-                      customerDetail.current_obligations
-                    }
-                  />
-
+              {/* PORTFOLIO CONTEXT — SMALL, NOT A SECOND DASHBOARD */}
+              <section className="glass-panel rounded-2xl border border-slate-700/70 p-5">
+                <div className="flex items-center justify-between mb-4">
+                  <div>
+                    <div className="text-[10px] font-mono uppercase tracking-widest text-slate-500">
+                      Queue context
+                    </div>
+                    <h3 className="text-lg font-bold text-white">
+                      Distress causes in this demo queue
+                    </h3>
+                  </div>
+                  <span className="text-[10px] font-mono text-slate-600">
+                    {queue.length} customers
+                  </span>
                 </div>
 
-              )}
-
-
-              {/* ================================================= */}
-              {/* TAB 4 — AUDIT */}
-              {/* ================================================= */}
-
-              {activeTab === 'audit' && (
-
-                <div className="space-y-6">
-
-                  <AuditTimeline
-                    events={
-                      customerDetail.audit_events ||
-                      []
-                    }
-                  />
-
+                <div className="grid grid-cols-1 sm:grid-cols-2 gap-3">
+                  {Object.entries(causeCounts).map(([cause, count]) => (
+                    <div
+                      key={cause}
+                      className="rounded-xl bg-slate-950/45 border border-slate-800 p-3"
+                    >
+                      <div className="flex items-center justify-between text-xs">
+                        <span className="text-slate-300">
+                          {CAUSE_LABELS[cause] || cause}
+                        </span>
+                        <span className="font-mono text-cyan-300">
+                          {count}
+                        </span>
+                      </div>
+                      <div className="h-1.5 rounded-full bg-slate-800 mt-2 overflow-hidden">
+                        <div
+                          className="h-full rounded-full bg-cyan-400"
+                          style={{
+                            width: `${(count / Math.max(queue.length, 1)) * 100}%`,
+                          }}
+                        />
+                      </div>
+                    </div>
+                  ))}
                 </div>
-
-              )}
-
-            </div>
-
-          ) : (
-
-            <div className="glass-panel rounded-2xl p-12 text-center text-slate-400">
-
-              Select a customer from the triage queue
-              to inspect case details.
-
-            </div>
-
+              </section>
+            </>
           )}
-
-        </div>
-
-      </div>
-
+        </main>
+      </section>
     </div>
   );
+}
+
+function Metric({ label, value, detail, icon, tone = 'cyan' }) {
+  const tones = {
+    cyan: 'text-cyan-300 border-cyan-500/20',
+    rose: 'text-rose-300 border-rose-500/20',
+    emerald: 'text-emerald-300 border-emerald-500/20',
+    amber: 'text-amber-300 border-amber-500/20',
+  };
+
+  return (
+    <div className={`glass-card rounded-2xl p-4 border ${tones[tone]}`}>
+      <div className="flex items-center justify-between">
+        <div className="text-[10px] font-mono uppercase tracking-wider text-slate-500">
+          {label}
+        </div>
+        <span className="text-slate-500">{icon}</span>
+      </div>
+      <div className="text-2xl font-black font-mono text-white mt-1">
+        {value}
+      </div>
+      <div className="text-[10px] text-slate-500 mt-1">{detail}</div>
+    </div>
+  );
+}
+
+function SnapshotCard({ eyebrow, title, value, detail, icon, tone = 'cyan' }) {
+  const tones = {
+    cyan: 'border-cyan-500/25',
+    emerald: 'border-emerald-500/25',
+    rose: 'border-rose-500/30',
+    amber: 'border-amber-500/25',
+  };
+
+  return (
+    <section
+      className={`glass-panel rounded-2xl border ${tones[tone]} p-5 min-h-[150px]`}
+    >
+      <div className="flex items-center justify-between">
+        <div className="text-[10px] font-mono uppercase tracking-widest text-slate-500">
+          {eyebrow}
+        </div>
+        <span className="text-slate-500">{icon}</span>
+      </div>
+      <div className="text-sm font-semibold text-slate-300 mt-3">{title}</div>
+      <div className="text-xl font-black text-white mt-1 leading-tight">
+        {value}
+      </div>
+      <div className="text-[11px] text-slate-500 mt-2 leading-relaxed">
+        {detail}
+      </div>
+    </section>
+  );
+}
+
+function MiniStat({ label, value }) {
+  return (
+    <div className="rounded-lg bg-slate-950/50 border border-slate-800 p-2.5">
+      <div className="text-[9px] font-mono uppercase text-slate-600">
+        {label}
+      </div>
+      <div className="text-[11px] font-mono font-bold text-slate-200 mt-1">
+        {value}
+      </div>
+    </div>
+  );
+}
+
+function Gate({ icon, label, value }) {
+  const blocked =
+    String(value).toUpperCase().includes('PENDING') ||
+    String(value).toUpperCase() === 'BLOCKED';
+
+  return (
+    <div className="flex items-center justify-between gap-2 rounded-xl bg-slate-950/50 border border-slate-800 p-3">
+      <div className="flex items-center gap-2 text-xs text-slate-400">
+        <span className="text-slate-500">{icon}</span>
+        {label}
+      </div>
+      <span
+        className={`text-[9px] font-mono font-bold ${
+          blocked ? 'text-amber-300' : 'text-emerald-300'
+        }`}
+      >
+        {value}
+      </span>
+    </div>
+  );
+}
+
+function ZapIcon() {
+  return <Sparkles className="w-4 h-4" />;
 }
