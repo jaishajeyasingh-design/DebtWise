@@ -113,6 +113,8 @@ def predict_distress(
         "primary_cause": primary_cause,
         "confidence": round(confidence, 4),
         "probabilities": probabilities,
+        "top_factors": top_factors,
         "top_shap_factors": top_factors,
         "engineered_features": features_dict
     }
+
