@@ -4,13 +4,23 @@ import { ShieldAlert, XCircle, AlertOctagon, FileCheck, CheckCircle2 } from 'luc
 export default function SafetyRejection({ rejectionData, className = "" }) {
   if (!rejectionData) return null;
 
-  const {
-    proposed_action = "Debt Consolidation Loan (₹500,000 @ 14.5% for 60 months)",
-    rule_id = "RULE_SC_402_ANTI_DEBT_ESCALATION",
-    reason = "Rejected by safety check — consolidation would increase long-term debt cost and does not address the immediate cash-flow problem.",
-    timestamp = "Automated Safety Filter Execution",
-    severity = "HIGH_SAFETY_VIOLATION"
-  } = rejectionData;
+  const proposed_action =
+    rejectionData.proposed_action ||
+    rejectionData.intervention_title ||
+    "Unsafe Candidate";
+
+  const rule_id =
+    rejectionData.rule_id ||
+    (rejectionData.rules_checked && rejectionData.rules_checked.length > 0
+      ? rejectionData.rules_checked.join(", ")
+      : "SC-004");
+
+  const reason =
+    rejectionData.reason ||
+    rejectionData.message ||
+    (rejectionData.rejection_reasons && rejectionData.rejection_reasons.length > 0
+      ? rejectionData.rejection_reasons.join(" ")
+      : "Rejected by safety check because it did not satisfy DebtWise safety constraints.");
 
   return (
     <div className={`rounded-2xl p-6 border-2 border-rose-500/50 bg-gradient-to-br from-rose-950/40 via-slate-900/80 to-slate-950/90 shadow-[0_0_30px_rgba(244,63,94,0.15)] relative overflow-hidden ${className}`}>
