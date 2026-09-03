@@ -4,7 +4,7 @@ import {
   Sparkles,
   ArrowRight,
   UserCheck,
-  AlertTriangle,
+  Building2,
   HeartPulse,
   TrendingDown,
   Clock,
@@ -12,42 +12,29 @@ import {
   CheckCircle2,
   Lock,
   ChevronRight,
-  Zap
+  Zap,
+  SlidersHorizontal,
+  Briefcase
 } from 'lucide-react';
 import { DEMO_PRESETS } from '../utils/customerPayloadBuilder';
 
 export default function LoginPage({
+  onContinueToIntelligence,
   onStartOnboarding,
   onQuickAnalyze,
   onOpenDashboard,
   isAnalyzing = false
 }) {
-  const [customerId, setCustomerId] = useState('priya.sharma@example.com');
-  const [customerName, setCustomerName] = useState('Priya Sharma');
+  const [officerId, setOfficerId] = useState('OFFICER_R_KUMAR_842');
   const [selectedPreset, setSelectedPreset] = useState('priya');
-
-  const handleCustomSubmit = (e) => {
-    e.preventDefault();
-    onStartOnboarding({
-      customerId: customerId.trim() || 'CUST_USER_101',
-      name: customerName.trim() || 'Customer',
-      presetKey: selectedPreset,
-      isCustomized: true
-    });
-  };
 
   const handleSelectPreset = (key) => {
     setSelectedPreset(key);
-    const preset = DEMO_PRESETS[key];
-    if (preset) {
-      setCustomerName(preset.name);
-      setCustomerId(`${preset.name.toLowerCase().replace(/\s+/g, '.')}@example.com`);
-    }
   };
 
   const handleDirectPresetAnalyze = (key) => {
     const preset = DEMO_PRESETS[key];
-    if (preset) {
+    if (preset && onQuickAnalyze) {
       onQuickAnalyze(preset);
     }
   };
@@ -57,8 +44,8 @@ export default function LoginPage({
       {/* Hero Header */}
       <div className="text-center space-y-4 max-w-3xl mx-auto">
         <div className="inline-flex items-center gap-2 px-3 py-1.5 rounded-full bg-cyan-500/10 border border-cyan-500/30 text-cyan-300 text-xs font-mono">
-          <Sparkles className="w-3.5 h-3.5 text-cyan-400" />
-          <span>DebtWise Closed-Loop Financial Recovery Engine</span>
+          <Shield className="w-3.5 h-3.5 text-cyan-400" />
+          <span>DebtWise Operations Console · Bank Decision Support</span>
         </div>
 
         <h1 className="text-3xl sm:text-5xl font-black text-white tracking-tight leading-tight">
@@ -70,100 +57,89 @@ export default function LoginPage({
 
         <p className="text-slate-300 text-sm sm:text-base leading-relaxed">
           When financial distress hits, detection is not enough. DebtWise diagnoses the root cause,
-          calculates your sustainable repayment floor, and proposes safe, human-approved recovery options.
+          calculates sustainable repayment capacity, and proposes safe, human-approved recovery options.
         </p>
       </div>
 
       {/* Main Login / Launcher Cards */}
       <div className="grid grid-cols-1 lg:grid-cols-12 gap-8 items-start">
-        {/* Left Column: Customer Access Card */}
+        {/* Left Column: Bank Operations Console Launcher */}
         <div className="lg:col-span-5 glass-panel rounded-3xl p-6 sm:p-8 border border-cyan-500/30 bg-gradient-to-b from-slate-950/90 to-slate-900/90 shadow-2xl space-y-6">
           <div className="flex items-center gap-3">
-            <div className="w-10 h-10 rounded-xl bg-gradient-to-tr from-cyan-500 to-blue-600 flex items-center justify-center text-slate-950 font-bold">
-              <UserCheck className="w-5 h-5" />
+            <div className="w-11 h-11 rounded-2xl bg-gradient-to-tr from-cyan-500 to-blue-600 flex items-center justify-center text-slate-950 font-black shadow-lg">
+              <Briefcase className="w-6 h-6" />
             </div>
             <div>
               <h2 className="text-lg font-bold text-white">
-                Customer Assessment Portal
+                Bank Operations Console
               </h2>
               <p className="text-xs text-slate-400 font-mono">
-                Enter your details to start financial onboarding
+                AI decision-support for credit & hardship officers
               </p>
             </div>
           </div>
 
-          <form onSubmit={handleCustomSubmit} className="space-y-4">
-            <div>
-              <label className="block text-xs font-mono text-slate-300 mb-1.5">
-                Full Name
-              </label>
-              <input
-                type="text"
-                value={customerName}
-                onChange={(e) => setCustomerName(e.target.value)}
-                placeholder="e.g. Priya Sharma"
-                className="w-full px-4 py-3 rounded-xl bg-slate-900/90 border border-slate-700/80 text-white placeholder-slate-500 text-sm focus:outline-none focus:border-cyan-400 focus:ring-1 focus:ring-cyan-400 transition"
-                required
-              />
+          <div className="space-y-4 font-mono text-xs">
+            <div className="p-4 rounded-xl bg-slate-900/80 border border-slate-800 space-y-2">
+              <div className="text-slate-400 text-[10px] uppercase">Active Officer Session</div>
+              <div className="text-white font-bold text-sm">Rajesh Kumar (Credit Support Desk)</div>
+              <div className="text-slate-400 text-[11px]">Officer ID: {officerId}</div>
+              <div className="text-slate-400 text-[11px]">Branch: Retail Credit Operations #408</div>
             </div>
 
-            <div>
-              <label className="block text-xs font-mono text-slate-300 mb-1.5">
-                Customer ID / Email
-              </label>
-              <input
-                type="text"
-                value={customerId}
-                onChange={(e) => setCustomerId(e.target.value)}
-                placeholder="e.g. priya.sharma@example.com"
-                className="w-full px-4 py-3 rounded-xl bg-slate-900/90 border border-slate-700/80 text-white placeholder-slate-500 text-sm focus:outline-none focus:border-cyan-400 focus:ring-1 focus:ring-cyan-400 transition"
-                required
-              />
-            </div>
-
-            <div className="p-4 rounded-xl bg-slate-900/60 border border-slate-800 text-xs text-slate-400 space-y-1.5">
+            <div className="p-4 rounded-xl bg-slate-900/60 border border-slate-800 text-slate-400 space-y-1.5">
               <div className="flex items-center gap-2 text-cyan-400 font-semibold font-mono text-[11px]">
                 <Lock className="w-3.5 h-3.5" />
-                <span>Protected Financial Sandbox</span>
+                <span>Simulated Bank Data Available</span>
               </div>
               <p className="text-[11px] leading-relaxed">
-                DebtWise will guide you through 5 simple steps to understand your income, expenses, obligations, and liquidity.
+                The bank already holds 12-month customer financial records. DebtWise ingests these records directly to assess distress without requiring customer application forms.
               </p>
             </div>
 
             <button
-              type="submit"
+              type="button"
+              onClick={onContinueToIntelligence}
               disabled={isAnalyzing}
-              className="w-full py-3.5 px-6 rounded-xl bg-gradient-to-r from-cyan-500 to-blue-600 hover:from-cyan-400 hover:to-blue-500 text-slate-950 font-bold text-sm font-mono flex items-center justify-center gap-2 transition shadow-[0_0_20px_rgba(0,240,255,0.25)] disabled:opacity-50"
+              className="w-full py-4 px-6 rounded-xl bg-gradient-to-r from-cyan-500 to-blue-600 hover:from-cyan-400 hover:to-blue-500 text-slate-950 font-bold text-sm font-mono flex items-center justify-center gap-2 transition shadow-[0_0_20px_rgba(0,240,255,0.25)] disabled:opacity-50 cursor-pointer"
             >
-              <span>Start 5-Step Assessment</span>
+              <span>Continue to Customer Intelligence</span>
               <ArrowRight className="w-4 h-4" />
             </button>
-          </form>
+
+            <button
+              type="button"
+              onClick={() => onStartOnboarding({})}
+              className="w-full py-2.5 px-4 rounded-xl bg-slate-900 hover:bg-slate-800 border border-slate-700/80 text-slate-300 hover:text-white text-xs font-mono flex items-center justify-center gap-2 transition"
+            >
+              <SlidersHorizontal className="w-3.5 h-3.5 text-slate-400" />
+              <span>Manual / Exception Intake Workflow</span>
+            </button>
+          </div>
 
           <div className="pt-2 border-t border-slate-800 flex items-center justify-between text-xs text-slate-400">
-            <span>Bank Administrator?</span>
+            <span>Portfolio View?</span>
             <button
               onClick={onOpenDashboard}
               className="text-cyan-400 hover:text-cyan-300 font-mono transition flex items-center gap-1"
             >
-              <span>Operations Console</span>
+              <span>Portfolio Dashboard</span>
               <ChevronRight className="w-3.5 h-3.5" />
             </button>
           </div>
         </div>
 
-        {/* Right Column: Canonical Hackathon Demo Personas */}
+        {/* Right Column: Canonical Hackathon Demo Cases */}
         <div className="lg:col-span-7 space-y-4">
           <div className="flex items-center justify-between">
             <div className="flex items-center gap-2">
               <Zap className="w-4 h-4 text-cyan-400" />
               <h3 className="text-sm font-bold uppercase tracking-wider text-slate-200 font-mono">
-                Live Hackathon Demo Personas (1-Click)
+                Existing Customer Cases (Simulated Records)
               </h3>
             </div>
             <span className="text-[10px] font-mono text-slate-400">
-              Direct Real Backend Test Payloads
+              Direct /api/v1/analyze Ingestion
             </span>
           </div>
 
@@ -184,7 +160,7 @@ export default function LoginPage({
                   </div>
                   <div>
                     <h4 className="font-bold text-white text-sm">Priya Sharma</h4>
-                    <span className="text-[10px] font-mono text-slate-400">Age 34 · IT Professional</span>
+                    <span className="text-[10px] font-mono text-slate-400">CUST_PRIYA_34 · Age 34</span>
                   </div>
                 </div>
                 <span className="px-2 py-0.5 rounded bg-rose-500/20 text-rose-300 font-mono text-[9px] font-bold">
@@ -202,20 +178,10 @@ export default function LoginPage({
                     handleDirectPresetAnalyze('priya');
                   }}
                   disabled={isAnalyzing}
-                  className="flex-1 py-2 px-3 rounded-lg bg-cyan-500/20 hover:bg-cyan-500/30 text-cyan-300 border border-cyan-500/30 text-xs font-mono font-bold transition flex items-center justify-center gap-1.5"
+                  className="w-full py-2.5 px-3 rounded-lg bg-cyan-500/20 hover:bg-cyan-500/30 text-cyan-300 border border-cyan-500/30 text-xs font-mono font-bold transition flex items-center justify-center gap-1.5 cursor-pointer"
                 >
                   <Zap className="w-3 h-3 text-cyan-400" />
-                  <span>Instant Analyze</span>
-                </button>
-                <button
-                  type="button"
-                  onClick={(e) => {
-                    e.stopPropagation();
-                    onStartOnboarding({ ...DEMO_PRESETS.priya, presetKey: 'priya' });
-                  }}
-                  className="py-2 px-3 rounded-lg bg-slate-800 hover:bg-slate-700 text-slate-200 text-xs font-mono transition"
-                >
-                  Prefill
+                  <span>Analyze with DebtWise AI</span>
                 </button>
               </div>
             </div>
@@ -236,7 +202,7 @@ export default function LoginPage({
                   </div>
                   <div>
                     <h4 className="font-bold text-white text-sm">Arun Patel</h4>
-                    <span className="text-[10px] font-mono text-slate-400">Age 42 · Retail Business</span>
+                    <span className="text-[10px] font-mono text-slate-400">CUST_ARUN_42 · Age 42</span>
                   </div>
                 </div>
                 <span className="px-2 py-0.5 rounded bg-amber-500/20 text-amber-300 font-mono text-[9px] font-bold">
@@ -254,20 +220,10 @@ export default function LoginPage({
                     handleDirectPresetAnalyze('arun');
                   }}
                   disabled={isAnalyzing}
-                  className="flex-1 py-2 px-3 rounded-lg bg-amber-500/20 hover:bg-amber-500/30 text-amber-300 border border-amber-500/30 text-xs font-mono font-bold transition flex items-center justify-center gap-1.5"
+                  className="w-full py-2.5 px-3 rounded-lg bg-amber-500/20 hover:bg-amber-500/30 text-amber-300 border border-amber-500/30 text-xs font-mono font-bold transition flex items-center justify-center gap-1.5 cursor-pointer"
                 >
                   <Zap className="w-3 h-3 text-amber-400" />
-                  <span>Instant Analyze</span>
-                </button>
-                <button
-                  type="button"
-                  onClick={(e) => {
-                    e.stopPropagation();
-                    onStartOnboarding({ ...DEMO_PRESETS.arun, presetKey: 'arun' });
-                  }}
-                  className="py-2 px-3 rounded-lg bg-slate-800 hover:bg-slate-700 text-slate-200 text-xs font-mono transition"
-                >
-                  Prefill
+                  <span>Analyze with DebtWise AI</span>
                 </button>
               </div>
             </div>
@@ -288,7 +244,7 @@ export default function LoginPage({
                   </div>
                   <div>
                     <h4 className="font-bold text-white text-sm">Rahul Verma</h4>
-                    <span className="text-[10px] font-mono text-slate-400">Age 29 · Freelance Consultant</span>
+                    <span className="text-[10px] font-mono text-slate-400">CUST_RAHUL_29 · Age 29</span>
                   </div>
                 </div>
                 <span className="px-2 py-0.5 rounded bg-blue-500/20 text-blue-300 font-mono text-[9px] font-bold">
@@ -306,20 +262,10 @@ export default function LoginPage({
                     handleDirectPresetAnalyze('rahul');
                   }}
                   disabled={isAnalyzing}
-                  className="flex-1 py-2 px-3 rounded-lg bg-blue-500/20 hover:bg-blue-500/30 text-blue-300 border border-blue-500/30 text-xs font-mono font-bold transition flex items-center justify-center gap-1.5"
+                  className="w-full py-2.5 px-3 rounded-lg bg-blue-500/20 hover:bg-blue-500/30 text-blue-300 border border-blue-500/30 text-xs font-mono font-bold transition flex items-center justify-center gap-1.5 cursor-pointer"
                 >
                   <Zap className="w-3 h-3 text-blue-400" />
-                  <span>Instant Analyze</span>
-                </button>
-                <button
-                  type="button"
-                  onClick={(e) => {
-                    e.stopPropagation();
-                    onStartOnboarding({ ...DEMO_PRESETS.rahul, presetKey: 'rahul' });
-                  }}
-                  className="py-2 px-3 rounded-lg bg-slate-800 hover:bg-slate-700 text-slate-200 text-xs font-mono transition"
-                >
-                  Prefill
+                  <span>Analyze with DebtWise AI</span>
                 </button>
               </div>
             </div>
@@ -340,7 +286,7 @@ export default function LoginPage({
                   </div>
                   <div>
                     <h4 className="font-bold text-white text-sm">Meena Iyer</h4>
-                    <span className="text-[10px] font-mono text-slate-400">Age 31 · Operations Manager</span>
+                    <span className="text-[10px] font-mono text-slate-400">CUST_MEENA_31 · Age 31</span>
                   </div>
                 </div>
                 <span className="px-2 py-0.5 rounded bg-emerald-500/20 text-emerald-300 font-mono text-[9px] font-bold">
@@ -358,20 +304,10 @@ export default function LoginPage({
                     handleDirectPresetAnalyze('meena');
                   }}
                   disabled={isAnalyzing}
-                  className="flex-1 py-2 px-3 rounded-lg bg-emerald-500/20 hover:bg-emerald-500/30 text-emerald-300 border border-emerald-500/30 text-xs font-mono font-bold transition flex items-center justify-center gap-1.5"
+                  className="w-full py-2.5 px-3 rounded-lg bg-emerald-500/20 hover:bg-emerald-500/30 text-emerald-300 border border-emerald-500/30 text-xs font-mono font-bold transition flex items-center justify-center gap-1.5 cursor-pointer"
                 >
                   <Zap className="w-3 h-3 text-emerald-400" />
-                  <span>Instant Analyze</span>
-                </button>
-                <button
-                  type="button"
-                  onClick={(e) => {
-                    e.stopPropagation();
-                    onStartOnboarding({ ...DEMO_PRESETS.meena, presetKey: 'meena' });
-                  }}
-                  className="py-2 px-3 rounded-lg bg-slate-800 hover:bg-slate-700 text-slate-200 text-xs font-mono transition"
-                >
-                  Prefill
+                  <span>Analyze with DebtWise AI</span>
                 </button>
               </div>
             </div>

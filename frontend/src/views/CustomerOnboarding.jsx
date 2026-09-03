@@ -126,24 +126,24 @@ export default function CustomerOnboarding({
             className="text-xs font-mono text-slate-400 hover:text-cyan-400 transition flex items-center gap-1.5 mb-2"
           >
             <ArrowLeft className="w-3.5 h-3.5" />
-            <span>Change Customer / Login</span>
+            <span>Return to Customer Intelligence</span>
           </button>
           <h1 className="text-2xl sm:text-3xl font-black text-white flex items-center gap-3">
-            <span>Financial Data Onboarding</span>
+            <span>Manual Data Entry — Exception Workflow</span>
             {formData.presetKey && (
               <span className="text-xs px-2.5 py-1 rounded-full bg-cyan-500/20 text-cyan-300 font-mono font-bold">
-                {formData.name} Persona
+                {formData.name}
               </span>
             )}
           </h1>
           <p className="text-xs text-slate-400 font-mono mt-1">
-            Step {currentStep} of 5 · {ONBOARDING_STEPS[currentStep - 1].title}
+            Exception intake form · Step {currentStep} of 5 · {ONBOARDING_STEPS[currentStep - 1].title}
           </p>
         </div>
 
-        <div className="flex items-center gap-2 px-3 py-1.5 rounded-xl bg-slate-900 border border-slate-800 text-xs font-mono text-slate-300">
-          <Shield className="w-4 h-4 text-emerald-400" />
-          <span>Responsible AI Assessment</span>
+        <div className="flex items-center gap-2 px-3 py-1.5 rounded-xl bg-amber-500/10 border border-amber-500/30 text-xs font-mono text-amber-300">
+          <Shield className="w-4 h-4 text-amber-400" />
+          <span>Exception Intake Mode</span>
         </div>
       </div>
 

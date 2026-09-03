@@ -37,6 +37,9 @@ function formatINR(value) {
 function mapCandidate(candidate) {
   if (!candidate) return null;
 
+  const relief = money(candidate.estimated_monthly_relief);
+  const emiAfter = money(candidate.estimated_emi_after);
+
   return {
     id: candidate.id,
     level: candidate.level,
@@ -45,8 +48,8 @@ function mapCandidate(candidate) {
     title: candidate.title,
     description: candidate.description,
     reason: candidate.reason,
-    estimated_monthly_relief: money(candidate.estimated_monthly_relief),
-    estimated_emi_after: money(candidate.estimated_emi_after),
+    estimated_monthly_relief: relief,
+    estimated_emi_after: emiAfter,
     reversibility: candidate.reversibility,
     intrusiveness: candidate.intrusiveness,
     friction: candidate.friction,
@@ -54,9 +57,13 @@ function mapCandidate(candidate) {
     requires_customer_consent: candidate.requires_customer_consent,
     priority: candidate.priority,
 
-    // UI-friendly aliases
-    monthly_relief: money(candidate.estimated_monthly_relief),
-    emi_after: money(candidate.estimated_emi_after),
+    // UI-friendly aliases for components
+    monthly_relief: relief,
+    emi_after: emiAfter,
+    monthly_payment_after: emiAfter,
+    impact: `₹${Math.round(relief).toLocaleString("en-IN")}/mo cash-flow relief`,
+    summary: candidate.description || candidate.reason,
+    level_name: candidate.intervention_type ? candidate.intervention_type.replace(/_/g, " ") : `Level ${candidate.level}`,
     tier: candidate.requires_human_approval ? "TIER_B" : "TIER_A",
   };
 }
@@ -84,20 +91,20 @@ function buildSafetyRejection(result) {
   }
 
   const first = rejected[0];
+  const reasonsText = first.rejection_reasons?.length > 0
+    ? first.rejection_reasons.join(" ")
+    : "Rejected by safety check because it did not satisfy DebtWise safety constraints.";
 
   return {
     intervention_id: first.intervention_id,
     intervention_title: first.intervention_title,
+    proposed_action: first.intervention_title,
+    rule_id: first.rules_checked?.length > 0 ? first.rules_checked.join(", ") : "SC-004",
     status: first.status,
     rejection_reasons: first.rejection_reasons || [],
+    reason: reasonsText,
+    message: `Rejected by safety check — ${reasonsText}`,
     safer_alternative: first.safer_alternative || null,
-
-    // Existing UI expects a single readable message.
-    message:
-      first.rejection_reasons?.length > 0
-        ? `Rejected by safety check — ${first.rejection_reasons.join(" ")}`
-        : "Rejected by safety check because it did not satisfy DebtWise safety constraints.",
-
     rules_checked: first.rules_checked || [],
   };
 }
@@ -215,6 +222,8 @@ function mapAnalysisToCustomerDetail(rawCustomer, result, explanation = null) {
 
     current_monthly_income: money(capacity.average_income),
     current_obligations: money(capacity.current_obligations),
+    living_cost_floor: money(capacity.living_cost_floor),
+    emergency_buffer: money(capacity.emergency_buffer_gap || capacity.emergency_buffer_target),
 
     diagnosis: {
       primary_cause: risk.primary_cause,

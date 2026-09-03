@@ -2,7 +2,7 @@ import React from 'react';
 import { Shield, LayoutDashboard, UserCheck, Sparkles, UserPlus, HeartHandshake } from 'lucide-react';
 
 export default function Navbar({ activeView, setActiveView, onStartNewAssessment }) {
-  const isCustomerPortal = activeView === 'login' || activeView === 'onboarding';
+  const isCustomerPortal = activeView === 'intelligence' || activeView === 'login' || activeView === 'onboarding';
   const isJourney = activeView === 'journey' || activeView === 'priya';
   const isDashboard = activeView === 'dashboard';
 
@@ -27,15 +27,15 @@ export default function Navbar({ activeView, setActiveView, onStartNewAssessment
         {/* View Switcher Pills */}
         <div className="flex items-center gap-1 p-1 rounded-xl bg-slate-900 border border-slate-800">
           <button
-            onClick={() => setActiveView('login')}
+            onClick={() => setActiveView('intelligence')}
             className={`px-3.5 py-1.5 rounded-lg text-xs font-semibold flex items-center gap-1.5 transition-all ${
               isCustomerPortal
                 ? "bg-gradient-to-r from-cyan-500 to-blue-600 text-slate-950 font-bold shadow-md"
                 : "text-slate-400 hover:text-white"
             }`}
           >
-            <UserPlus className="w-3.5 h-3.5" />
-            <span>Customer Onboarding</span>
+            <UserCheck className="w-3.5 h-3.5" />
+            <span>Customer Intelligence</span>
           </button>
 
           <button

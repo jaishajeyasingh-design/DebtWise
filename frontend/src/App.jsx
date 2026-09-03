@@ -1,6 +1,7 @@
 import React, { useState } from 'react';
 import Navbar from './components/common/Navbar';
 import LoginPage from './views/LoginPage';
+import CustomerIntelligence from './views/CustomerIntelligence';
 import CustomerOnboarding from './views/CustomerOnboarding';
 import CustomerJourney from './views/CustomerJourney';
 import BankDashboard from './views/BankDashboard';
@@ -9,21 +10,22 @@ import { api } from './api/mockApi';
 import { buildCustomerTimeSeriesPayload } from './utils/customerPayloadBuilder';
 
 export default function App() {
-  const [activeView, setActiveView] = useState('login'); // 'login' | 'onboarding' | 'journey' | 'dashboard'
+  // Primary Bank Operations workflow starts on 'intelligence'
+  const [activeView, setActiveView] = useState('intelligence'); // 'intelligence' | 'login' | 'onboarding' | 'journey' | 'dashboard'
   const [activeCustomerData, setActiveCustomerData] = useState(null);
   const [onboardingInitialData, setOnboardingInitialData] = useState({});
   const [isAnalyzing, setIsAnalyzing] = useState(false);
   const [analysisError, setAnalysisError] = useState(null);
 
-  // Navigate to Onboarding with optional prefill data
-  const handleStartOnboarding = (initialData = {}) => {
+  // Navigate to optional Manual Exception Intake with prefill data
+  const handleStartManualIntake = (initialData = {}) => {
     setOnboardingInitialData(initialData);
     setAnalysisError(null);
     setActiveView('onboarding');
   };
 
-  // Perform instant live analysis on backend from Login demo shortcuts
-  const handleQuickAnalyze = async (presetOrData) => {
+  // Perform live analysis against authoritative backend /api/v1/analyze
+  const handleAnalyzeCustomer = async (presetOrData) => {
     try {
       setIsAnalyzing(true);
       setAnalysisError(null);
@@ -34,16 +36,15 @@ export default function App() {
       setActiveCustomerData(result);
       setActiveView('journey');
     } catch (err) {
-      console.error('Quick analyze error:', err);
+      console.error('Customer analysis error:', err);
       setAnalysisError(err.message || 'Failed to analyze customer on the live decision engine.');
-      setActiveView('onboarding');
     } finally {
       setIsAnalyzing(false);
     }
   };
 
-  // Submit 5-step onboarding form to real backend /api/v1/analyze
-  const handleOnboardingSubmit = async (payload) => {
+  // Submit 5-step manual exception form to real backend /api/v1/analyze
+  const handleManualOnboardingSubmit = async (payload) => {
     try {
       setIsAnalyzing(true);
       setAnalysisError(null);
@@ -53,7 +54,7 @@ export default function App() {
       setActiveCustomerData(result);
       setActiveView('journey');
     } catch (err) {
-      console.error('Onboarding submission error:', err);
+      console.error('Manual exception submission error:', err);
       setAnalysisError(err.message || 'Failed to submit customer data to the live decision engine.');
     } finally {
       setIsAnalyzing(false);
@@ -72,15 +73,27 @@ export default function App() {
       <Navbar
         activeView={activeView}
         setActiveView={setActiveView}
-        onStartNewAssessment={() => handleStartOnboarding({})}
+        onStartNewAssessment={() => setActiveView('intelligence')}
       />
 
       {/* Main App Container */}
       <main className="flex-1 z-10">
+        {activeView === 'intelligence' && (
+          <CustomerIntelligence
+            onAnalyzeCustomer={handleAnalyzeCustomer}
+            onStartManualIntake={() => handleStartManualIntake({})}
+            onOpenDashboard={() => setActiveView('dashboard')}
+            isAnalyzing={isAnalyzing}
+            analysisError={analysisError}
+            onClearError={() => setAnalysisError(null)}
+          />
+        )}
+
         {activeView === 'login' && (
           <LoginPage
-            onStartOnboarding={handleStartOnboarding}
-            onQuickAnalyze={handleQuickAnalyze}
+            onContinueToIntelligence={() => setActiveView('intelligence')}
+            onStartOnboarding={handleStartManualIntake}
+            onQuickAnalyze={handleAnalyzeCustomer}
             onOpenDashboard={() => setActiveView('dashboard')}
             isAnalyzing={isAnalyzing}
           />
@@ -89,8 +102,8 @@ export default function App() {
         {activeView === 'onboarding' && (
           <CustomerOnboarding
             initialData={onboardingInitialData}
-            onSubmitToBackend={handleOnboardingSubmit}
-            onBackToLogin={() => setActiveView('login')}
+            onSubmitToBackend={handleManualOnboardingSubmit}
+            onBackToLogin={() => setActiveView('intelligence')}
             isAnalyzing={isAnalyzing}
             analysisError={analysisError}
             onClearError={() => setAnalysisError(null)}
@@ -101,7 +114,7 @@ export default function App() {
           <CustomerJourney
             customerData={activeCustomerData}
             onReturnToDashboard={() => setActiveView('dashboard')}
-            onNewAssessment={() => setActiveView('login')}
+            onNewAssessment={() => setActiveView('intelligence')}
           />
         )}
 
@@ -120,7 +133,7 @@ export default function App() {
         <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 flex flex-col sm:flex-row items-center justify-between gap-3">
           <div className="flex items-center gap-2 text-slate-400">
             <Shield className="w-4 h-4 text-cyan-400" />
-            <span>DebtWise AI/ML Distress Intervention Engine • Hackathon Prototype</span>
+            <span>DebtWise AI/ML Distress Intervention Engine • Bank Decision Support Platform</span>
           </div>
           <div>
             <span>Diagnosis Before Treatment • Strict Responsible AI Guardrails</span>

@@ -4,12 +4,13 @@ import { Calculator, ShieldCheck, AlertTriangle, ArrowRight, DollarSign } from '
 export default function CapacityCard({ customer, className = "" }) {
   if (!customer) return null;
 
-  const income = customer.current_monthly_income || 60000;
-  const livingFloor = customer.living_cost_floor || 35000;
-  const buffer = customer.emergency_buffer || 10000;
-  const sustainableCapacity = customer.sustainable_repayment_capacity || 15000;
-  const currentObligations = customer.current_obligations || 25000;
-  const monthlyDeficit = currentObligations - sustainableCapacity;
+  const capacity = customer.capacity || {};
+  const income = capacity.average_income ?? customer.current_monthly_income ?? 60000;
+  const livingFloor = capacity.living_cost_floor ?? customer.living_cost_floor ?? 35000;
+  const buffer = capacity.emergency_buffer_gap ?? capacity.emergency_buffer_target ?? customer.emergency_buffer ?? 10000;
+  const sustainableCapacity = capacity.safe_emi ?? customer.sustainable_repayment_capacity ?? 15000;
+  const currentObligations = capacity.current_obligations ?? customer.current_obligations ?? 25000;
+  const monthlyDeficit = capacity.emi_gap ?? (currentObligations - sustainableCapacity);
 
   return (
     <div className={`glass-panel rounded-2xl p-6 border border-slate-700/60 ${className}`}>

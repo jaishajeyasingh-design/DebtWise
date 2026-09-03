@@ -46,7 +46,7 @@ export default function AuditPage({ data, onBack }) {
               Safety Rules
             </div>
             <div className="text-sm font-bold text-white mt-1">
-              {audit.safety_rules_evaluated ?? '—'}
+              {audit.safety_rules_evaluated_count ?? audit.safety_rules_evaluated ?? '—'}
             </div>
           </div>
 
@@ -56,7 +56,7 @@ export default function AuditPage({ data, onBack }) {
               Candidates
             </div>
             <div className="text-sm font-bold text-white mt-1">
-              {audit.candidates_evaluated ?? '—'}
+              {audit.candidates_evaluated_count ?? audit.candidates_evaluated ?? '—'}
             </div>
           </div>
 
