@@ -40,7 +40,7 @@ const STEPS = [
 
 export default function CustomerJourney({ onReturnToDashboard }) {
   const [currentStep, setCurrentStep] = useState(1);
-  const [selectedIntervention, setSelectedIntervention] = useState(PRIYA_DEMO_DATA.safe_interventions[0]);
+  const [selectedIntervention, setSelectedIntervention] = useState(null);
   const [isConsentModalOpen, setIsConsentModalOpen] = useState(false);
   const [consentGranted, setConsentGranted] = useState(false);
   const [humanHelpRequested, setHumanHelpRequested] = useState(false);
