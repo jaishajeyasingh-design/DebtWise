@@ -1,0 +1,1749 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>FinShield — AI-Assisted Financial Distress Intervention Engine</title>
+  <meta name="description" content="Hackathon presentation deck for FinShield - AI-Assisted Financial Distress Intervention Engine for Banks.">
+  
+  <!-- Google Fonts -->
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700;800&family=Outfit:wght@500;600;700;800;900&family=JetBrains+Mono:wght@400;500;700&display=swap" rel="stylesheet">
+  
+  <style>
+    /* -------------------------------------------------------------
+       DESIGN SYSTEM & CSS VARIABLES
+       ------------------------------------------------------------- */
+    :root {
+      --bg-dark: #080D1E;
+      --bg-surface: #0E1733;
+      --bg-card: rgba(18, 28, 62, 0.75);
+      --bg-card-hover: rgba(26, 40, 86, 0.85);
+      --border-subtle: rgba(70, 95, 160, 0.25);
+      --border-glow: rgba(58, 134, 255, 0.45);
+      
+      --accent-blue: #3A86FF;
+      --accent-cyan: #00F0FF;
+      --accent-teal: #10B981;
+      --accent-emerald: #059669;
+      --accent-coral: #F43F5E;
+      --accent-amber: #F59E0B;
+      --accent-purple: #A855F7;
+      
+      --text-white: #FFFFFF;
+      --text-primary: #F1F5F9;
+      --text-muted: #94A3B8;
+      --text-dim: #64748B;
+      
+      --font-display: 'Outfit', sans-serif;
+      --font-body: 'Inter', sans-serif;
+      --font-mono: 'JetBrains Mono', monospace;
+      
+      --transition-smooth: all 0.35s cubic-bezier(0.16, 1, 0.3, 1);
+      --shadow-glow: 0 0 35px rgba(0, 240, 255, 0.12);
+      --shadow-card: 0 10px 30px -10px rgba(0, 0, 0, 0.5);
+      --radius-sm: 8px;
+      --radius-md: 14px;
+      --radius-lg: 20px;
+    }
+
+    /* Light Mode Overrides */
+    body.light-theme {
+      --bg-dark: #F8FAFC;
+      --bg-surface: #EDF2F7;
+      --bg-card: rgba(255, 255, 255, 0.95);
+      --bg-card-hover: #FFFFFF;
+      --border-subtle: rgba(203, 213, 225, 0.9);
+      --border-glow: rgba(58, 134, 255, 0.5);
+      --text-white: #0F172A;
+      --text-primary: #1E293B;
+      --text-muted: #475569;
+      --text-dim: #64748B;
+      --shadow-glow: 0 0 25px rgba(58, 134, 255, 0.15);
+      --shadow-card: 0 10px 25px -5px rgba(0, 0, 0, 0.08);
+    }
+
+    * {
+      box-sizing: border-box;
+      margin: 0;
+      padding: 0;
+      -webkit-font-smoothing: antialiased;
+    }
+
+    body {
+      background-color: var(--bg-dark);
+      color: var(--text-primary);
+      font-family: var(--font-body);
+      overflow: hidden;
+      width: 100vw;
+      height: 100vh;
+      display: flex;
+      flex-direction: column;
+      user-select: none;
+      transition: background-color 0.4s ease, color 0.4s ease;
+    }
+
+    /* Subtle grid background */
+    .bg-grid {
+      position: absolute;
+      inset: 0;
+      background-image: 
+        radial-gradient(circle at 50% 0%, rgba(58, 134, 255, 0.15) 0%, transparent 60%),
+        radial-gradient(circle at 90% 90%, rgba(0, 240, 255, 0.08) 0%, transparent 50%),
+        linear-gradient(to right, rgba(255,255,255,0.02) 1px, transparent 1px),
+        linear-gradient(to bottom, rgba(255,255,255,0.02) 1px, transparent 1px);
+      background-size: 100% 100%, 100% 100%, 40px 40px, 40px 40px;
+      pointer-events: none;
+      z-index: 0;
+    }
+
+    /* -------------------------------------------------------------
+       DECK CONTAINER & SLIDES
+       ------------------------------------------------------------- */
+    #deck {
+      position: relative;
+      flex: 1;
+      width: 100%;
+      height: 100%;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      padding: 1.5rem 2.5rem 4.5rem 2.5rem;
+      z-index: 1;
+    }
+
+    .slide {
+      position: absolute;
+      inset: 1.5rem 2.5rem 4.5rem 2.5rem;
+      background: var(--bg-surface);
+      border: 1px solid var(--border-subtle);
+      border-radius: var(--radius-lg);
+      padding: 2.2rem 3rem;
+      display: flex;
+      flex-direction: column;
+      opacity: 0;
+      pointer-events: none;
+      transform: scale(0.96) translateY(20px);
+      transition: opacity 0.4s cubic-bezier(0.16, 1, 0.3, 1), transform 0.4s cubic-bezier(0.16, 1, 0.3, 1);
+      box-shadow: var(--shadow-card);
+      overflow-y: auto;
+      backdrop-filter: blur(12px);
+    }
+
+    .slide.active {
+      opacity: 1;
+      pointer-events: auto;
+      transform: scale(1) translateY(0);
+      z-index: 2;
+    }
+
+    /* Slide Header */
+    .slide-header {
+      margin-bottom: 1.5rem;
+      flex-shrink: 0;
+    }
+    .slide-badge {
+      display: inline-flex;
+      align-items: center;
+      gap: 0.5rem;
+      font-family: var(--font-mono);
+      font-size: 0.75rem;
+      font-weight: 700;
+      color: var(--accent-cyan);
+      text-transform: uppercase;
+      letter-spacing: 0.1em;
+      margin-bottom: 0.35rem;
+    }
+    .slide-badge::before {
+      content: '';
+      display: inline-block;
+      width: 8px;
+      height: 8px;
+      border-radius: 50%;
+      background: var(--accent-cyan);
+      box-shadow: 0 0 10px var(--accent-cyan);
+    }
+    .slide-title {
+      font-family: var(--font-display);
+      font-size: 1.85rem;
+      font-weight: 800;
+      color: var(--text-white);
+      letter-spacing: -0.02em;
+      line-height: 1.2;
+    }
+    .slide-subtitle {
+      font-size: 0.95rem;
+      color: var(--text-muted);
+      margin-top: 0.3rem;
+      line-height: 1.4;
+    }
+
+    /* Content Layouts */
+    .grid-2 {
+      display: grid;
+      grid-template-columns: 1fr 1fr;
+      gap: 1.5rem;
+      flex: 1;
+    }
+    .grid-3 {
+      display: grid;
+      grid-template-columns: repeat(3, 1fr);
+      gap: 1.25rem;
+      flex: 1;
+    }
+    .grid-4 {
+      display: grid;
+      grid-template-columns: repeat(4, 1fr);
+      gap: 1rem;
+      flex: 1;
+    }
+
+    /* Custom Glass Cards */
+    .card {
+      background: var(--bg-card);
+      border: 1px solid var(--border-subtle);
+      border-radius: var(--radius-md);
+      padding: 1.25rem;
+      display: flex;
+      flex-direction: column;
+      transition: var(--transition-smooth);
+      position: relative;
+    }
+    .card:hover {
+      background: var(--bg-card-hover);
+      border-color: var(--border-glow);
+      transform: translateY(-2px);
+      box-shadow: var(--shadow-glow);
+    }
+    .card.border-coral { border-color: rgba(244, 63, 94, 0.4); }
+    .card.border-teal { border-color: rgba(16, 185, 129, 0.4); }
+    .card.border-cyan { border-color: rgba(0, 240, 255, 0.4); }
+    .card.border-amber { border-color: rgba(245, 158, 11, 0.4); }
+
+    .card-title {
+      font-family: var(--font-display);
+      font-size: 1.05rem;
+      font-weight: 700;
+      color: var(--text-white);
+      margin-bottom: 0.5rem;
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+    }
+    .card-title span.tag {
+      font-family: var(--font-mono);
+      font-size: 0.7rem;
+      font-weight: 600;
+      padding: 0.2rem 0.5rem;
+      border-radius: var(--radius-sm);
+      background: rgba(255,255,255,0.06);
+    }
+
+    .pill-list {
+      list-style: none;
+      display: flex;
+      flex-direction: column;
+      gap: 0.65rem;
+    }
+    .pill-item {
+      display: flex;
+      align-items: flex-start;
+      gap: 0.6rem;
+      font-size: 0.88rem;
+      line-height: 1.45;
+      color: var(--text-primary);
+    }
+    .pill-icon {
+      flex-shrink: 0;
+      width: 18px;
+      height: 18px;
+      border-radius: 50%;
+      display: inline-flex;
+      align-items: center;
+      justify-content: center;
+      font-size: 0.7rem;
+      font-weight: 800;
+      margin-top: 2px;
+    }
+    .pill-icon.danger { background: rgba(244, 63, 94, 0.2); color: var(--accent-coral); }
+    .pill-icon.success { background: rgba(16, 185, 129, 0.2); color: var(--accent-teal); }
+    .pill-icon.info { background: rgba(0, 240, 255, 0.2); color: var(--accent-cyan); }
+    .pill-icon.warning { background: rgba(245, 158, 11, 0.2); color: var(--accent-amber); }
+
+    /* -------------------------------------------------------------
+       SLIDE 1: TITLE HERO
+       ------------------------------------------------------------- */
+    .hero-container {
+      display: flex;
+      flex-direction: column;
+      justify-content: center;
+      height: 100%;
+      max-width: 1050px;
+    }
+    .hero-tag {
+      display: inline-flex;
+      align-items: center;
+      gap: 0.5rem;
+      padding: 0.4rem 0.9rem;
+      border-radius: 999px;
+      background: rgba(58, 134, 255, 0.15);
+      border: 1px solid rgba(58, 134, 255, 0.35);
+      color: var(--accent-cyan);
+      font-family: var(--font-mono);
+      font-size: 0.8rem;
+      font-weight: 700;
+      width: fit-content;
+      margin-bottom: 1.25rem;
+    }
+    .hero-title {
+      font-family: var(--font-display);
+      font-size: 4.2rem;
+      font-weight: 900;
+      color: var(--text-white);
+      line-height: 1.05;
+      letter-spacing: -0.03em;
+      margin-bottom: 0.75rem;
+    }
+    .hero-title span {
+      background: linear-gradient(135deg, #3A86FF 0%, #00F0FF 100%);
+      -webkit-background-clip: text;
+      -webkit-text-fill-color: transparent;
+    }
+    .hero-lead {
+      font-size: 1.4rem;
+      font-weight: 600;
+      color: var(--accent-blue);
+      margin-bottom: 1rem;
+      line-height: 1.3;
+    }
+    .hero-desc {
+      font-size: 1.05rem;
+      color: var(--text-muted);
+      line-height: 1.6;
+      max-width: 860px;
+      margin-bottom: 2rem;
+    }
+    .hero-pills {
+      display: grid;
+      grid-template-columns: repeat(3, 1fr);
+      gap: 1.25rem;
+    }
+    .hero-pill-card {
+      background: var(--bg-card);
+      border: 1px solid var(--border-subtle);
+      border-radius: var(--radius-md);
+      padding: 1rem 1.25rem;
+      border-left: 4px solid var(--accent-cyan);
+    }
+    .hero-pill-card h4 {
+      font-family: var(--font-mono);
+      font-size: 0.8rem;
+      color: var(--accent-cyan);
+      text-transform: uppercase;
+      letter-spacing: 0.05em;
+      margin-bottom: 0.25rem;
+    }
+    .hero-pill-card p {
+      font-size: 0.9rem;
+      font-weight: 600;
+      color: var(--text-white);
+    }
+
+    /* -------------------------------------------------------------
+       SLIDE 6: INTERVENTION HIERARCHY LADDER
+       ------------------------------------------------------------- */
+    .ladder-container {
+      display: flex;
+      flex-direction: column;
+      gap: 0.5rem;
+      flex: 1;
+    }
+    .ladder-row {
+      display: grid;
+      grid-template-columns: 80px 180px 1fr 150px;
+      align-items: center;
+      gap: 1rem;
+      background: var(--bg-card);
+      border: 1px solid var(--border-subtle);
+      border-radius: var(--radius-sm);
+      padding: 0.6rem 1rem;
+      transition: var(--transition-smooth);
+      cursor: pointer;
+    }
+    .ladder-row:hover, .ladder-row.active {
+      border-color: var(--accent-cyan);
+      background: var(--bg-card-hover);
+      transform: translateX(6px);
+    }
+    .ladder-badge {
+      font-family: var(--font-mono);
+      font-weight: 800;
+      font-size: 0.8rem;
+      padding: 0.25rem 0.6rem;
+      border-radius: var(--radius-sm);
+      text-align: center;
+    }
+    .ladder-title {
+      font-family: var(--font-display);
+      font-weight: 700;
+      font-size: 0.95rem;
+      color: var(--text-white);
+    }
+    .ladder-desc {
+      font-size: 0.82rem;
+      color: var(--text-muted);
+    }
+    .ladder-meta {
+      font-family: var(--font-mono);
+      font-size: 0.75rem;
+      font-weight: 600;
+      text-align: right;
+    }
+
+    /* -------------------------------------------------------------
+       SLIDE 8: WOW DEMO — UNSAFE REJECTION
+       ------------------------------------------------------------- */
+    .rejection-box {
+      border: 2px dashed var(--accent-coral);
+      background: rgba(244, 63, 94, 0.08);
+      border-radius: var(--radius-md);
+      padding: 1.25rem;
+      display: flex;
+      flex-direction: column;
+      gap: 0.75rem;
+    }
+    .rejection-header {
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+      color: var(--accent-coral);
+      font-weight: 800;
+      font-size: 1.05rem;
+    }
+    .approved-box {
+      border: 2px solid var(--accent-teal);
+      background: rgba(16, 185, 129, 0.08);
+      border-radius: var(--radius-md);
+      padding: 1.25rem;
+      display: flex;
+      flex-direction: column;
+      gap: 0.75rem;
+    }
+
+    /* -------------------------------------------------------------
+       INTERACTIVE SIMULATOR (SLIDE 10)
+       ------------------------------------------------------------- */
+    .sim-card {
+      background: var(--bg-card);
+      border: 1px solid var(--border-subtle);
+      border-radius: var(--radius-md);
+      padding: 1.25rem;
+    }
+    .slider-group {
+      margin-bottom: 1rem;
+    }
+    .slider-header {
+      display: flex;
+      justify-content: space-between;
+      font-size: 0.82rem;
+      font-weight: 600;
+      color: var(--text-muted);
+      margin-bottom: 0.35rem;
+    }
+    .slider-header span.val {
+      font-family: var(--font-mono);
+      color: var(--accent-cyan);
+      font-weight: 700;
+    }
+    input[type="range"] {
+      width: 100%;
+      accent-color: var(--accent-cyan);
+      cursor: pointer;
+    }
+    .gauge-container {
+      display: flex;
+      align-items: center;
+      justify-content: space-around;
+      background: rgba(0,0,0,0.25);
+      border-radius: var(--radius-md);
+      padding: 1rem;
+      margin-top: 1rem;
+    }
+    .gauge-item {
+      text-align: center;
+    }
+    .gauge-val {
+      font-family: var(--font-mono);
+      font-size: 1.5rem;
+      font-weight: 800;
+      color: var(--text-white);
+    }
+    .gauge-label {
+      font-size: 0.75rem;
+      color: var(--text-muted);
+      text-transform: uppercase;
+      font-weight: 600;
+    }
+
+    /* -------------------------------------------------------------
+       SHAP VISUALIZER (SLIDE 5)
+       ------------------------------------------------------------- */
+    .shap-bar-row {
+      display: flex;
+      align-items: center;
+      gap: 0.8rem;
+      margin-bottom: 0.6rem;
+      font-size: 0.8rem;
+    }
+    .shap-bar-label {
+      width: 150px;
+      font-family: var(--font-mono);
+      color: var(--text-muted);
+      white-space: nowrap;
+      overflow: hidden;
+      text-overflow: ellipsis;
+    }
+    .shap-bar-track {
+      flex: 1;
+      height: 12px;
+      background: rgba(255,255,255,0.06);
+      border-radius: 6px;
+      overflow: hidden;
+      position: relative;
+    }
+    .shap-bar-fill {
+      height: 100%;
+      border-radius: 6px;
+      transition: width 0.6s ease;
+    }
+    .shap-bar-val {
+      width: 55px;
+      font-family: var(--font-mono);
+      font-weight: 700;
+      text-align: right;
+    }
+
+    /* -------------------------------------------------------------
+       NAVIGATION DOCK & CONTROLS
+       ------------------------------------------------------------- */
+    #nav-bar {
+      position: absolute;
+      bottom: 0.75rem;
+      left: 50%;
+      transform: translateX(-50%);
+      display: flex;
+      align-items: center;
+      gap: 0.75rem;
+      background: rgba(14, 23, 51, 0.85);
+      border: 1px solid var(--border-subtle);
+      border-radius: 999px;
+      padding: 0.45rem 1rem;
+      backdrop-filter: blur(16px);
+      box-shadow: var(--shadow-card);
+      z-index: 10;
+    }
+    .nav-btn {
+      background: transparent;
+      border: none;
+      color: var(--text-muted);
+      font-size: 0.95rem;
+      cursor: pointer;
+      padding: 0.35rem 0.65rem;
+      border-radius: 999px;
+      display: flex;
+      align-items: center;
+      gap: 0.4rem;
+      font-weight: 600;
+      transition: var(--transition-smooth);
+    }
+    .nav-btn:hover {
+      color: var(--text-white);
+      background: rgba(255,255,255,0.08);
+    }
+    .nav-btn.active {
+      color: var(--accent-cyan);
+      background: rgba(0, 240, 255, 0.12);
+    }
+    .slide-counter {
+      font-family: var(--font-mono);
+      font-size: 0.85rem;
+      font-weight: 700;
+      color: var(--text-white);
+      padding: 0 0.5rem;
+      border-left: 1px solid var(--border-subtle);
+      border-right: 1px solid var(--border-subtle);
+    }
+
+    /* -------------------------------------------------------------
+       SPEAKER NOTES DRAWER & MODALS
+       ------------------------------------------------------------- */
+    #notes-drawer {
+      position: absolute;
+      bottom: 4rem;
+      right: 2.5rem;
+      width: 420px;
+      max-height: 250px;
+      background: rgba(10, 17, 40, 0.95);
+      border: 1px solid var(--accent-cyan);
+      border-radius: var(--radius-md);
+      padding: 1.25rem;
+      box-shadow: 0 10px 40px rgba(0,0,0,0.8);
+      z-index: 20;
+      display: none;
+      backdrop-filter: blur(20px);
+      overflow-y: auto;
+    }
+    #notes-drawer.open {
+      display: block;
+      animation: fadeIn 0.2s ease;
+    }
+    #notes-drawer h4 {
+      font-family: var(--font-mono);
+      font-size: 0.75rem;
+      color: var(--accent-cyan);
+      text-transform: uppercase;
+      margin-bottom: 0.5rem;
+      display: flex;
+      justify-content: space-between;
+    }
+    #notes-drawer p {
+      font-size: 0.85rem;
+      color: var(--text-primary);
+      line-height: 1.5;
+    }
+
+    /* Grid Overview Modal */
+    #grid-modal {
+      position: fixed;
+      inset: 0;
+      background: rgba(8, 13, 30, 0.95);
+      backdrop-filter: blur(24px);
+      z-index: 100;
+      display: none;
+      padding: 3rem;
+      overflow-y: auto;
+    }
+    #grid-modal.open {
+      display: block;
+    }
+    .grid-overview-content {
+      display: grid;
+      grid-template-columns: repeat(4, 1fr);
+      gap: 1.25rem;
+      max-width: 1400px;
+      margin: 0 auto;
+    }
+    .grid-card {
+      background: var(--bg-surface);
+      border: 1px solid var(--border-subtle);
+      border-radius: var(--radius-md);
+      padding: 1rem;
+      cursor: pointer;
+      transition: var(--transition-smooth);
+    }
+    .grid-card:hover {
+      border-color: var(--accent-cyan);
+      transform: translateY(-4px);
+      box-shadow: var(--shadow-glow);
+    }
+    .grid-card-num {
+      font-family: var(--font-mono);
+      font-size: 0.75rem;
+      font-weight: 700;
+      color: var(--accent-cyan);
+      margin-bottom: 0.25rem;
+    }
+    .grid-card-title {
+      font-family: var(--font-display);
+      font-size: 0.95rem;
+      font-weight: 700;
+      color: var(--text-white);
+    }
+
+    /* Key Badge helper */
+    .key-hint {
+      font-family: var(--font-mono);
+      font-size: 0.65rem;
+      padding: 0.15rem 0.35rem;
+      background: rgba(255,255,255,0.1);
+      border-radius: 4px;
+      color: var(--text-muted);
+      margin-left: 0.3rem;
+    }
+
+    @keyframes fadeIn {
+      from { opacity: 0; transform: translateY(10px); }
+      to { opacity: 1; transform: translateY(0); }
+    }
+
+    /* -------------------------------------------------------------
+       PRINT / PDF EXPORT STYLES
+       ------------------------------------------------------------- */
+    @media print {
+      body {
+        overflow: visible;
+        background: #FFFFFF !important;
+        color: #000000 !important;
+      }
+      #nav-bar, #notes-drawer, #grid-modal, .bg-grid {
+        display: none !important;
+      }
+      #deck {
+        display: block !important;
+        padding: 0 !important;
+      }
+      .slide {
+        position: relative !important;
+        inset: auto !important;
+        page-break-after: always !important;
+        break-after: page !important;
+        width: 100vw !important;
+        height: 100vh !important;
+        opacity: 1 !important;
+        pointer-events: auto !important;
+        transform: none !important;
+        box-shadow: none !important;
+        border: none !important;
+        background: #F8FAFC !important;
+        color: #0F172A !important;
+        padding: 2rem !important;
+      }
+      .card {
+        background: #FFFFFF !important;
+        border: 1px solid #CBD5E1 !important;
+        color: #0F172A !important;
+      }
+      .slide-title, .hero-title, .card-title {
+        color: #0F172A !important;
+      }
+      .slide-subtitle, .hero-desc, .ladder-desc, .pill-item {
+        color: #475569 !important;
+      }
+    }
+  </style>
+</head>
+<body>
+
+  <div class="bg-grid"></div>
+
+  <!-- MAIN DECK -->
+  <main id="deck">
+
+    <!-- =========================================================================
+         SLIDE 1: TITLE / HERO
+         ========================================================================= -->
+    <section class="slide active" id="slide-1" data-title="Title" data-notes="Good morning judges. We are presenting FinShield. Today, risk detection is a solved problem for banks—models can easily flag high-risk accounts. But what happens AFTER someone is flagged? Banks either do nothing or jump straight to aggressive collections. FinShield is the missing AI intervention layer that diagnoses why distress happened and safely resolves it.">
+      <div class="hero-container">
+        <div class="hero-tag">
+          <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5"><path d="M12 22s8-4 8-10V5l-8-3-8 3v7c0 6 8 10 8 10z"/></svg>
+          HACKATHON EDITION • RESPONSIBLE AI IN FINTECH
+        </div>
+        <h1 class="hero-title">Fin<span>Shield</span></h1>
+        <div class="hero-lead">AI-Assisted Financial Distress Intervention Engine</div>
+        <p class="hero-desc">
+          Helping banks bridge the critical gap between <strong>identifying high-risk customers</strong> and <strong>safely resolving their distress</strong> before it becomes a default or permanent financial exclusion.
+        </p>
+        <div class="hero-pills">
+          <div class="hero-pill-card">
+            <h4>01 • DIAGNOSE</h4>
+            <p>XGBoost + SHAP Root-Cause Multi-Class Classifier</p>
+          </div>
+          <div class="hero-pill-card" style="border-left-color: var(--accent-blue);">
+            <h4>02 • CALCULATE</h4>
+            <p>Deterministic Rule-Based Sustainable Capacity</p>
+          </div>
+          <div class="hero-pill-card" style="border-left-color: var(--accent-teal);">
+            <h4>03 • INTERVENE</h4>
+            <p>Safety-Filtered 7-Tier Hierarchy with Consent</p>
+          </div>
+        </div>
+      </div>
+    </section>
+
+    <!-- =========================================================================
+         SLIDE 2: THE CORE PROBLEM
+         ========================================================================= -->
+    <section class="slide" id="slide-2" data-title="The Problem" data-notes="Let's look at the current industry dilemma. Risk scorecards flag borrowers as high risk. But then what? Most banks have no intelligent intervention engine. They wait until 60-90 days past due, charge punitive late fees which worsen the borrower's cash crunch, and escalate to legal collections. FinShield asks the question: Why are they struggling, and how do we safely intervene early?">
+      <div class="slide-header">
+        <div class="slide-badge">The Industry Dilemma</div>
+        <h2 class="slide-title">Banks Know Who Is High-Risk. The Problem Is What Happens Next.</h2>
+        <p class="slide-subtitle">Risk detection is mature, but the post-flagging intervention workflow is broken, punitive, and disconnected.</p>
+      </div>
+      <div class="grid-2">
+        <div class="card border-coral">
+          <div class="card-title">
+            <span>THE CURRENT BROKEN ESCALATOR</span>
+            <span class="tag" style="color: var(--accent-coral);">PUNITIVE & LATE</span>
+          </div>
+          <ul class="pill-list">
+            <li class="pill-item">
+              <span class="pill-icon danger">✕</span>
+              <div><strong>Passive Probability Scoring:</strong> ML outputs a probability of default (PD) score, but provides zero actionable remediation paths.</div>
+            </li>
+            <li class="pill-item">
+              <span class="pill-icon danger">✕</span>
+              <div><strong>The Penalty Spiral:</strong> Adding late fees and overdraft fines directly exacerbates the cash-flow crunch causing the distress.</div>
+            </li>
+            <li class="pill-item">
+              <span class="pill-icon danger">✕</span>
+              <div><strong>Blind Collections Hand-off:</strong> Treated as a debt recovery problem rather than an affordability mismatch.</div>
+            </li>
+            <li class="pill-item">
+              <span class="pill-icon danger">✕</span>
+              <div><strong>Severe Financial Loss:</strong> Results in balance write-offs for banks and permanent credit exclusion for customers.</div>
+            </li>
+          </ul>
+        </div>
+
+        <div class="card border-cyan">
+          <div class="card-title">
+            <span>THE UNANSWERED INTERVENTION QUESTION</span>
+            <span class="tag" style="color: var(--accent-cyan);">FINSHIELD PARADIGM</span>
+          </div>
+          <p style="font-size: 1.05rem; font-weight: 700; color: var(--text-white); margin-bottom: 1rem; line-height: 1.4;">
+            “How can a bank responsibly understand <em>WHY</em> a customer is in distress, determine what they can sustainably afford, choose the safest intervention, and act early enough to prevent default?”
+          </p>
+          <ul class="pill-list">
+            <li class="pill-item">
+              <span class="pill-icon info">✔</span>
+              <div><strong>Root-Cause Clarity:</strong> Distinguish an expense spike from a debt overload or cash-flow timing mismatch.</div>
+            </li>
+            <li class="pill-item">
+              <span class="pill-icon info">✔</span>
+              <div><strong>Affordability Floor:</strong> Calculate true sustainable repayment capacity before presenting options.</div>
+            </li>
+            <li class="pill-item">
+              <span class="pill-icon info">✔</span>
+              <div><strong>Reversible Interventions:</strong> Prioritize low-friction fixes over heavy, irreversible debt restructuring.</div>
+            </li>
+          </ul>
+        </div>
+      </div>
+    </section>
+
+    <!-- =========================================================================
+         SLIDE 3: STRATEGIC POSITIONING (DIAGNOSIS BEFORE TREATMENT)
+         ========================================================================= -->
+    <section class="slide" id="slide-3" data-title="Positioning" data-notes="We must be very clear on positioning. FinShield is not a credit scorecard, not a customer service chatbot, not a loan upsell engine, and not a passive dashboard. Think of FinShield as a clinical physician for personal finance: diagnosis before treatment.">
+      <div class="slide-header">
+        <div class="slide-badge">Strategic Differentiator</div>
+        <h2 class="slide-title">Diagnosis Before Treatment: The FinShield Paradigm</h2>
+        <p class="slide-subtitle">We treat financial distress like clinical medicine — diagnose the specific condition before prescribing gentle, safe remedies.</p>
+      </div>
+      <div class="grid-2">
+        <div class="card border-coral">
+          <div class="card-title">
+            <span>WHAT FINSHIELD IS NOT</span>
+            <span class="tag" style="color: var(--accent-coral);">ANTI-PATTERNS</span>
+          </div>
+          <ul class="pill-list">
+            <li class="pill-item">
+              <span class="pill-icon danger">✕</span>
+              <div><strong>Not a Credit Risk Scorecard:</strong> Scorecards predict likelihood of default (PD) but cannot formulate a cure.</div>
+            </li>
+            <li class="pill-item">
+              <span class="pill-icon danger">✕</span>
+              <div><strong>Not a Generic Banking Chatbot:</strong> LLMs alone lack deterministic guardrails and mathematical capacity engines.</div>
+            </li>
+            <li class="pill-item">
+              <span class="pill-icon danger">✕</span>
+              <div><strong>Not a Loan Upseller:</strong> Pushing more credit on a distressed borrower creates predatory debt overhang.</div>
+            </li>
+            <li class="pill-item">
+              <span class="pill-icon danger">✕</span>
+              <div><strong>Not a Passive BI Dashboard:</strong> Doesn't just display charts; generates audited, actionable intervention pathways.</div>
+            </li>
+          </ul>
+        </div>
+
+        <div class="card border-teal">
+          <div class="card-title">
+            <span>WHAT FINSHIELD IS</span>
+            <span class="tag" style="color: var(--accent-teal);">CORE INNOVATION</span>
+          </div>
+          <ul class="pill-list">
+            <li class="pill-item">
+              <span class="pill-icon success">★</span>
+              <div><strong>Root-Cause Diagnostic Engine:</strong> Pinpoints the exact financial mechanism causing strain across 5 archetypes.</div>
+            </li>
+            <li class="pill-item">
+              <span class="pill-icon success">★</span>
+              <div><strong>Deterministic Affordability Math:</strong> Calculates non-negotiable living cost floors and sustainable payment capacity.</div>
+            </li>
+            <li class="pill-item">
+              <span class="pill-icon success">★</span>
+              <div><strong>Self-Rejecting Safety Filter:</strong> Automatically prunes options that increase long-term debt or customer friction.</div>
+            </li>
+            <li class="pill-item">
+              <span class="pill-icon success">★</span>
+              <div><strong>Explainable Agency & Consent:</strong> Transparent SHAP attribution + Claude LLM customer translation before execution.</div>
+            </li>
+          </ul>
+        </div>
+      </div>
+    </section>
+
+    <!-- =========================================================================
+         SLIDE 4: THE END-TO-END FLOW
+         ========================================================================= -->
+    <section class="slide" id="slide-4" data-title="Architecture Flow" data-notes="Here is the master architecture flow of FinShield. It operates in 6 sequential stages: from proactive telemetry detection, to XGBoost diagnosis, deterministic capacity calculations, safety pruning, customer consent, and dual-track execution.">
+      <div class="slide-header">
+        <div class="slide-badge">System Workflow</div>
+        <h2 class="slide-title">The FinShield End-to-End Decision Architecture</h2>
+        <p class="slide-subtitle">A closed-loop pipeline combining machine learning, deterministic financial rules, and strict human safety boundaries.</p>
+      </div>
+      <div class="grid-3" style="grid-template-rows: 1fr 1fr;">
+        <div class="card">
+          <div class="card-title" style="color: var(--accent-cyan);">01 • EARLY DISTRESS TRIGGER</div>
+          <p style="font-size: 0.85rem; color: var(--text-muted); line-height: 1.45;">Monitors high-frequency transactional telemetry (overdrafts, savings drawdown, cash-flow velocity) before missed payments occur.</p>
+        </div>
+        <div class="card">
+          <div class="card-title" style="color: var(--accent-blue);">02 • AI ROOT-CAUSE DIAGNOSIS</div>
+          <p style="font-size: 0.85rem; color: var(--text-muted); line-height: 1.45;">XGBoost classifies distress into 5 archetypes: Income Shock, Debt Overload, Cash-Flow Mismatch, Expense Shock, or Structural Distress.</p>
+        </div>
+        <div class="card">
+          <div class="card-title" style="color: var(--accent-teal);">03 • SUSTAINABLE CAPACITY</div>
+          <p style="font-size: 0.85rem; color: var(--text-muted); line-height: 1.45;">Deterministic formula: Income minus essential living cost floor and buffer to establish the exact maximum affordable monthly EMI.</p>
+        </div>
+        <div class="card">
+          <div class="card-title" style="color: var(--accent-amber);">04 • ELIGIBILITY & SAFETY FILTER</div>
+          <p style="font-size: 0.85rem; color: var(--text-muted); line-height: 1.45;">Hard safety constraints actively reject predatory or inappropriate options (e.g. debt consolidation rejected if debt-overloaded).</p>
+        </div>
+        <div class="card">
+          <div class="card-title" style="color: var(--accent-purple);">05 • EXPLAINABILITY & CONSENT</div>
+          <p style="font-size: 0.85rem; color: var(--text-muted); line-height: 1.45;">SHAP feature attribution + Claude LLM plain-English translation. Borrower reviews options, trade-offs, and grants explicit consent.</p>
+        </div>
+        <div class="card">
+          <div class="card-title" style="color: var(--accent-teal);">06 • SAFE DUAL-EXECUTION</div>
+          <p style="font-size: 0.85rem; color: var(--text-muted); line-height: 1.45;">Tier A low-risk reversible actions execute automatically; Tier B/C contractual modifications route to human hardship officers.</p>
+        </div>
+      </div>
+    </section>
+
+    <!-- =========================================================================
+         SLIDE 5: AI MODULES & SHAP EXPLORER
+         ========================================================================= -->
+    <section class="slide" id="slide-5" data-title="AI Engine" data-notes="Slide 5 dives into the technical AI components. Notice that AI is only applied where it adds real value. XGBoost handles multi-class classification, SHAP provides transparent local attributions, the Repayment Capacity Engine uses transparent math, and Claude is strictly a translation layer.">
+      <div class="slide-header">
+        <div class="slide-badge">Machine Learning & Explainability</div>
+        <h2 class="slide-title">Core AI Stack: Precision ML + Deterministic Math</h2>
+        <p class="slide-subtitle">Interactive inspect: Select a distress scenario below to view live SHAP feature attributions and capacity outputs.</p>
+      </div>
+      <div class="grid-2">
+        <!-- Left: 4 Modules Summary -->
+        <div style="display: flex; flex-direction: column; gap: 0.75rem;">
+          <div class="card" style="padding: 0.9rem 1.1rem;">
+            <div class="card-title" style="font-size: 0.95rem; color: var(--accent-cyan);">A. XGBoost Distress Classifier</div>
+            <p style="font-size: 0.82rem; color: var(--text-muted);">Predicts the root cause across 5 archetypes using financial time-series velocity and variance features.</p>
+          </div>
+          <div class="card" style="padding: 0.9rem 1.1rem;">
+            <div class="card-title" style="font-size: 0.95rem; color: var(--accent-blue);">B. SHAP TreeExplainer</div>
+            <p style="font-size: 0.82rem; color: var(--text-muted);">Computes local Shapley values for every decision — zero black-box predictions; full regulatory compliance.</p>
+          </div>
+          <div class="card" style="padding: 0.9rem 1.1rem;">
+            <div class="card-title" style="font-size: 0.95rem; color: var(--accent-teal);">C. Repayment Capacity Engine</div>
+            <p style="font-size: 0.82rem; color: var(--text-muted);">Deterministic, transparent formula. Calculates net income minus living cost floor and emergency buffer.</p>
+          </div>
+          <div class="card" style="padding: 0.9rem 1.1rem;">
+            <div class="card-title" style="font-size: 0.95rem; color: var(--accent-purple);">D. Claude LLM Layer</div>
+            <p style="font-size: 0.82rem; color: var(--text-muted);">Translates raw SHAP vectors into empathetic customer explanations. Zero decision-making authority.</p>
+          </div>
+        </div>
+
+        <!-- Right: Interactive SHAP Feature Inspector -->
+        <div class="card border-cyan">
+          <div class="card-title">
+            <span>LIVE SHAP FEATURE ATTRIBUTION</span>
+            <select id="archetype-select" onchange="updateShapDemo(this.value)" style="background: rgba(0,0,0,0.5); color: var(--accent-cyan); border: 1px solid var(--border-subtle); padding: 0.2rem 0.5rem; border-radius: 4px; font-family: var(--font-mono); font-size: 0.75rem; cursor: pointer;">
+              <option value="expense">Scenario: Expense Shock (Priya)</option>
+              <option value="timing">Scenario: Cash-Flow Mismatch</option>
+              <option value="debt">Scenario: Debt Overload</option>
+              <option value="income">Scenario: Income Shock</option>
+            </select>
+          </div>
+
+          <div id="shap-bars" style="margin-top: 0.75rem; flex: 1; display: flex; flex-direction: column; justify-content: center;">
+            <!-- Rendered by JS -->
+          </div>
+
+          <div style="background: rgba(0,0,0,0.3); padding: 0.75rem; border-radius: var(--radius-sm); margin-top: 0.75rem; font-size: 0.82rem; border-left: 3px solid var(--accent-cyan);">
+            <div style="font-weight: 700; color: var(--text-white);" id="shap-summary-title">Expense Shock Detected (85% Confidence)</div>
+            <div style="color: var(--text-muted);" id="shap-summary-desc">Driven by sudden +48% increase in non-discretionary medical bills and 60% savings depletion.</div>
+          </div>
+        </div>
+      </div>
+    </section>
+
+    <!-- =========================================================================
+         SLIDE 6: 7-LEVEL INTERVENTION LADDER
+         ========================================================================= -->
+    <section class="slide" id="slide-6" data-title="Intervention Ladder" data-notes="This is the 7-level intervention hierarchy. Crucially, interventions are ranked strictly by reversibility and long-term cost, rather than customer risk score alone. Level 2 timing fixes resolve a huge portion of distress with zero cost to the bank.">
+      <div class="slide-header">
+        <div class="slide-badge">Action Hierarchy</div>
+        <h2 class="slide-title">The 7-Level Intervention Ladder</h2>
+        <p class="slide-subtitle">Ordered strictly by intrusiveness and reversibility — preventing premature or aggressive contractual restructuring.</p>
+      </div>
+      <div class="ladder-container">
+        <div class="ladder-row" onclick="highlightLadder(this)">
+          <span class="ladder-badge" style="background: rgba(0,240,255,0.2); color: var(--accent-cyan);">L0</span>
+          <span class="ladder-title">MONITOR</span>
+          <span class="ladder-desc">Passive telemetry tracking when financial metrics are within safe variance limits. Zero customer contact.</span>
+          <span class="ladder-meta" style="color: var(--accent-cyan);">ZERO FRICTION</span>
+        </div>
+        <div class="ladder-row" onclick="highlightLadder(this)">
+          <span class="ladder-badge" style="background: rgba(0,240,255,0.2); color: var(--accent-cyan);">L1</span>
+          <span class="ladder-title">INFORM</span>
+          <span class="ladder-desc">Actionable spending alerts, obligation calendar sync, proactive financial coaching tips.</span>
+          <span class="ladder-meta" style="color: var(--accent-cyan);">INFORMATIONAL</span>
+        </div>
+        <div class="ladder-row active" onclick="highlightLadder(this)">
+          <span class="ladder-badge" style="background: rgba(16,185,129,0.2); color: var(--accent-teal);">L2</span>
+          <span class="ladder-title">TIMING FIX</span>
+          <span class="ladder-desc">Align EMI dates with actual payroll deposit, autopay re-timing, fee/overdraft relief waivers.</span>
+          <span class="ladder-meta" style="color: var(--accent-teal);">100% REVERSIBLE</span>
+        </div>
+        <div class="ladder-row" onclick="highlightLadder(this)">
+          <span class="ladder-badge" style="background: rgba(16,185,129,0.2); color: var(--accent-teal);">L3</span>
+          <span class="ladder-title">REPAYMENT PLAN</span>
+          <span class="ladder-desc">Personalized 3-6 month catch-up schedule with stabilized, budget-friendly installments.</span>
+          <span class="ladder-meta" style="color: var(--accent-teal);">AFFORDABLE</span>
+        </div>
+        <div class="ladder-row" onclick="highlightLadder(this)">
+          <span class="ladder-badge" style="background: rgba(245,158,11,0.2); color: var(--accent-amber);">L4</span>
+          <span class="ladder-title">TEMPORARY RELIEF</span>
+          <span class="ladder-desc">1-3 month payment moratorium, interest freeze, or temporary reduction to capacity floor.</span>
+          <span class="ladder-meta" style="color: var(--accent-amber);">SHORT-TERM</span>
+        </div>
+        <div class="ladder-row" onclick="highlightLadder(this)">
+          <span class="ladder-badge" style="background: rgba(245,158,11,0.2); color: var(--accent-amber);">L5</span>
+          <span class="ladder-title">FORMAL SUPPORT</span>
+          <span class="ladder-desc">Tenor extension, structured loan restructuring, contractual interest rate reduction.</span>
+          <span class="ladder-meta" style="color: var(--accent-amber);">CONTRACTUAL</span>
+        </div>
+        <div class="ladder-row" onclick="highlightLadder(this)">
+          <span class="ladder-badge" style="background: rgba(244,63,94,0.2); color: var(--accent-coral);">L6</span>
+          <span class="ladder-title">HUMAN ESCALATION</span>
+          <span class="ladder-desc">Hardship team review for highly complex, vulnerable, or disputed borrower situations.</span>
+          <span class="ladder-meta" style="color: var(--accent-coral);">HUMAN JUDGMENT</span>
+        </div>
+      </div>
+    </section>
+
+    <!-- =========================================================================
+         SLIDE 7: RESPONSIBLE AI BOUNDARY
+         ========================================================================= -->
+    <section class="slide" id="slide-7" data-title="Responsible AI" data-notes="Responsible AI is not just a marketing bullet point. It is strictly engineered into our execution architecture. We divided actions into 3 unambiguous tiers: Tier A is automated only after consent; Tier B requires human loan officer approval; Tier C completely forbids AI involvement.">
+      <div class="slide-header">
+        <div class="slide-badge">Governance & Ethics</div>
+        <h2 class="slide-title">Responsible AI: Strict Automation Boundaries</h2>
+        <p class="slide-subtitle">Hardcoded architectural guardrails dictate what AI can automate versus what requires human authority.</p>
+      </div>
+      <div class="grid-3">
+        <!-- Tier A -->
+        <div class="card border-teal">
+          <div class="card-title">
+            <span style="color: var(--accent-teal);">TIER A • AUTO AFTER CONSENT</span>
+          </div>
+          <p style="font-size: 0.78rem; color: var(--text-dim); margin-bottom: 0.75rem; font-family: var(--font-mono);">LOW-RISK • 100% REVERSIBLE</p>
+          <ul class="pill-list">
+            <li class="pill-item">
+              <span class="pill-icon success">✔</span>
+              <div>Root-cause distress diagnosis</div>
+            </li>
+            <li class="pill-item">
+              <span class="pill-icon success">✔</span>
+              <div>Sustainable capacity calculation</div>
+            </li>
+            <li class="pill-item">
+              <span class="pill-icon success">✔</span>
+              <div>Payment due date alignment</div>
+            </li>
+            <li class="pill-item">
+              <span class="pill-icon success">✔</span>
+              <div>Policy-capped late fee waivers</div>
+            </li>
+            <li class="pill-item">
+              <span class="pill-icon success">✔</span>
+              <div>Budget insights & reminders</div>
+            </li>
+          </ul>
+        </div>
+
+        <!-- Tier B -->
+        <div class="card border-amber">
+          <div class="card-title">
+            <span style="color: var(--accent-amber);">TIER B • AI PREPARES, HUMAN APPROVES</span>
+          </div>
+          <p style="font-size: 0.78rem; color: var(--text-dim); margin-bottom: 0.75rem; font-family: var(--font-mono);">MODERATE IMPACT • OFFICER SIGN-OFF</p>
+          <ul class="pill-list">
+            <li class="pill-item">
+              <span class="pill-icon warning">⚡</span>
+              <div>Temporary payment reduction (1-3 mo)</div>
+            </li>
+            <li class="pill-item">
+              <span class="pill-icon warning">⚡</span>
+              <div>Grace period activations</div>
+            </li>
+            <li class="pill-item">
+              <span class="pill-icon warning">⚡</span>
+              <div>Loan tenor extension packaging</div>
+            </li>
+            <li class="pill-item">
+              <span class="pill-icon warning">⚡</span>
+              <div>Interest concession proposals</div>
+            </li>
+            <li class="pill-item">
+              <span class="pill-icon warning">⚡</span>
+              <div>Hardship officer case dossier prep</div>
+            </li>
+          </ul>
+        </div>
+
+        <!-- Tier C -->
+        <div class="card border-coral">
+          <div class="card-title">
+            <span style="color: var(--accent-coral);">TIER C • HUMAN ONLY (NO AI)</span>
+          </div>
+          <p style="font-size: 0.78rem; color: var(--text-dim); margin-bottom: 0.75rem; font-family: var(--font-mono);">HIGH IMPACT • AI STRICTLY FORBIDDEN</p>
+          <ul class="pill-list">
+            <li class="pill-item">
+              <span class="pill-icon danger">✕</span>
+              <div>Denying financial services</div>
+            </li>
+            <li class="pill-item">
+              <span class="pill-icon danger">✕</span>
+              <div>Involuntary loan restructuring</div>
+            </li>
+            <li class="pill-item">
+              <span class="pill-icon danger">✕</span>
+              <div>Reporting to credit bureaus</div>
+            </li>
+            <li class="pill-item">
+              <span class="pill-icon danger">✕</span>
+              <div>Forcing intervention onto borrower</div>
+            </li>
+            <li class="pill-item">
+              <span class="pill-icon danger">✕</span>
+              <div>Legal enforcement or foreclosure</div>
+            </li>
+          </ul>
+        </div>
+      </div>
+    </section>
+
+    <!-- =========================================================================
+         SLIDE 8: WOW DEMO — SELF-REJECTING SAFETY FILTER
+         ========================================================================= -->
+    <section class="slide" id="slide-8" data-title="Safety Filter Demo" data-notes="This is our biggest 'WOW' differentiator. FinShield doesn't just recommend interventions; it actively rejects its own unsafe recommendations. When a debt-overloaded customer is evaluated, standard bank systems often push debt consolidation. FinShield detects excessive DTI, rejects consolidation, audits the rejection, and serves a safer payment reduction bundle.">
+      <div class="slide-header">
+        <div class="slide-badge">The 'WOW' Innovation</div>
+        <h2 class="slide-title">Safety in Action: Rejecting Unsafe Recommendations</h2>
+        <p class="slide-subtitle">FinShield doesn't just generate recommendations — it actively audits and rejects dangerous options.</p>
+      </div>
+      <div class="grid-2">
+        <!-- Rejection Box -->
+        <div class="rejection-box">
+          <div class="rejection-header">
+            <span>PROPOSED: DEBT CONSOLIDATION</span>
+            <span style="font-family: var(--font-mono); font-size: 0.75rem; background: rgba(244,63,94,0.2); padding: 0.2rem 0.5rem; border-radius: 4px;">SAFETY VIOLATION</span>
+          </div>
+          <div style="font-size: 1.1rem; font-weight: 800; color: var(--accent-coral);">
+            ❌ UNSAFE INTERVENTION REJECTED
+          </div>
+          <div style="font-size: 0.85rem; color: var(--text-primary); line-height: 1.5;">
+            <strong>Triggered Hard Constraint:</strong> Rule SC-402 (Anti-Debt Escalation).<br>
+            <strong>Customer State:</strong> Debt Overload Archetype (DTI = 72%, Liquid Savings = 0.4 mos).<br>
+            <strong>Safety Audit Finding:</strong> Consolidation would increase lifetime interest burden by ₹84,000 without fixing structural cash deficit.
+          </div>
+          <div style="background: rgba(0,0,0,0.3); padding: 0.6rem; border-radius: var(--radius-sm); font-family: var(--font-mono); font-size: 0.75rem; color: var(--text-muted);">
+            [AUDIT_LOG_0842] Candidate 'Debt_Consolidation_V2' pruned with reason: 'EXCESSIVE_DEBT_RISK_ESCALATION'.
+          </div>
+        </div>
+
+        <!-- Safe Alternative -->
+        <div class="approved-box">
+          <div class="card-title" style="color: var(--accent-teal); margin-bottom: 0.25rem;">
+            <span>APPROVED & RANKED ALTERNATIVE</span>
+            <span style="font-family: var(--font-mono); font-size: 0.75rem; background: rgba(16,185,129,0.2); padding: 0.2rem 0.5rem; border-radius: 4px; color: var(--accent-teal);">SAFETY SCORE: 96/100</span>
+          </div>
+          <div style="font-size: 1.1rem; font-weight: 800; color: var(--accent-teal);">
+            ✔ 2-STEP RECOVERY BUNDLE
+          </div>
+          <ul class="pill-list" style="margin-top: 0.5rem;">
+            <li class="pill-item">
+              <span class="pill-icon info">1</span>
+              <div><strong>Level 2 Timing Sync:</strong> Move EMI due date from 1st to 7th (post-salary credit). Stops recurring ₹500 overdraft fees.</div>
+            </li>
+            <li class="pill-item">
+              <span class="pill-icon info">2</span>
+              <div><strong>Level 4 Temporary Reduction:</strong> Lower monthly EMI from ₹25,000 to sustainable capacity floor of ₹15,000 for 3 months.</div>
+            </li>
+            <li class="pill-item">
+              <span class="pill-icon success">★</span>
+              <div><strong>Net Result:</strong> Instant liquidity relief without taking on a single rupee of additional debt burden.</div>
+            </li>
+          </ul>
+        </div>
+      </div>
+    </section>
+
+    <!-- =========================================================================
+         SLIDE 9: CUSTOMER EXPERIENCE JOURNEY (PRIYA)
+         ========================================================================= -->
+    <section class="slide" id="slide-9" data-title="Customer Journey" data-notes="Let's walk through the borrower experience with Priya, a 34-year-old earning 60k/month who had an unexpected expense shock. FinShield reaches out proactively with empathy, shows her true affordability math, gives her clear choices with trade-offs, and tracks her recovery.">
+      <div class="slide-header">
+        <div class="slide-badge">User Experience</div>
+        <h2 class="slide-title">Customer Journey: Priya (Age 34)</h2>
+        <p class="slide-subtitle">Income: ₹60,000/mo | Existing EMI: ₹25,000/mo | Recent Event: Sudden medical expense shock.</p>
+      </div>
+      <div class="grid-4">
+        <!-- Step 1 -->
+        <div class="card">
+          <div class="card-title" style="font-size: 0.95rem; color: var(--accent-cyan);">1. PROACTIVE ALERT</div>
+          <p style="font-size: 0.78rem; color: var(--text-dim); margin-bottom: 0.5rem; font-family: var(--font-mono);">EMPATHETIC REACH</p>
+          <div style="background: rgba(0,0,0,0.3); padding: 0.6rem; border-radius: var(--radius-sm); font-size: 0.8rem; color: var(--text-primary); line-height: 1.4; border-left: 3px solid var(--accent-cyan);">
+            “Hi Priya, we noticed an unexpected medical expense spike this month. Let’s keep your finances stress-free before your next EMI.”
+          </div>
+          <p style="font-size: 0.8rem; color: var(--text-muted); margin-top: 0.5rem;">Zero threatening collections language or negative credit flags.</p>
+        </div>
+
+        <!-- Step 2 -->
+        <div class="card">
+          <div class="card-title" style="font-size: 0.95rem; color: var(--accent-blue);">2. DIAGNOSIS & MATH</div>
+          <p style="font-size: 0.78rem; color: var(--text-dim); margin-bottom: 0.5rem; font-family: var(--font-mono);">CLEAR DIAGNOSTICS</p>
+          <div style="font-size: 0.82rem; color: var(--text-primary); line-height: 1.45;">
+            • <strong>Cause:</strong> Expense Shock (85%)<br>
+            • <strong>Current EMI:</strong> ₹25,000/mo<br>
+            • <strong>Sustainable Floor:</strong> <span style="color: var(--accent-cyan); font-weight: 700;">₹15,000/mo</span><br>
+            • Transparent living cost floor shown.
+          </div>
+        </div>
+
+        <!-- Step 3 -->
+        <div class="card border-teal">
+          <div class="card-title" style="font-size: 0.95rem; color: var(--accent-teal);">3. TAILORED CHOICE</div>
+          <p style="font-size: 0.78rem; color: var(--text-dim); margin-bottom: 0.5rem; font-family: var(--font-mono);">BORROWER AGENCY</p>
+          <div style="font-size: 0.8rem; color: var(--text-primary); line-height: 1.45;">
+            <strong>Plan A (Recommended):</strong> Date shift + 3-mo ₹10k EMI reduction.<br><br>
+            <strong>Plan B:</strong> 60-day principal pause.<br><br>
+            <strong>Plan C:</strong> Connect with Hardship Officer.
+          </div>
+        </div>
+
+        <!-- Step 4 -->
+        <div class="card">
+          <div class="card-title" style="font-size: 0.95rem; color: var(--accent-purple);">4. CONSENT & RECOVERY</div>
+          <p style="font-size: 0.78rem; color: var(--text-dim); margin-bottom: 0.5rem; font-family: var(--font-mono);">DYNAMIC TRACKER</p>
+          <div style="font-size: 0.8rem; color: var(--text-primary); line-height: 1.45;">
+            Priya taps 'Accept Plan A'.<br>
+            Tier A date change activates instantly.<br>
+            Tier B reduction approved by officer in 45 mins.<br>
+            Real-time recovery tracking begins.
+          </div>
+        </div>
+      </div>
+    </section>
+
+    <!-- =========================================================================
+         SLIDE 10: BANK OPS & WHAT-IF SIMULATOR
+         ========================================================================= -->
+    <section class="slide" id="slide-10" data-title="Bank Console & Sim" data-notes="Slide 10 showcases the bank operations console and What-If simulator. Credit officers can triage the distressed portfolio in real time. Try adjusting the sliders in our live simulator to see how sustainable capacity and financial stress update dynamically.">
+      <div class="slide-header">
+        <div class="slide-badge">Operations & Simulation</div>
+        <h2 class="slide-title">Bank Operations Console & What-If Stress Simulator</h2>
+        <p class="slide-subtitle">Live interactive simulator: Adjust parameters to project sustainable capacity and stress reduction.</p>
+      </div>
+      <div class="grid-2">
+        <!-- Left: Operations Console Capabilities -->
+        <div class="card">
+          <div class="card-title" style="color: var(--accent-cyan);">PORTFOLIO OPERATIONS CAPABILITIES</div>
+          <ul class="pill-list" style="margin-top: 0.5rem;">
+            <li class="pill-item">
+              <span class="pill-icon info">✔</span>
+              <div><strong>Distress Queue Triage:</strong> Groups flagged accounts by root cause (Expense Shock, Timing, etc.) rather than simplistic risk scores.</div>
+            </li>
+            <li class="pill-item">
+              <span class="pill-icon info">✔</span>
+              <div><strong>Automated vs Officer Queues:</strong> Tier A self-resolves; Tier B packaged dossiers queued for 1-click officer review.</div>
+            </li>
+            <li class="pill-item">
+              <span class="pill-icon info">✔</span>
+              <div><strong>Audit & Fair Lending Logs:</strong> Complete immutable audit trail capturing why options were recommended or rejected.</div>
+            </li>
+            <li class="pill-item">
+              <span class="pill-icon info">✔</span>
+              <div><strong>Dynamic Recovery Telemetry:</strong> Monitors post-intervention health and flags early recidivism triggers.</div>
+            </li>
+          </ul>
+        </div>
+
+        <!-- Right: Interactive What-If Simulator -->
+        <div class="sim-card border-teal">
+          <div class="card-title" style="color: var(--accent-teal);">
+            <span>WHAT-IF INTERVENTION SIMULATOR</span>
+            <span class="tag" style="color: var(--accent-teal);">LIVE ENGINE</span>
+          </div>
+
+          <div class="slider-group">
+            <div class="slider-header">
+              <span>Monthly Net Income:</span>
+              <span class="val" id="income-val">₹60,000</span>
+            </div>
+            <input type="range" id="income-slider" min="30000" max="150000" step="5000" value="60000" oninput="runSimulation()">
+          </div>
+
+          <div class="slider-group">
+            <div class="slider-header">
+              <span>Current Monthly Obligations (EMI):</span>
+              <span class="val" id="emi-val">₹25,000</span>
+            </div>
+            <input type="range" id="emi-slider" min="10000" max="80000" step="2500" value="25000" oninput="runSimulation()">
+          </div>
+
+          <div class="slider-group">
+            <div class="slider-header">
+              <span>Simulated Relief Reduction:</span>
+              <span class="val" id="relief-val">₹10,000 / mo</span>
+            </div>
+            <input type="range" id="relief-slider" min="0" max="20000" step="1000" value="10000" oninput="runSimulation()">
+          </div>
+
+          <div class="gauge-container">
+            <div class="gauge-item">
+              <div class="gauge-val" id="res-capacity" style="color: var(--accent-cyan);">₹15,000</div>
+              <div class="gauge-label">Sustainable Capacity</div>
+            </div>
+            <div class="gauge-item">
+              <div class="gauge-val" id="res-stress" style="color: var(--accent-teal);">34%</div>
+              <div class="gauge-label">Projected Stress</div>
+            </div>
+            <div class="gauge-item">
+              <div class="gauge-val" id="res-buffer" style="color: var(--accent-teal);">+₹1,500</div>
+              <div class="gauge-label">Monthly Buffer</div>
+            </div>
+          </div>
+
+          <p style="font-size: 0.7rem; color: var(--text-dim); margin-top: 0.75rem; text-align: center;">
+            ⚠ <strong>TRANSPARENCY DISCLAIMER:</strong> SIMULATED ESTIMATE — NOT A GUARANTEED OUTCOME. Projections are rule-based feasibility estimates, not causal guarantees.
+          </p>
+        </div>
+      </div>
+    </section>
+
+    <!-- =========================================================================
+         SLIDE 11: TECHNICAL STACK & DATASET TRANSPARENCY
+         ========================================================================= -->
+    <section class="slide" id="slide-11" data-title="Tech Stack & Data" data-notes="Slide 11 outlines our technical architecture and data methodology. We built a production-ready stack with React, FastAPI, XGBoost, SHAP, and Claude 3.5. Crucially, in the spirit of scientific integrity, we explicitly disclaim that our hackathon prototype is validated on high-fidelity synthetic financial time-series data.">
+      <div class="slide-header">
+        <div class="slide-badge">Engineering & Integrity</div>
+        <h2 class="slide-title">Technical Architecture & Dataset Transparency</h2>
+        <p class="slide-subtitle">A high-performance, modular fintech architecture with complete scientific transparency.</p>
+      </div>
+      <div class="grid-2">
+        <div style="display: flex; flex-direction: column; gap: 0.75rem;">
+          <div class="card" style="padding: 0.9rem 1.1rem;">
+            <div class="card-title" style="font-size: 0.95rem; color: var(--accent-blue);">Frontend & UI</div>
+            <p style="font-size: 0.85rem; color: var(--text-white); font-weight: 600;">React 19 • TailwindCSS • Recharts • Lucide</p>
+            <p style="font-size: 0.8rem; color: var(--text-muted); margin-top: 0.2rem;">Responsive mobile customer portal + comprehensive credit officer operations console.</p>
+          </div>
+          <div class="card" style="padding: 0.9rem 1.1rem;">
+            <div class="card-title" style="font-size: 0.95rem; color: var(--accent-cyan);">Backend & Microservices</div>
+            <p style="font-size: 0.85rem; color: var(--text-white); font-weight: 600;">FastAPI • Python 3.13 • Pydantic v2 • PostgreSQL</p>
+            <p style="font-size: 0.8rem; color: var(--text-muted); margin-top: 0.2rem;">Sub-50ms rule evaluation, deterministic capacity math engine, and immutable audit event logs.</p>
+          </div>
+        </div>
+
+        <div style="display: flex; flex-direction: column; gap: 0.75rem;">
+          <div class="card" style="padding: 0.9rem 1.1rem;">
+            <div class="card-title" style="font-size: 0.95rem; color: var(--accent-teal);">Machine Learning & XAI</div>
+            <p style="font-size: 0.85rem; color: var(--text-white); font-weight: 600;">XGBoost • SHAP TreeExplainer • Scikit-Learn</p>
+            <p style="font-size: 0.8rem; color: var(--text-muted); margin-top: 0.2rem;">Multi-class distress classification on financial time-series velocity and variance features.</p>
+          </div>
+          <div class="card" style="padding: 0.9rem 1.1rem;">
+            <div class="card-title" style="font-size: 0.95rem; color: var(--accent-purple);">Natural Language Layer</div>
+            <p style="font-size: 0.85rem; color: var(--text-white); font-weight: 600;">Claude 3.5 Sonnet API</p>
+            <p style="font-size: 0.8rem; color: var(--text-muted); margin-top: 0.2rem;">Translates structured AI diagnostics and financial math into empathetic customer advice.</p>
+          </div>
+        </div>
+      </div>
+
+      <div class="card border-amber" style="margin-top: 1rem; padding: 0.85rem 1.25rem;">
+        <div style="font-size: 0.85rem; color: var(--accent-amber); font-weight: 700; margin-bottom: 0.25rem;">
+          ★ SYNTHETIC DATASET TRANSPARENCY STATEMENT
+        </div>
+        <div style="font-size: 0.8rem; color: var(--text-muted); line-height: 1.45;">
+          Our hackathon prototype is validated on a rigorously engineered synthetic dataset modeling 10,000 customer accounts across the 5 distress archetypes with realistic cash-flow, expense, and repayment volatility. <em>We do not claim validation on proprietary live bank production data.</em>
+        </div>
+      </div>
+    </section>
+
+    <!-- =========================================================================
+         SLIDE 12: QUALITATIVE IMPACT & CLOSING VISION
+         ========================================================================= -->
+    <section class="slide" id="slide-12" data-title="Impact & Vision" data-notes="In conclusion, FinShield fundamentally transforms the banking paradigm from punitive 'Detect, Collect, Escalate' to proactive 'Diagnose, Intervene, Recover'. AI does not replace human judgment; it empowers responsible, personalized financial care. Thank you.">
+      <div class="slide-header">
+        <div class="slide-badge">Strategic Impact & Vision</div>
+        <h2 class="slide-title">Don't Wait for Default to Act.</h2>
+        <p class="slide-subtitle">Transforming banking from late, punitive collections into proactive, sustainable recovery.</p>
+      </div>
+      <div class="grid-2">
+        <div class="card border-cyan">
+          <div class="card-title" style="color: var(--accent-cyan);">QUALITATIVE IMPACT VALUE</div>
+          <ul class="pill-list">
+            <li class="pill-item">
+              <span class="pill-icon success">✔</span>
+              <div><strong>For Borrowers:</strong> Early proactive support, sustainable monthly affordability, preserved dignity, and avoidance of damaging debt spirals.</div>
+            </li>
+            <li class="pill-item">
+              <span class="pill-icon success">✔</span>
+              <div><strong>For Financial Institutions:</strong> Substantially higher cure rates, 60% reduction in manual hardship triage time, and automated audit compliance.</div>
+            </li>
+            <li class="pill-item">
+              <span class="pill-icon success">✔</span>
+              <div><strong>For Society & Regulators:</strong> Fair lending compliance, transparent explainable AI, and sustained financial inclusion.</div>
+            </li>
+          </ul>
+        </div>
+
+        <div class="card border-teal">
+          <div class="card-title" style="color: var(--accent-teal);">THE OPERATIONAL PARADIGM SHIFT</div>
+          <div style="margin-bottom: 1rem; padding: 0.75rem; background: rgba(244,63,94,0.1); border-radius: var(--radius-sm); border-left: 3px solid var(--accent-coral);">
+            <div style="font-size: 0.75rem; font-family: var(--font-mono); color: var(--accent-coral); font-weight: 700;">TRADITIONAL WORKFLOW</div>
+            <div style="font-size: 0.95rem; font-weight: 700; color: var(--text-white); margin-top: 0.2rem;">Detect (Late)  ➔  Collect (Aggressive)  ➔  Escalate (Loss)</div>
+          </div>
+          <div style="padding: 0.75rem; background: rgba(16,185,129,0.1); border-radius: var(--radius-sm); border-left: 3px solid var(--accent-teal);">
+            <div style="font-size: 0.75rem; font-family: var(--font-mono); color: var(--accent-teal); font-weight: 700;">FINSHIELD WORKFLOW</div>
+            <div style="font-size: 0.95rem; font-weight: 700; color: var(--text-white); margin-top: 0.2rem;">Diagnose (Early)  ➔  Intervene (Safely)  ➔  Recover (Sustainable)</div>
+          </div>
+        </div>
+      </div>
+
+      <div class="card" style="margin-top: 1rem; text-align: center; border-color: var(--accent-blue); background: linear-gradient(135deg, rgba(58,134,255,0.15) 0%, rgba(0,240,255,0.08) 100%);">
+        <p style="font-size: 1.2rem; font-weight: 800; color: var(--text-white); line-height: 1.35;">
+          “AI doesn't replace human judgment. It makes responsible intervention faster, safer, and more personalized.”
+        </p>
+        <p style="font-family: var(--font-mono); font-size: 0.8rem; color: var(--accent-cyan); font-weight: 700; margin-top: 0.4rem;">
+          FINSHIELD  |  HACKATHON PRESENTATION
+        </p>
+      </div>
+    </section>
+
+  </main>
+
+  <!-- NAVIGATION BAR -->
+  <nav id="nav-bar">
+    <button class="nav-btn" onclick="prevSlide()" title="Previous Slide [←]">
+      <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5"><polyline points="15 18 9 12 15 6"/></svg>
+      Prev
+    </button>
+    <div class="slide-counter" id="slide-num">01 / 12</div>
+    <button class="nav-btn" onclick="nextSlide()" title="Next Slide [→]">
+      Next
+      <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5"><polyline points="9 18 15 12 9 6"/></svg>
+    </button>
+    
+    <button class="nav-btn" onclick="toggleGrid()" title="Slide Overview Grid [G]">
+      <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><rect x="3" y="3" width="7" height="7"/><rect x="14" y="3" width="7" height="7"/><rect x="14" y="14" width="7" height="7"/><rect x="3" y="14" width="7" height="7"/></svg>
+      Grid <span class="key-hint">G</span>
+    </button>
+
+    <button class="nav-btn" onclick="toggleNotes()" title="Speaker Notes [P]">
+      <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M21 15a2 2 0 0 1-2 2H7l-4 4V5a2 2 0 0 1 2-2h14a2 2 0 0 1 2 2z"/></svg>
+      Notes <span class="key-hint">P</span>
+    </button>
+
+    <button class="nav-btn" onclick="toggleTheme()" title="Toggle Light/Dark Theme [T]">
+      <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><circle cx="12" cy="12" r="5"/><line x1="12" y1="1" x2="12" y2="3"/><line x1="12" y1="21" x2="12" y2="23"/><line x1="4.22" y1="4.22" x2="5.64" y2="5.64"/><line x1="18.36" y1="18.36" x2="19.78" y2="19.78"/><line x1="1" y1="12" x2="3" y2="12"/><line x1="21" y1="12" x2="23" y2="12"/><line x1="4.22" y1="19.78" x2="5.64" y2="18.36"/><line x1="18.36" y1="5.64" x2="19.78" y2="4.22"/></svg>
+      <span class="key-hint">T</span>
+    </button>
+
+    <button class="nav-btn" onclick="window.print()" title="Print / Export to PDF">
+      <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><polyline points="6 9 6 2 18 2 18 9"/><path d="M6 18H4a2 2 0 0 1-2-2v-5a2 2 0 0 1 2-2h16a2 2 0 0 1 2 2v5a2 2 0 0 1-2 2h-2"/><rect x="6" y="14" width="12" height="8"/></svg>
+      PDF
+    </button>
+
+    <button class="nav-btn" onclick="toggleFullscreen()" title="Fullscreen Mode [F]">
+      <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M8 3H5a2 2 0 0 0-2 2v3m18 0V5a2 2 0 0 0-2-2h-3m0 18h3a2 2 0 0 0 2-2v-3M3 16v3a2 2 0 0 0 2 2h3"/></svg>
+      <span class="key-hint">F</span>
+    </button>
+  </nav>
+
+  <!-- SPEAKER NOTES DRAWER -->
+  <aside id="notes-drawer">
+    <h4>
+      <span>SPEAKER NOTES</span>
+      <span style="cursor: pointer;" onclick="toggleNotes()">✕</span>
+    </h4>
+    <p id="notes-content">Notes for current slide...</p>
+  </aside>
+
+  <!-- GRID OVERVIEW MODAL -->
+  <div id="grid-modal" onclick="if(event.target === this) toggleGrid()">
+    <div class="grid-overview-content" id="grid-content">
+      <!-- Injected by JS -->
+    </div>
+  </div>
+
+  <script>
+    /* -------------------------------------------------------------
+       PRESENTATION DECK CONTROLLER JAVASCRIPT
+       ------------------------------------------------------------- */
+    let currentSlide = 1;
+    const slides = document.querySelectorAll('.slide');
+    const totalSlides = slides.length;
+    const slideNumDisplay = document.getElementById('slide-num');
+    const notesContent = document.getElementById('notes-content');
+    const notesDrawer = document.getElementById('notes-drawer');
+    const gridModal = document.getElementById('grid-modal');
+    const gridContent = document.getElementById('grid-content');
+
+    // Build Grid Modal content
+    slides.forEach((s, idx) => {
+      const card = document.createElement('div');
+      card.className = 'grid-card';
+      card.innerHTML = `
+        <div class="grid-card-num">SLIDE ${String(idx + 1).padStart(2, '0')}</div>
+        <div class="grid-card-title">${s.getAttribute('data-title') || 'Slide ' + (idx + 1)}</div>
+      `;
+      card.onclick = () => {
+        goToSlide(idx + 1);
+        toggleGrid();
+      };
+      gridContent.appendChild(card);
+    });
+
+    function updateSlide() {
+      slides.forEach((slide, idx) => {
+        if (idx + 1 === currentSlide) {
+          slide.classList.add('active');
+          slideNumDisplay.textContent = `${String(currentSlide).padStart(2, '0')} / ${String(totalSlides).padStart(2, '0')}`;
+          notesContent.textContent = slide.getAttribute('data-notes') || 'No speaker notes for this slide.';
+        } else {
+          slide.classList.remove('active');
+        }
+      });
+    }
+
+    function nextSlide() {
+      if (currentSlide < totalSlides) {
+        currentSlide++;
+        updateSlide();
+      }
+    }
+
+    function prevSlide() {
+      if (currentSlide > 1) {
+        currentSlide--;
+        updateSlide();
+      }
+    }
+
+    function goToSlide(n) {
+      if (n >= 1 && n <= totalSlides) {
+        currentSlide = n;
+        updateSlide();
+      }
+    }
+
+    function toggleNotes() {
+      notesDrawer.classList.toggle('open');
+    }
+
+    function toggleGrid() {
+      gridModal.classList.toggle('open');
+    }
+
+    function toggleTheme() {
+      document.body.classList.toggle('light-theme');
+    }
+
+    function toggleFullscreen() {
+      if (!document.fullscreenElement) {
+        document.documentElement.requestFullscreen().catch(() => {});
+      } else {
+        if (document.exitFullscreen) document.exitFullscreen();
+      }
+    }
+
+    // Keyboard navigation
+    window.addEventListener('keydown', (e) => {
+      if (e.target.tagName === 'INPUT' || e.target.tagName === 'SELECT') return;
+      
+      switch(e.key) {
+        case 'ArrowRight':
+        case 'PageDown':
+        case ' ':
+          e.preventDefault();
+          nextSlide();
+          break;
+        case 'ArrowLeft':
+        case 'PageUp':
+          e.preventDefault();
+          prevSlide();
+          break;
+        case 'Home':
+          e.preventDefault();
+          goToSlide(1);
+          break;
+        case 'End':
+          e.preventDefault();
+          goToSlide(totalSlides);
+          break;
+        case 'p':
+        case 'P':
+          toggleNotes();
+          break;
+        case 'g':
+        case 'G':
+          toggleGrid();
+          break;
+        case 'f':
+        case 'F':
+          toggleFullscreen();
+          break;
+        case 't':
+        case 'T':
+          toggleTheme();
+          break;
+        case 'Escape':
+          gridModal.classList.remove('open');
+          notesDrawer.classList.remove('open');
+          break;
+      }
+    });
+
+    /* -------------------------------------------------------------
+       INTERACTIVE SHAP ENGINE (SLIDE 5)
+       ------------------------------------------------------------- */
+    const shapScenarios = {
+      expense: {
+        title: "Expense Shock Detected (85% Confidence)",
+        desc: "Driven by sudden +48% increase in non-discretionary medical bills and 60% liquid savings depletion.",
+        features: [
+          { name: "essential_exp_spike", val: "+0.48", pct: 88, color: "var(--accent-coral)" },
+          { name: "savings_depletion_rate", val: "+0.32", pct: 64, color: "var(--accent-coral)" },
+          { name: "overdraft_frequency", val: "+0.15", pct: 30, color: "var(--accent-amber)" },
+          { name: "income_stability", val: "-0.18", pct: 36, color: "var(--accent-teal)" }
+        ]
+      },
+      timing: {
+        title: "Cash-Flow Timing Mismatch (91% Confidence)",
+        desc: "Caused by salary disbursement date shifting to 5th while EMI autopay remained scheduled on 1st.",
+        features: [
+          { name: "pay_cycle_lag_days", val: "+0.62", pct: 92, color: "var(--accent-coral)" },
+          { name: "overdraft_cycle_sync", val: "+0.38", pct: 70, color: "var(--accent-amber)" },
+          { name: "overall_savings_buffer", val: "-0.24", pct: 45, color: "var(--accent-teal)" },
+          { name: "debt_to_income_ratio", val: "-0.30", pct: 55, color: "var(--accent-teal)" }
+        ]
+      },
+      debt: {
+        title: "Debt Overload Distress (89% Confidence)",
+        desc: "High multiple concurrent loans with DTI exceeding 72% and compounding credit card revolving balances.",
+        features: [
+          { name: "dti_excess_ratio", val: "+0.71", pct: 95, color: "var(--accent-coral)" },
+          { name: "revolving_credit_util", val: "+0.54", pct: 80, color: "var(--accent-coral)" },
+          { name: "min_payment_only_flag", val: "+0.28", pct: 50, color: "var(--accent-amber)" },
+          { name: "income_stability", val: "-0.05", pct: 15, color: "var(--accent-teal)" }
+        ]
+      },
+      income: {
+        title: "Income Shock Detected (82% Confidence)",
+        desc: "Net monthly payroll receipts dropped by 40% due to loss of variable incentives/overtime.",
+        features: [
+          { name: "payroll_credit_drop", val: "+0.68", pct: 90, color: "var(--accent-coral)" },
+          { name: "discretionary_spend_cut", val: "+0.41", pct: 75, color: "var(--accent-amber)" },
+          { name: "essential_burn_rate", val: "+0.22", pct: 40, color: "var(--accent-amber)" },
+          { name: "prior_credit_score", val: "-0.12", pct: 24, color: "var(--accent-teal)" }
+        ]
+      }
+    };
+
+    function updateShapDemo(key) {
+      const data = shapScenarios[key] || shapScenarios.expense;
+      document.getElementById('shap-summary-title').textContent = data.title;
+      document.getElementById('shap-summary-desc').textContent = data.desc;
+      
+      const container = document.getElementById('shap-bars');
+      container.innerHTML = '';
+      
+      data.features.forEach(f => {
+        const row = document.createElement('div');
+        row.className = 'shap-bar-row';
+        row.innerHTML = `
+          <div class="shap-bar-label">${f.name}</div>
+          <div class="shap-bar-track">
+            <div class="shap-bar-fill" style="width: ${f.pct}%; background: ${f.color};"></div>
+          </div>
+          <div class="shap-bar-val" style="color: ${f.color};">${f.val}</div>
+        `;
+        container.appendChild(row);
+      });
+    }
+
+    // Initialize SHAP demo
+    updateShapDemo('expense');
+
+    /* -------------------------------------------------------------
+       INTERACTIVE LADDER HIGHLIGHT (SLIDE 6)
+       ------------------------------------------------------------- */
+    function highlightLadder(el) {
+      document.querySelectorAll('.ladder-row').forEach(r => r.classList.remove('active'));
+      el.classList.add('active');
+    }
+
+    /* -------------------------------------------------------------
+       INTERACTIVE WHAT-IF SIMULATOR (SLIDE 10)
+       ------------------------------------------------------------- */
+    function runSimulation() {
+      const income = parseInt(document.getElementById('income-slider').value);
+      const emi = parseInt(document.getElementById('emi-slider').value);
+      const relief = parseInt(document.getElementById('relief-slider').value);
+
+      document.getElementById('income-val').textContent = '₹' + income.toLocaleString('en-IN');
+      document.getElementById('emi-val').textContent = '₹' + emi.toLocaleString('en-IN');
+      document.getElementById('relief-val').textContent = '₹' + relief.toLocaleString('en-IN') + ' / mo';
+
+      // Living cost floor: 60% of income or min 25k
+      const livingFloor = Math.max(25000, income * 0.55);
+      const buffer = 3000;
+      const sustainableCap = Math.max(0, income - livingFloor - buffer);
+
+      const effectiveEmi = Math.max(0, emi - relief);
+      const monthlyDeficit = sustainableCap - effectiveEmi;
+
+      // Calculate stress index
+      const stressRatio = effectiveEmi / Math.max(1, sustainableCap);
+      let stressPct = Math.min(99, Math.round(stressRatio * 50));
+      if (stressRatio > 1.2) stressPct = Math.min(98, 75 + Math.round((stressRatio - 1.2) * 20));
+
+      const capEl = document.getElementById('res-capacity');
+      const stressEl = document.getElementById('res-stress');
+      const bufEl = document.getElementById('res-buffer');
+
+      capEl.textContent = '₹' + Math.round(sustainableCap).toLocaleString('en-IN');
+      stressEl.textContent = stressPct + '%';
+      
+      if (stressPct > 70) {
+        stressEl.style.color = 'var(--accent-coral)';
+      } else if (stressPct > 45) {
+        stressEl.style.color = 'var(--accent-amber)';
+      } else {
+        stressEl.style.color = 'var(--accent-teal)';
+      }
+
+      if (monthlyDeficit >= 0) {
+        bufEl.textContent = '+₹' + Math.round(monthlyDeficit).toLocaleString('en-IN');
+        bufEl.style.color = 'var(--accent-teal)';
+      } else {
+        bufEl.textContent = '-₹' + Math.round(Math.abs(monthlyDeficit)).toLocaleString('en-IN');
+        bufEl.style.color = 'var(--accent-coral)';
+      }
+    }
+
+    // Init simulator
+    runSimulation();
+    updateSlide();
+  </script>
+</body>
+</html>
