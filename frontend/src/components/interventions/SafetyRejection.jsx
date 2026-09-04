@@ -153,12 +153,13 @@ export default function SafetyRejection({ rejectionData, className = "" }) {
           </span>
         </div>
         <p className="text-sm font-bold text-white">
-          {typeof saferAlternative === 'string'
+          {(typeof saferAlternative === 'string'
             ? saferAlternative
-            : saferAlternative?.title || "Revolving Line Freeze & Fixed Avalanche Plan"}
+            : saferAlternative?.title || "Revolving Line Freeze & Structured Debt Repayment Plan"
+          ).replace('Fixed Avalanche Plan', 'Structured Debt Repayment Plan')}
         </p>
         <p className="text-slate-300 text-xs leading-relaxed">
-          DebtWise prevented an unsafe debt escalation loan and promoted a structured, non-borrowing relief intervention instead.
+          DebtWise prevents additional borrowing and promotes a structured repayment plan for existing obligations instead.
         </p>
       </div>
 
