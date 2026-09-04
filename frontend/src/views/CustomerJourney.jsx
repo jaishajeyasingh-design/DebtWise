@@ -339,7 +339,7 @@ export default function CustomerJourney({
         <button
           onClick={goBack}
           disabled={currentStep === 1}
-          className="px-4 py-2.5 rounded-xl text-xs font-mono theme-text-muted hover:theme-text disabled:opacity-30 enabled:cursor-pointer disabled:cursor-not-allowed flex items-center gap-2 transition"
+          className="px-4 py-2.5 rounded-xl text-xs font-mono theme-text-muted hover:theme-text disabled:opacity-30 disabled:pointer-events-none flex items-center gap-2 transition cursor-pointer"
         >
           <ChevronLeft className="w-4 h-4" />
           Previous

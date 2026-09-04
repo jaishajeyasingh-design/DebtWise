@@ -292,7 +292,7 @@ export default function BankDashboard({ onOpenPriyaDemo }) {
               value={searchQuery}
               onChange={(e) => setSearchQuery(e.target.value)}
               placeholder="Search name or customer ID"
-              className="w-full pl-9 pr-3 py-2.5 rounded-xl bg-slate-950/80 border border-slate-700 text-xs text-white placeholder-slate-600 focus:outline-none focus:border-cyan-400"
+              className="w-full pl-9 pr-3 py-2.5 rounded-xl theme-input text-xs placeholder-slate-500 focus:outline-none focus:ring-1 focus:ring-cyan-500 transition"
             />
           </div>
 

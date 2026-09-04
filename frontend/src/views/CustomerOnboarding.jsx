@@ -224,7 +224,7 @@ export default function CustomerOnboarding({
                     type="number"
                     value={formData.monthlyIncome}
                     onChange={(e) => updateField('monthlyIncome', Number(e.target.value))}
-                    className="w-full pl-8 pr-4 py-3 rounded-xl bg-slate-900 border border-slate-700 text-white font-mono text-sm focus:border-cyan-400 focus:outline-none"
+                    className="w-full pl-8 pr-4 py-3 rounded-xl theme-input font-mono text-sm focus:outline-none"
                     placeholder="60000"
                     min="1000"
                     required
@@ -243,7 +243,7 @@ export default function CustomerOnboarding({
                   type="number"
                   value={formData.salaryDay}
                   onChange={(e) => updateField('salaryDay', Math.min(31, Math.max(1, Number(e.target.value))))}
-                  className="w-full px-4 py-3 rounded-xl bg-slate-900 border border-slate-700 text-white font-mono text-sm focus:border-cyan-400 focus:outline-none"
+                  className="w-full px-4 py-3 rounded-xl theme-input font-mono text-sm focus:outline-none"
                   min="1"
                   max="31"
                   required
@@ -288,7 +288,7 @@ export default function CustomerOnboarding({
                   type="number"
                   value={formData.age}
                   onChange={(e) => updateField('age', Math.min(100, Math.max(18, Number(e.target.value))))}
-                  className="w-full px-4 py-3 rounded-xl bg-slate-900 border border-slate-700 text-white font-mono text-sm focus:border-cyan-400 focus:outline-none"
+                  className="w-full px-4 py-3 rounded-xl theme-input font-mono text-sm focus:outline-none"
                   min="18"
                   max="100"
                 />
@@ -302,7 +302,7 @@ export default function CustomerOnboarding({
                   type="text"
                   value={formData.customerId}
                   onChange={(e) => updateField('customerId', e.target.value)}
-                  className="w-full px-4 py-3 rounded-xl bg-slate-900 border border-slate-700 text-slate-300 font-mono text-sm focus:border-cyan-400 focus:outline-none"
+                  className="w-full px-4 py-3 rounded-xl theme-input font-mono text-sm focus:outline-none"
                 />
               </div>
             </div>
@@ -333,7 +333,7 @@ export default function CustomerOnboarding({
                     type="number"
                     value={formData.essentialExpenses}
                     onChange={(e) => updateField('essentialExpenses', Number(e.target.value))}
-                    className="w-full pl-8 pr-4 py-3 rounded-xl bg-slate-900 border border-slate-700 text-white font-mono text-sm focus:border-cyan-400 focus:outline-none"
+                    className="w-full pl-8 pr-4 py-3 rounded-xl theme-input font-mono text-sm focus:outline-none"
                     placeholder="25000"
                     min="500"
                     required
@@ -354,7 +354,7 @@ export default function CustomerOnboarding({
                     type="number"
                     value={formData.discretionaryExpenses}
                     onChange={(e) => updateField('discretionaryExpenses', Number(e.target.value))}
-                    className="w-full pl-8 pr-4 py-3 rounded-xl bg-slate-900 border border-slate-700 text-white font-mono text-sm focus:border-cyan-400 focus:outline-none"
+                    className="w-full pl-8 pr-4 py-3 rounded-xl theme-input font-mono text-sm focus:outline-none"
                     placeholder="3000"
                     min="0"
                   />
@@ -418,7 +418,7 @@ export default function CustomerOnboarding({
                     type="number"
                     value={formData.monthlyObligations}
                     onChange={(e) => updateField('monthlyObligations', Number(e.target.value))}
-                    className="w-full pl-8 pr-4 py-3 rounded-xl bg-slate-900 border border-slate-700 text-white font-mono text-sm focus:border-cyan-400 focus:outline-none"
+                    className="w-full pl-8 pr-4 py-3 rounded-xl theme-input font-mono text-sm focus:outline-none"
                     placeholder="25000"
                     min="0"
                     required
@@ -439,7 +439,7 @@ export default function CustomerOnboarding({
                     type="number"
                     value={formData.totalDebt}
                     onChange={(e) => updateField('totalDebt', Number(e.target.value))}
-                    className="w-full pl-8 pr-4 py-3 rounded-xl bg-slate-900 border border-slate-700 text-white font-mono text-sm focus:border-cyan-400 focus:outline-none"
+                    className="w-full pl-8 pr-4 py-3 rounded-xl theme-input font-mono text-sm focus:outline-none"
                     placeholder="400000"
                     min="0"
                   />
@@ -457,7 +457,7 @@ export default function CustomerOnboarding({
                   type="number"
                   value={formData.emiDueDay}
                   onChange={(e) => updateField('emiDueDay', Math.min(31, Math.max(1, Number(e.target.value))))}
-                  className="w-full px-4 py-3 rounded-xl bg-slate-900 border border-slate-700 text-white font-mono text-sm focus:border-cyan-400 focus:outline-none"
+                  className="w-full px-4 py-3 rounded-xl theme-input font-mono text-sm focus:outline-none"
                   min="1"
                   max="31"
                   required
@@ -474,7 +474,7 @@ export default function CustomerOnboarding({
                 <select
                   value={formData.paymentDelaysCount}
                   onChange={(e) => updateField('paymentDelaysCount', Number(e.target.value))}
-                  className="w-full px-4 py-3 rounded-xl bg-slate-900 border border-slate-700 text-white font-mono text-sm focus:border-cyan-400 focus:outline-none"
+                  className="w-full px-4 py-3 rounded-xl theme-input font-mono text-sm focus:outline-none"
                 >
                   <option value={0}>0 (No missed payments)</option>
                   <option value={1}>1 Month (Occasional delay)</option>
@@ -533,7 +533,7 @@ export default function CustomerOnboarding({
                     type="number"
                     value={formData.savings}
                     onChange={(e) => updateField('savings', Number(e.target.value))}
-                    className="w-full pl-8 pr-4 py-3 rounded-xl bg-slate-900 border border-slate-700 text-white font-mono text-sm focus:border-cyan-400 focus:outline-none"
+                    className="w-full pl-8 pr-4 py-3 rounded-xl theme-input font-mono text-sm focus:outline-none"
                     placeholder="15000"
                     min="0"
                     required
@@ -551,7 +551,7 @@ export default function CustomerOnboarding({
                 <select
                   value={formData.overdraftCount}
                   onChange={(e) => updateField('overdraftCount', Number(e.target.value))}
-                  className="w-full px-4 py-3 rounded-xl bg-slate-900 border border-slate-700 text-white font-mono text-sm focus:border-cyan-400 focus:outline-none"
+                  className="w-full px-4 py-3 rounded-xl theme-input font-mono text-sm focus:outline-none"
                 >
                   <option value={0}>0 (Zero overdrafts)</option>
                   <option value={1}>1-2 Times in last 6 months</option>
@@ -573,7 +573,7 @@ export default function CustomerOnboarding({
                     type="number"
                     value={formData.creditLimit}
                     onChange={(e) => updateField('creditLimit', Number(e.target.value))}
-                    className="w-full pl-8 pr-4 py-3 rounded-xl bg-slate-900 border border-slate-700 text-white font-mono text-sm focus:border-cyan-400 focus:outline-none"
+                    className="w-full pl-8 pr-4 py-3 rounded-xl theme-input font-mono text-sm focus:outline-none"
                     placeholder="100000"
                     min="1000"
                   />
@@ -590,7 +590,7 @@ export default function CustomerOnboarding({
                     type="number"
                     value={formData.creditBalance}
                     onChange={(e) => updateField('creditBalance', Number(e.target.value))}
-                    className="w-full pl-8 pr-4 py-3 rounded-xl bg-slate-900 border border-slate-700 text-white font-mono text-sm focus:border-cyan-400 focus:outline-none"
+                    className="w-full pl-8 pr-4 py-3 rounded-xl theme-input font-mono text-sm focus:outline-none"
                     placeholder="45000"
                     min="0"
                   />
