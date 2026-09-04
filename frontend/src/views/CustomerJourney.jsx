@@ -145,14 +145,14 @@ export default function CustomerJourney({
   if (loading) {
     return (
       <div className="max-w-5xl mx-auto px-4 sm:px-6 py-12">
-        <div className="glass-panel rounded-3xl p-10 border border-cyan-500/20 bg-slate-950/70 text-center">
+        <div className="glass-panel rounded-3xl p-10 border border-slate-300 dark:border-cyan-500/20 bg-white dark:bg-slate-950/70 text-center shadow-lg">
           <div className="w-12 h-12 rounded-2xl bg-cyan-500/10 border border-cyan-500/30 flex items-center justify-center mx-auto mb-4">
-            <HeartHandshake className="w-6 h-6 text-cyan-400 animate-pulse" />
+            <HeartHandshake className="w-6 h-6 text-cyan-600 dark:text-cyan-400 animate-pulse" />
           </div>
-          <h2 className="text-xl font-bold text-white">
+          <h2 className="text-xl font-bold text-slate-900 dark:text-white">
             Loading Customer DebtWise Analysis
           </h2>
-          <p className="text-xs font-mono text-slate-400 mt-2">
+          <p className="text-xs font-mono text-slate-500 dark:text-slate-400 mt-2">
             Running diagnosis, affordability, safety and intervention engines...
           </p>
         </div>
@@ -163,11 +163,11 @@ export default function CustomerJourney({
   if (error || !customerData) {
     return (
       <div className="max-w-3xl mx-auto px-4 sm:px-6 py-12">
-        <div className="glass-panel rounded-3xl p-8 border border-rose-500/30 bg-slate-950/80 text-center">
-          <h2 className="text-xl font-bold text-white">
+        <div className="glass-panel rounded-3xl p-8 border border-rose-500/30 bg-white dark:bg-slate-950/80 text-center shadow-lg">
+          <h2 className="text-xl font-bold text-slate-900 dark:text-white">
             Unable to load customer analysis
           </h2>
-          <p className="text-sm text-slate-400 mt-2">
+          <p className="text-sm text-slate-600 dark:text-slate-400 mt-2">
             {error || 'No customer data was returned by the backend.'}
           </p>
 
@@ -175,14 +175,14 @@ export default function CustomerJourney({
             {onNewAssessment && (
               <button
                 onClick={onNewAssessment}
-                className="px-5 py-2.5 rounded-xl bg-cyan-500 hover:bg-cyan-400 text-slate-950 font-bold text-xs font-mono"
+                className="px-5 py-2.5 rounded-xl bg-cyan-500 hover:bg-cyan-400 text-slate-950 font-bold text-xs font-mono cursor-pointer"
               >
                 New Assessment
               </button>
             )}
             <button
               onClick={onReturnToDashboard}
-              className="px-5 py-2.5 rounded-xl bg-slate-800 hover:bg-slate-700 text-white text-xs font-mono"
+              className="px-5 py-2.5 rounded-xl bg-slate-200 dark:bg-slate-800 hover:bg-slate-300 dark:hover:bg-slate-700 text-slate-800 dark:text-white text-xs font-mono cursor-pointer"
             >
               Return to Bank Dashboard
             </button>
@@ -201,26 +201,26 @@ export default function CustomerJourney({
     <div className="max-w-5xl mx-auto px-4 sm:px-6 py-6 sm:py-8 space-y-5 animate-fadeIn">
 
       {/* Customer Header */}
-      <div className="glass-panel rounded-2xl p-4 sm:p-5 border border-slate-700/80 bg-slate-950/70">
+      <div className="glass-panel rounded-2xl p-4 sm:p-5 border border-slate-200 dark:border-slate-700/80 bg-white/95 dark:bg-slate-950/70 shadow-md">
         <div className="flex flex-col lg:flex-row lg:items-center lg:justify-between gap-4">
 
           <div className="flex items-center gap-3">
-            <div className="w-11 h-11 rounded-xl bg-gradient-to-tr from-cyan-400 to-blue-600 flex items-center justify-center text-slate-950 font-bold">
+            <div className="w-11 h-11 rounded-xl bg-gradient-to-tr from-cyan-400 to-blue-600 flex items-center justify-center text-slate-950 font-bold shadow-sm">
               <User className="w-5 h-5" />
             </div>
 
             <div>
-              <div className="font-bold text-white text-sm sm:text-base flex items-center gap-2 flex-wrap">
+              <div className="font-bold text-slate-900 dark:text-white text-sm sm:text-base flex items-center gap-2 flex-wrap">
                 <span>{customerName}</span>
-                <span className="px-2 py-0.5 rounded bg-cyan-500/20 text-cyan-300 font-mono text-[10px] font-bold">
+                <span className="px-2 py-0.5 rounded bg-cyan-500/15 text-cyan-800 dark:text-cyan-300 font-mono text-[10px] font-bold border border-cyan-500/30">
                   {diagnosisCause.replace(/_/g, ' ')}
                 </span>
-                <span className="px-2 py-0.5 rounded bg-slate-800 text-slate-400 font-mono text-[10px]">
+                <span className="px-2 py-0.5 rounded bg-slate-100 dark:bg-slate-800 text-slate-600 dark:text-slate-400 font-mono text-[10px] border border-slate-200 dark:border-slate-700">
                   REAL ML RESPONSE
                 </span>
               </div>
 
-              <div className="text-xs font-mono text-slate-400 mt-0.5">
+              <div className="text-xs font-mono text-slate-500 dark:text-slate-400 mt-0.5">
                 {customerId} · Personalized Recovery Journey
               </div>
             </div>
@@ -230,7 +230,7 @@ export default function CustomerJourney({
             {onNewAssessment && (
               <button
                 onClick={onNewAssessment}
-                className="text-xs font-mono px-3 py-1.5 rounded-lg bg-slate-800 hover:bg-slate-700 text-slate-300 transition flex items-center gap-1.5"
+                className="text-xs font-mono px-3 py-1.5 rounded-lg bg-slate-100 dark:bg-slate-800 hover:bg-slate-200 dark:hover:bg-slate-700 text-slate-700 dark:text-slate-300 border border-slate-300 dark:border-slate-700 transition flex items-center gap-1.5 cursor-pointer"
               >
                 <RefreshCw className="w-3.5 h-3.5" />
                 <span>New Assessment</span>
@@ -239,7 +239,7 @@ export default function CustomerJourney({
 
             <button
               onClick={onReturnToDashboard}
-              className="text-xs font-mono text-slate-400 hover:text-cyan-400 transition flex items-center gap-1.5 px-3 py-1.5 rounded-lg border border-slate-800 hover:border-slate-700"
+              className="text-xs font-mono text-slate-600 dark:text-slate-400 hover:text-cyan-600 dark:hover:text-cyan-400 transition flex items-center gap-1.5 px-3 py-1.5 rounded-lg border border-slate-300 dark:border-slate-800 hover:border-slate-400 dark:hover:border-slate-700 cursor-pointer"
             >
               <ArrowLeft className="w-3.5 h-3.5" />
               <span>Bank Console</span>
@@ -248,8 +248,8 @@ export default function CustomerJourney({
         </div>
       </div>
 
-      {/* Page Navigation */}
-      <div className="glass-panel rounded-2xl p-3 border border-slate-700/80 bg-slate-950/70">
+      {/* Page Navigation Step Bar */}
+      <div className="glass-panel rounded-2xl p-3 border border-slate-200 dark:border-slate-700/80 bg-white/90 dark:bg-slate-950/70 shadow-sm">
         <div className="flex items-center gap-2 overflow-x-auto pb-1">
           {STEPS.map((step) => {
             const active = currentStep === step.id;
@@ -259,12 +259,12 @@ export default function CustomerJourney({
               <button
                 key={step.id}
                 onClick={() => setCurrentStep(step.id)}
-                className={`shrink-0 min-w-[115px] px-3 py-2.5 rounded-xl border transition text-left ${
+                className={`shrink-0 min-w-[115px] px-3 py-2.5 rounded-xl border transition text-left cursor-pointer ${
                   active
-                    ? 'bg-cyan-500/15 border-cyan-500/40 text-cyan-300'
+                    ? 'bg-cyan-50 dark:bg-cyan-500/15 border-cyan-400 dark:border-cyan-500/40 text-cyan-800 dark:text-cyan-300 shadow-sm'
                     : complete
-                    ? 'bg-emerald-500/5 border-emerald-500/20 text-emerald-300'
-                    : 'bg-slate-900/50 border-slate-800 text-slate-500 hover:text-slate-300'
+                    ? 'bg-emerald-50 dark:bg-emerald-500/5 border-emerald-300 dark:border-emerald-500/20 text-emerald-800 dark:text-emerald-300'
+                    : 'bg-slate-50 dark:bg-slate-900/50 border-slate-200 dark:border-slate-800 text-slate-500 hover:text-slate-800 dark:hover:text-slate-300'
                 }`}
               >
                 <div className="text-[10px] font-mono font-bold">
@@ -282,7 +282,7 @@ export default function CustomerJourney({
         </div>
       </div>
 
-      {/* Current Page */}
+      {/* Current Page Content */}
       {currentStep === 1 && (
         <DiagnosisPage
           data={customerData}
@@ -349,11 +349,11 @@ export default function CustomerJourney({
       )}
 
       {/* Previous / Next Controls */}
-      <div className="glass-panel rounded-2xl p-3 border border-slate-800 bg-slate-950/50 flex items-center justify-between">
+      <div className="glass-panel rounded-2xl p-3 border border-slate-200 dark:border-slate-800 bg-white/80 dark:bg-slate-950/50 flex items-center justify-between shadow-sm">
         <button
           onClick={goBack}
           disabled={currentStep === 1}
-          className="px-4 py-2.5 rounded-xl text-xs font-mono text-slate-400 hover:text-white disabled:opacity-30 disabled:cursor-not-allowed flex items-center gap-2 transition"
+          className="px-4 py-2.5 rounded-xl text-xs font-mono text-slate-600 dark:text-slate-400 hover:text-slate-950 dark:hover:text-white disabled:opacity-30 disabled:cursor-not-allowed flex items-center gap-2 transition cursor-pointer"
         >
           <ChevronLeft className="w-4 h-4" />
           Previous
@@ -366,7 +366,7 @@ export default function CustomerJourney({
         {currentStep < 7 ? (
           <button
             onClick={goNext}
-            className="px-4 py-2.5 rounded-xl bg-cyan-500 hover:bg-cyan-400 text-slate-950 font-bold text-xs font-mono flex items-center gap-2 transition"
+            className="px-4 py-2.5 rounded-xl bg-cyan-500 hover:bg-cyan-400 text-slate-950 font-bold text-xs font-mono flex items-center gap-2 transition shadow-sm cursor-pointer"
           >
             Next
             <ChevronRight className="w-4 h-4" />
@@ -374,7 +374,7 @@ export default function CustomerJourney({
         ) : (
           <button
             onClick={resetDemo}
-            className="px-4 py-2.5 rounded-xl bg-slate-800 hover:bg-slate-700 text-white font-bold text-xs font-mono flex items-center gap-2 transition"
+            className="px-4 py-2.5 rounded-xl bg-slate-200 dark:bg-slate-800 hover:bg-slate-300 dark:hover:bg-slate-700 text-slate-800 dark:text-white font-bold text-xs font-mono flex items-center gap-2 transition cursor-pointer"
           >
             Restart
           </button>
@@ -383,24 +383,24 @@ export default function CustomerJourney({
 
       {/* Human Help Modal */}
       {humanHelpRequested && (
-        <div className="fixed inset-0 z-50 flex items-center justify-center p-4 bg-slate-950/80 backdrop-blur-md">
+        <div className="fixed inset-0 z-50 flex items-center justify-center p-4 bg-slate-950/80 backdrop-blur-md animate-fadeIn">
           <div className="glass-panel rounded-3xl p-6 sm:p-8 max-w-md w-full border border-cyan-500/40 shadow-2xl text-center">
-            <div className="w-12 h-12 rounded-2xl bg-cyan-500/15 border border-cyan-500/30 flex items-center justify-center text-cyan-400 mx-auto mb-4">
+            <div className="w-12 h-12 rounded-2xl bg-cyan-500/15 border border-cyan-500/30 flex items-center justify-center text-cyan-600 dark:text-cyan-400 mx-auto mb-4">
               <PhoneCall className="w-6 h-6" />
             </div>
 
-            <h3 className="text-xl font-bold text-white">
+            <h3 className="text-xl font-bold text-slate-900 dark:text-white">
               Human Specialist Requested
             </h3>
 
-            <p className="text-xs text-slate-300 leading-relaxed mt-3">
+            <p className="text-xs text-slate-600 dark:text-slate-300 leading-relaxed mt-3">
               This hackathon prototype records the request locally for the demo.
               A real bank deployment would route the case to an authorized hardship specialist.
             </p>
 
             <button
               onClick={() => setHumanHelpRequested(false)}
-              className="mt-5 w-full py-2.5 rounded-xl bg-slate-800 hover:bg-slate-700 text-white font-mono text-xs font-bold transition"
+              className="mt-5 w-full py-2.5 rounded-xl bg-slate-200 dark:bg-slate-800 hover:bg-slate-300 dark:hover:bg-slate-700 text-slate-800 dark:text-white font-mono text-xs font-bold transition cursor-pointer"
             >
               Close
             </button>
