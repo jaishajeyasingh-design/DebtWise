@@ -360,7 +360,7 @@ export default function FinancialResiliencePlanner({
                     <span>1. Systematic Investment Plan</span>
                   </h4>
                   <p className="text-[11px] theme-text-secondary mt-1">
-                    Monthly recurring investment in diversified mutual funds for inflation-beating long-term growth.
+                    Long-term growth-oriented option with market-linked returns and higher variability.
                   </p>
                 </div>
 
@@ -401,7 +401,7 @@ export default function FinancialResiliencePlanner({
               <div className="space-y-3">
                 <div className="flex items-center justify-between">
                   <span className="px-2.5 py-1 rounded-lg bg-emerald-500/10 border border-emerald-500/30 text-emerald-400 font-mono text-[10px] font-bold">
-                    GUARANTEED BANK DEPOSIT
+                    RECURRING DEPOSIT · DEFINED RATE
                   </span>
                   <span className="text-xs font-mono text-emerald-400 font-bold">
                     ~{rdRate}% p.a.
@@ -413,7 +413,7 @@ export default function FinancialResiliencePlanner({
                     <span>2. Recurring Deposit (RD)</span>
                   </h4>
                   <p className="text-[11px] theme-text-secondary mt-1">
-                    Scheduled monthly bank deposit providing guaranteed interest accumulation and zero capital volatility.
+                    Scheduled monthly bank deposit providing defined interest accumulation with quarterly compounding.
                   </p>
                 </div>
 
@@ -454,7 +454,7 @@ export default function FinancialResiliencePlanner({
               <div className="space-y-3">
                 <div className="flex items-center justify-between">
                   <span className="px-2.5 py-1 rounded-lg bg-indigo-500/10 border border-indigo-500/30 text-indigo-400 font-mono text-[10px] font-bold">
-                    LUMP-SUM PRINCIPAL DEPOSIT
+                    BANK DEPOSIT · DEFINED RATE
                   </span>
                   <span className="text-xs font-mono text-indigo-400 font-bold">
                     ~{fdRate}% p.a.
@@ -466,7 +466,7 @@ export default function FinancialResiliencePlanner({
                     <span>3. Fixed Deposit (FD)</span>
                   </h4>
                   <p className="text-[11px] theme-text-secondary mt-1">
-                    One-time lump-sum bank term deposit. Unlike SIP and RD, FD does not accommodate monthly recurring contributions.
+                    One-time lump-sum bank term deposit with quarterly compounding. Unlike SIP and RD, FD does not accommodate monthly recurring contributions.
                   </p>
                 </div>
 
@@ -480,8 +480,8 @@ export default function FinancialResiliencePlanner({
                     <span className="theme-text font-bold">{horizonYears} Years</span>
                   </div>
                   <div className="flex justify-between pt-1 border-t theme-border-subtle">
-                    <span className="theme-text-muted">Structure:</span>
-                    <span className="text-indigo-400 font-bold">Upfront Single Deposit</span>
+                    <span className="theme-text-muted">Compounding Basis:</span>
+                    <span className="text-indigo-400 font-bold">Quarterly Compounded</span>
                   </div>
                   <div className="flex justify-between text-emerald-400">
                     <span>Estimated Interest:</span>
@@ -622,8 +622,8 @@ export default function FinancialResiliencePlanner({
                 <tr>
                   <td className="p-3 font-bold theme-text">Volatility & Risk Profile</td>
                   <td className="p-3 theme-text-secondary">Market-linked NAV variability</td>
-                  <td className="p-3 theme-text-secondary">Guaranteed bank deposit rate</td>
-                  <td className="p-3 theme-text-secondary">Guaranteed bank term deposit</td>
+                  <td className="p-3 theme-text-secondary">Defined bank deposit rate</td>
+                  <td className="p-3 theme-text-secondary">Defined bank term deposit</td>
                 </tr>
               </tbody>
             </table>
