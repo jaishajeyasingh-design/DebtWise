@@ -90,12 +90,14 @@ export default function DistressDiagnosis({ diagnosis, showProbabilities = true,
         </div>
 
         {/* Confidence Gauge Dial */}
-        <div className="sm:text-right shrink-0 border-t sm:border-t-0 sm:border-l border-slate-800 pt-3 sm:pt-0 sm:pl-6">
-          <div className="text-xs font-mono text-slate-400">DIAGNOSIS CERTAINTY</div>
+        <div className="sm:text-right shrink-0 border-t sm:border-t-0 sm:border-l border-slate-800 pt-3 sm:pt-0 sm:pl-6 max-w-xs">
+          <div className="text-xs font-mono text-slate-400 uppercase">Model Confidence</div>
           <div className={`text-3xl font-mono font-black ${meta.color} mt-0.5`}>
             {confidencePct}%
           </div>
-          <div className="text-[11px] text-slate-400 mt-0.5">Statistical Multi-Class Fit</div>
+          <p className="text-[11px] text-slate-400 mt-1.5 leading-snug">
+            Confidence reflects the model's predicted probability on this case; it is not a guarantee of real-world accuracy.
+          </p>
         </div>
       </div>
 

@@ -31,7 +31,22 @@ export default function SafetyRejection({ rejectionData, className = "" }) {
     rejectionData.intervention_title ||
     "Debt Consolidation Loan (Additional Borrowing)";
 
-  const rulesChecked = rejectionData.rules_checked || rejectionData.rules_violated || ['SC-001', 'SC-003', 'SC-004'];
+  const rawRules = rejectionData.rules_checked || rejectionData.rules_violated || ['SC-001', 'SC-003', 'SC-004'];
+  const rulesChecked = rawRules.map((rule) => {
+    if (typeof rule === 'object' && rule !== null) {
+      const id = rule.rule_id || 'SC-001';
+      return {
+        id,
+        title: rule.rule_name || RULE_TITLES[id] || 'Institutional Safety Rule',
+        status: rule.status,
+        reason: rule.reason
+      };
+    }
+    return {
+      id: rule,
+      title: RULE_TITLES[rule] || 'Institutional Safety Rule'
+    };
+  });
   const rejectionReasons = rejectionData.rejection_reasons || [];
   const saferAlternative = rejectionData.safer_alternative;
 
@@ -92,9 +107,9 @@ export default function SafetyRejection({ rejectionData, className = "" }) {
               key={idx}
               className="p-3 rounded-xl bg-rose-500/10 border border-rose-500/25 flex flex-col justify-between"
             >
-              <div className="text-xs font-mono font-bold text-rose-300">{rule}</div>
+              <div className="text-xs font-mono font-bold text-rose-300">{rule.id}</div>
               <div className="text-[11px] text-slate-300 mt-1">
-                {RULE_TITLES[rule] || 'Institutional Safety Rule'}
+                {rule.title}
               </div>
             </div>
           ))}

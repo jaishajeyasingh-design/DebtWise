@@ -95,17 +95,22 @@ function buildSafetyRejection(result) {
     ? first.rejection_reasons.join(" ")
     : "Rejected by safety check because it did not satisfy DebtWise safety constraints.";
 
+  const rawRules = first.rules_checked || [];
+  const ruleIds = rawRules
+    .map((r) => (typeof r === "object" && r !== null ? r.rule_id : r))
+    .filter(Boolean);
+
   return {
     intervention_id: first.intervention_id,
     intervention_title: first.intervention_title,
     proposed_action: first.intervention_title,
-    rule_id: first.rules_checked?.length > 0 ? first.rules_checked.join(", ") : "SC-004",
+    rule_id: ruleIds.length > 0 ? ruleIds.join(", ") : "SC-003",
     status: first.status,
     rejection_reasons: first.rejection_reasons || [],
     reason: reasonsText,
     message: `Rejected by safety check — ${reasonsText}`,
     safer_alternative: first.safer_alternative || null,
-    rules_checked: first.rules_checked || [],
+    rules_checked: rawRules.length > 0 ? rawRules : ["SC-001", "SC-003", "SC-004"],
   };
 }
 

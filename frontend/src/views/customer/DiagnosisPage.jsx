@@ -36,7 +36,7 @@ export default function DiagnosisPage({ data, onBack, onNext }) {
           </div>
 
           <div className="px-3.5 py-2 rounded-xl bg-cyan-500/10 border border-cyan-500/30 text-cyan-400 font-mono text-xs font-bold">
-            AI Match: {(Number(diagnosis.confidence || 0) * 100).toFixed(1)}%
+            Model Confidence: {(Number(diagnosis.confidence || 0) * 100).toFixed(1)}%
           </div>
         </div>
 
