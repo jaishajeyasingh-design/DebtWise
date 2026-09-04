@@ -60,20 +60,18 @@ export default function FinancialResiliencePlanner({
   const isIncomeShock = primaryCause === 'INCOME_SHOCK' && currentIncome < 35000;
 
   // Compute post-stabilization monthly cash flow:
-  // Net Income - Protected Essentials - Safe EMI - Preserved Emergency Buffer
-  const totalMandatoryOutflow = essentialExpenses + postInterventionEmi + emergencyBuffer;
-  const calculatedSurplus = currentIncome - totalMandatoryOutflow;
+  // monthly surplus = income - protected living floor - post-intervention EMI
+  const calculatedSurplus = currentIncome - essentialExpenses - postInterventionEmi;
 
   // Determine eligibility: Must have positive surplus, no severe debt overload rejection
+  // Preserved liquid buffer is a protected safety reserve / eligibility requirement, not a monthly cash expense
   const isEligible = !isDebtOverload && !isIncomeShock && calculatedSurplus > 500;
 
-  // Preset default surplus for demo (default ₹5,000 for eligible, or calculated surplus)
-  const defaultSurplus = isEligible
-    ? Math.max(1000, Math.min(15000, Math.round(calculatedSurplus / 500) * 500 || 5000))
-    : 0;
+  // Exact calculated surplus as initial allocation amount (not hardcoded)
+  const defaultSurplus = isEligible ? Math.round(calculatedSurplus) : 0;
 
   // Interactive state
-  const [monthlyContribution, setMonthlyContribution] = useState(defaultSurplus || 5000);
+  const [monthlyContribution, setMonthlyContribution] = useState(defaultSurplus || 3358);
   const [horizonYears, setHorizonYears] = useState(10); // 5 or 10 years
   const [sipRate, setSipRate] = useState(10.0); // 10% annual return
   const [rdRate, setRdRate] = useState(7.0);   // 7% annual rate
@@ -313,15 +311,20 @@ export default function FinancialResiliencePlanner({
               </div>
               <input
                 type="range"
-                min="1000"
+                min="500"
                 max={Math.max(10000, Math.round(calculatedSurplus * 1.5) || 15000)}
-                step="500"
+                step="100"
                 value={monthlyContribution}
                 onChange={(e) => setMonthlyContribution(Number(e.target.value))}
                 className="w-full accent-cyan-400 cursor-pointer h-2 rounded-lg bg-slate-800"
               />
               <div className="flex items-center gap-2 pt-1 flex-wrap">
-                {[2500, 5000, 7500, 10000].map((amt) => (
+                {[
+                  Math.round(calculatedSurplus),
+                  Math.round(calculatedSurplus * 0.5),
+                  2500,
+                  5000
+                ].filter((amt, idx, arr) => amt > 0 && arr.indexOf(amt) === idx).map((amt) => (
                   <button
                     key={amt}
                     onClick={() => setMonthlyContribution(amt)}
@@ -331,7 +334,7 @@ export default function FinancialResiliencePlanner({
                         : 'theme-surface-muted theme-border theme-text-muted hover:theme-text'
                     }`}
                   >
-                    ₹{amt.toLocaleString('en-IN')}/mo
+                    {amt === Math.round(calculatedSurplus) ? `Verified Surplus (₹${amt.toLocaleString('en-IN')})` : `₹${amt.toLocaleString('en-IN')}/mo`}
                   </button>
                 ))}
               </div>
