@@ -346,11 +346,11 @@ export default function FinancialResiliencePlanner({
             {/* Option 1: SIP */}
             <div className="glass-panel rounded-2xl p-5 border theme-border hover:border-cyan-500/50 transition-all flex flex-col justify-between space-y-4 relative group">
               <div className="space-y-3">
-                <div className="flex items-center justify-between">
-                  <span className="px-2.5 py-1 rounded-lg bg-cyan-500/10 border border-cyan-500/30 text-cyan-400 font-mono text-[10px] font-bold">
+                <div className="flex items-start justify-between gap-2">
+                  <span className="px-2.5 py-1 rounded-lg bg-cyan-500/10 border border-cyan-500/30 text-cyan-400 font-mono text-[10px] font-bold leading-tight">
                     MARKET-LINKED / EQUITY SIP
                   </span>
-                  <span className="text-xs font-mono text-cyan-400 font-bold">
+                  <span className="text-xs font-mono text-cyan-400 font-bold shrink-0">
                     ~{sipRate}% p.a.
                   </span>
                 </div>
@@ -399,11 +399,11 @@ export default function FinancialResiliencePlanner({
             {/* Option 2: RD */}
             <div className="glass-panel rounded-2xl p-5 border theme-border hover:border-emerald-500/50 transition-all flex flex-col justify-between space-y-4 relative group">
               <div className="space-y-3">
-                <div className="flex items-center justify-between">
-                  <span className="px-2.5 py-1 rounded-lg bg-emerald-500/10 border border-emerald-500/30 text-emerald-400 font-mono text-[10px] font-bold">
+                <div className="flex items-start justify-between gap-2">
+                  <span className="px-2.5 py-1 rounded-lg bg-emerald-500/10 border border-emerald-500/30 text-emerald-400 font-mono text-[10px] font-bold leading-tight">
                     RECURRING DEPOSIT · DEFINED RATE
                   </span>
-                  <span className="text-xs font-mono text-emerald-400 font-bold">
+                  <span className="text-xs font-mono text-emerald-400 font-bold shrink-0">
                     ~{rdRate}% p.a.
                   </span>
                 </div>
@@ -452,11 +452,11 @@ export default function FinancialResiliencePlanner({
             {/* Option 3: FD */}
             <div className="glass-panel rounded-2xl p-5 border theme-border hover:border-indigo-500/50 transition-all flex flex-col justify-between space-y-4 relative group">
               <div className="space-y-3">
-                <div className="flex items-center justify-between">
-                  <span className="px-2.5 py-1 rounded-lg bg-indigo-500/10 border border-indigo-500/30 text-indigo-400 font-mono text-[10px] font-bold">
+                <div className="flex items-start justify-between gap-2">
+                  <span className="px-2.5 py-1 rounded-lg bg-indigo-500/10 border border-indigo-500/30 text-indigo-400 font-mono text-[10px] font-bold leading-tight">
                     BANK DEPOSIT · DEFINED RATE
                   </span>
-                  <span className="text-xs font-mono text-indigo-400 font-bold">
+                  <span className="text-xs font-mono text-indigo-400 font-bold shrink-0">
                     ~{fdRate}% p.a.
                   </span>
                 </div>
