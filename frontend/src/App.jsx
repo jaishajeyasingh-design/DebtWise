@@ -39,23 +39,80 @@ export default function App() {
     setTheme((prev) => (prev === 'dark' ? 'light' : 'dark'));
   };
 
-  // Primary Bank Operations workflow starts on 'login'
-  const [activeView, setActiveView] = useState('login'); // 'login' | 'intelligence' | 'onboarding' | 'journey' | 'dashboard'
+  // Authenticated Employee Session Management with localStorage persistence
+  const [authenticatedEmployee, setAuthenticatedEmployee] = useState(() => {
+    try {
+      const saved = localStorage.getItem('debtwise_authenticated_employee');
+      return saved ? JSON.parse(saved) : null;
+    } catch {
+      return null;
+    }
+  });
+
+  // Primary Bank Operations view (starts on 'login' if unauthenticated, else 'intelligence')
+  const [activeView, setActiveView] = useState(() => {
+    try {
+      const saved = localStorage.getItem('debtwise_authenticated_employee');
+      return saved ? 'intelligence' : 'login';
+    } catch {
+      return 'login';
+    }
+  });
+
   const [activeCustomerData, setActiveCustomerData] = useState(null);
   const [onboardingInitialData, setOnboardingInitialData] = useState({});
   const [isAnalyzing, setIsAnalyzing] = useState(false);
   const [analysisError, setAnalysisError] = useState(null);
 
+  // Login Guard: Prevent navigation to internal bank views when logged out
+  const handleSafeSetActiveView = (view) => {
+    if (!authenticatedEmployee && view !== 'login') {
+      setActiveView('login');
+      return;
+    }
+    setActiveView(view);
+  };
+
+  const handleLoginSuccess = (employeeData = { id: 'EMP-74029', name: 'Authorized Bank Officer' }) => {
+    setAuthenticatedEmployee(employeeData);
+    try {
+      localStorage.setItem('debtwise_authenticated_employee', JSON.stringify(employeeData));
+    } catch (e) {
+      console.warn('Failed to persist employee session:', e);
+    }
+    setActiveView('intelligence');
+  };
+
+  const handleLogout = () => {
+    setAuthenticatedEmployee(null);
+    try {
+      localStorage.removeItem('debtwise_authenticated_employee');
+    } catch (e) {
+      console.warn('Failed to clear employee session:', e);
+    }
+    setActiveCustomerData(null);
+    setAnalysisError(null);
+    setActiveView('login');
+  };
+
   // Navigate to optional Manual Exception Intake with prefill data
   const handleStartManualIntake = (initialData = {}) => {
     setOnboardingInitialData(initialData);
     setAnalysisError(null);
-    setActiveView('onboarding');
+    handleSafeSetActiveView('onboarding');
   };
 
   // Perform live analysis against authoritative backend /api/v1/analyze
-  const handleAnalyzeCustomer = async (presetOrData) => {
+  const handleAnalyzeCustomer = async (presetOrData, employeeData = null) => {
     try {
+      if (!authenticatedEmployee) {
+        const emp = employeeData || { id: 'EMP-74029', name: 'Authorized Bank Officer' };
+        setAuthenticatedEmployee(emp);
+        try {
+          localStorage.setItem('debtwise_authenticated_employee', JSON.stringify(emp));
+        } catch {}
+      }
+
       setIsAnalyzing(true);
       setAnalysisError(null);
 
@@ -98,23 +155,25 @@ export default function App() {
         <div className="absolute bottom-10 right-1/4 w-125 h-125 bg-cyan-500/10 rounded-full blur-[120px] animate-pulse-glow"></div>
       </div>
 
-      {/* Top Navbar with Global Theme Switcher */}
+      {/* Top Navbar with Global Theme Switcher & Employee Session Control */}
       <Navbar
         activeView={activeView}
-        setActiveView={setActiveView}
-        onStartNewAssessment={() => setActiveView('intelligence')}
+        setActiveView={handleSafeSetActiveView}
+        onStartNewAssessment={() => handleSafeSetActiveView('intelligence')}
         theme={theme}
         onToggleTheme={toggleTheme}
+        authenticatedEmployee={authenticatedEmployee}
+        onLogout={handleLogout}
       />
 
       {/* Main App Container */}
       <main className="flex-1 z-10">
         {activeView === 'login' && (
           <LoginPage
-            onContinueToIntelligence={() => setActiveView('intelligence')}
+            onContinueToIntelligence={handleLoginSuccess}
             onStartOnboarding={handleStartManualIntake}
             onQuickAnalyze={handleAnalyzeCustomer}
-            onOpenDashboard={() => setActiveView('dashboard')}
+            onOpenDashboard={() => handleSafeSetActiveView('dashboard')}
             isAnalyzing={isAnalyzing}
           />
         )}
@@ -123,7 +182,7 @@ export default function App() {
           <CustomerIntelligence
             onAnalyzeCustomer={handleAnalyzeCustomer}
             onStartManualIntake={() => handleStartManualIntake({})}
-            onOpenDashboard={() => setActiveView('dashboard')}
+            onOpenDashboard={() => handleSafeSetActiveView('dashboard')}
             isAnalyzing={isAnalyzing}
             analysisError={analysisError}
             onClearError={() => setAnalysisError(null)}
@@ -134,7 +193,7 @@ export default function App() {
           <CustomerOnboarding
             initialData={onboardingInitialData}
             onSubmitToBackend={handleManualOnboardingSubmit}
-            onBackToLogin={() => setActiveView('intelligence')}
+            onBackToLogin={() => handleSafeSetActiveView('intelligence')}
             isAnalyzing={isAnalyzing}
             analysisError={analysisError}
             onClearError={() => setAnalysisError(null)}
@@ -144,8 +203,8 @@ export default function App() {
         {(activeView === 'journey' || activeView === 'priya') && (
           <CustomerJourney
             customerData={activeCustomerData}
-            onReturnToDashboard={() => setActiveView('dashboard')}
-            onNewAssessment={() => setActiveView('intelligence')}
+            onReturnToDashboard={() => handleSafeSetActiveView('dashboard')}
+            onNewAssessment={() => handleSafeSetActiveView('intelligence')}
           />
         )}
 

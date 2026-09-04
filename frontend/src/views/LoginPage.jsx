@@ -48,11 +48,17 @@ export default function LoginPage({
   const handleDirectPresetAnalyze = (key) => {
     const preset = DEMO_PRESETS[key];
     if (preset && onQuickAnalyze) {
-      onQuickAnalyze({
-        ...preset,
-        presetKey: key,
-        isCustomized: false,
-      });
+      onQuickAnalyze(
+        {
+          ...preset,
+          presetKey: key,
+          isCustomized: false,
+        },
+        {
+          id: 'EMP-74029',
+          name: 'Authorized Bank Officer'
+        }
+      );
     }
   };
 
@@ -77,8 +83,12 @@ export default function LoginPage({
     }
 
     setLoginError(null);
+    const employeeData = {
+      id: cleanEmpId,
+      name: employeeRecord.name
+    };
     if (onContinueToIntelligence) {
-      onContinueToIntelligence();
+      onContinueToIntelligence(employeeData);
     }
   };
 
