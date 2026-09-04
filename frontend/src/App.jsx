@@ -91,9 +91,9 @@ export default function App() {
   };
 
   return (
-    <div className="min-h-screen flex flex-col bg-[var(--bg-app)] text-[var(--text-primary)] font-sans selection:bg-cyan-500/30 selection:text-cyan-200 relative transition-colors duration-200">
+    <div className="min-h-screen flex flex-col theme-app font-sans selection:bg-cyan-500/30 selection:text-cyan-200 relative transition-colors duration-200">
       {/* Subtle Ambient Background Glows (Using Canonical Tailwind Sizing) */}
-      <div className="fixed inset-0 pointer-events-none overflow-hidden z-0 opacity-40 dark:opacity-70">
+      <div className="fixed inset-0 pointer-events-none overflow-hidden z-0 theme-glow">
         <div className="absolute top-0 left-1/4 w-150 h-150 bg-blue-600/10 rounded-full blur-[140px] animate-pulse-glow"></div>
         <div className="absolute bottom-10 right-1/4 w-125 h-125 bg-cyan-500/10 rounded-full blur-[120px] animate-pulse-glow"></div>
       </div>
@@ -160,10 +160,10 @@ export default function App() {
       </main>
 
       {/* Global Footer */}
-      <footer className="z-10 border-t border-slate-300/80 dark:border-slate-800/80 glass-panel bg-white/80 dark:bg-slate-950/80 py-6 text-xs text-slate-500 dark:text-slate-400 font-mono transition-colors">
+      <footer className="z-10 border-t theme-border glass-panel py-6 text-xs text-slate-400 font-mono transition-colors">
         <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 flex flex-col sm:flex-row items-center justify-between gap-3">
-          <div className="flex items-center gap-2 text-slate-700 dark:text-slate-300">
-            <Shield className="w-4 h-4 text-cyan-600 dark:text-cyan-400 shrink-0" />
+          <div className="flex items-center gap-2 text-slate-300">
+            <Shield className="w-4 h-4 text-cyan-400 shrink-0" />
             <span>DebtWise AI/ML Distress Intervention Engine • Bank Decision Support Platform</span>
           </div>
           <div>
@@ -174,3 +174,4 @@ export default function App() {
     </div>
   );
 }
+

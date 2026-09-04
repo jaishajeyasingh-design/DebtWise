@@ -67,22 +67,8 @@ export default function CustomerJourney({
       try {
         setLoading(true);
         setError(null);
-
-        const result = await api.getCustomerDetails('CUST_PRIYA_34');
-
-        if (!mounted) return;
-
-        setCustomerData(result);
-
-        const recommended =
-          result?.selected_intervention ||
-          result?.safe_interventions?.[0] ||
-          null;
-
-        setSelectedIntervention(recommended);
       } catch (err) {
         console.error('Failed to load customer details:', err);
-
         if (mounted) {
           setError('Unable to load the live customer analysis.');
         }
@@ -145,14 +131,14 @@ export default function CustomerJourney({
   if (loading) {
     return (
       <div className="max-w-5xl mx-auto px-4 sm:px-6 py-12">
-        <div className="glass-panel rounded-3xl p-10 border border-slate-300 dark:border-cyan-500/20 bg-white dark:bg-slate-950/70 text-center shadow-lg">
+        <div className="glass-panel rounded-3xl p-10 border border-cyan-500/20 text-center shadow-lg">
           <div className="w-12 h-12 rounded-2xl bg-cyan-500/10 border border-cyan-500/30 flex items-center justify-center mx-auto mb-4">
-            <HeartHandshake className="w-6 h-6 text-cyan-600 dark:text-cyan-400 animate-pulse" />
+            <HeartHandshake className="w-6 h-6 text-cyan-400 animate-pulse" />
           </div>
-          <h2 className="text-xl font-bold text-slate-900 dark:text-white">
+          <h2 className="text-xl font-bold theme-text">
             Loading Customer DebtWise Analysis
           </h2>
-          <p className="text-xs font-mono text-slate-500 dark:text-slate-400 mt-2">
+          <p className="text-xs font-mono theme-text-muted mt-2">
             Running diagnosis, affordability, safety and intervention engines...
           </p>
         </div>
@@ -163,11 +149,11 @@ export default function CustomerJourney({
   if (error || !customerData) {
     return (
       <div className="max-w-3xl mx-auto px-4 sm:px-6 py-12">
-        <div className="glass-panel rounded-3xl p-8 border border-rose-500/30 bg-white dark:bg-slate-950/80 text-center shadow-lg">
-          <h2 className="text-xl font-bold text-slate-900 dark:text-white">
+        <div className="glass-panel rounded-3xl p-8 border border-rose-500/30 text-center shadow-lg">
+          <h2 className="text-xl font-bold theme-text">
             Unable to load customer analysis
           </h2>
-          <p className="text-sm text-slate-600 dark:text-slate-400 mt-2">
+          <p className="text-sm theme-text-secondary mt-2">
             {error || 'No customer data was returned by the backend.'}
           </p>
 
@@ -175,14 +161,14 @@ export default function CustomerJourney({
             {onNewAssessment && (
               <button
                 onClick={onNewAssessment}
-                className="px-5 py-2.5 rounded-xl bg-cyan-500 hover:bg-cyan-400 text-slate-950 font-bold text-xs font-mono cursor-pointer"
+                className="theme-primary-button px-5 py-2.5 rounded-xl font-bold text-xs font-mono cursor-pointer"
               >
                 New Assessment
               </button>
             )}
             <button
               onClick={onReturnToDashboard}
-              className="px-5 py-2.5 rounded-xl bg-slate-200 dark:bg-slate-800 hover:bg-slate-300 dark:hover:bg-slate-700 text-slate-800 dark:text-white text-xs font-mono cursor-pointer"
+              className="px-5 py-2.5 rounded-xl theme-surface-muted theme-border theme-text hover:theme-border-strong text-xs font-mono cursor-pointer"
             >
               Return to Bank Dashboard
             </button>
@@ -201,7 +187,7 @@ export default function CustomerJourney({
     <div className="max-w-5xl mx-auto px-4 sm:px-6 py-6 sm:py-8 space-y-5 animate-fadeIn">
 
       {/* Customer Header */}
-      <div className="glass-panel rounded-2xl p-4 sm:p-5 border border-slate-200 dark:border-slate-700/80 bg-white/95 dark:bg-slate-950/70 shadow-md">
+      <div className="glass-panel rounded-2xl p-4 sm:p-5 shadow-md">
         <div className="flex flex-col lg:flex-row lg:items-center lg:justify-between gap-4">
 
           <div className="flex items-center gap-3">
@@ -210,17 +196,17 @@ export default function CustomerJourney({
             </div>
 
             <div>
-              <div className="font-bold text-slate-900 dark:text-white text-sm sm:text-base flex items-center gap-2 flex-wrap">
+              <div className="font-bold theme-text text-sm sm:text-base flex items-center gap-2 flex-wrap">
                 <span>{customerName}</span>
-                <span className="px-2 py-0.5 rounded bg-cyan-500/15 text-cyan-800 dark:text-cyan-300 font-mono text-[10px] font-bold border border-cyan-500/30">
+                <span className="px-2 py-0.5 rounded bg-cyan-500/15 text-cyan-400 font-mono text-[10px] font-bold border border-cyan-500/30">
                   {diagnosisCause.replace(/_/g, ' ')}
                 </span>
-                <span className="px-2 py-0.5 rounded bg-slate-100 dark:bg-slate-800 text-slate-600 dark:text-slate-400 font-mono text-[10px] border border-slate-200 dark:border-slate-700">
+                <span className="px-2 py-0.5 rounded theme-surface-muted theme-text-muted font-mono text-[10px] theme-border">
                   REAL ML RESPONSE
                 </span>
               </div>
 
-              <div className="text-xs font-mono text-slate-500 dark:text-slate-400 mt-0.5">
+              <div className="text-xs font-mono theme-text-muted mt-0.5">
                 {customerId} · Personalized Recovery Journey
               </div>
             </div>
@@ -230,7 +216,7 @@ export default function CustomerJourney({
             {onNewAssessment && (
               <button
                 onClick={onNewAssessment}
-                className="text-xs font-mono px-3 py-1.5 rounded-lg bg-slate-100 dark:bg-slate-800 hover:bg-slate-200 dark:hover:bg-slate-700 text-slate-700 dark:text-slate-300 border border-slate-300 dark:border-slate-700 transition flex items-center gap-1.5 cursor-pointer"
+                className="text-xs font-mono px-3 py-1.5 rounded-lg theme-surface-muted theme-text-secondary theme-border hover:theme-text transition flex items-center gap-1.5 cursor-pointer"
               >
                 <RefreshCw className="w-3.5 h-3.5" />
                 <span>New Assessment</span>
@@ -239,7 +225,7 @@ export default function CustomerJourney({
 
             <button
               onClick={onReturnToDashboard}
-              className="text-xs font-mono text-slate-600 dark:text-slate-400 hover:text-cyan-600 dark:hover:text-cyan-400 transition flex items-center gap-1.5 px-3 py-1.5 rounded-lg border border-slate-300 dark:border-slate-800 hover:border-slate-400 dark:hover:border-slate-700 cursor-pointer"
+              className="text-xs font-mono theme-text-muted hover:text-cyan-400 transition flex items-center gap-1.5 px-3 py-1.5 rounded-lg theme-border hover:border-cyan-500/40 cursor-pointer"
             >
               <ArrowLeft className="w-3.5 h-3.5" />
               <span>Bank Console</span>
@@ -249,7 +235,7 @@ export default function CustomerJourney({
       </div>
 
       {/* Page Navigation Step Bar */}
-      <div className="glass-panel rounded-2xl p-3 border border-slate-200 dark:border-slate-700/80 bg-white/90 dark:bg-slate-950/70 shadow-sm">
+      <div className="glass-panel rounded-2xl p-3 shadow-sm">
         <div className="flex items-center gap-2 overflow-x-auto pb-1">
           {STEPS.map((step) => {
             const active = currentStep === step.id;
@@ -261,10 +247,10 @@ export default function CustomerJourney({
                 onClick={() => setCurrentStep(step.id)}
                 className={`shrink-0 min-w-[115px] px-3 py-2.5 rounded-xl border transition text-left cursor-pointer ${
                   active
-                    ? 'bg-cyan-50 dark:bg-cyan-500/15 border-cyan-400 dark:border-cyan-500/40 text-cyan-800 dark:text-cyan-300 shadow-sm'
+                    ? 'bg-cyan-500/15 border-cyan-500/40 text-cyan-400 shadow-sm'
                     : complete
-                    ? 'bg-emerald-50 dark:bg-emerald-500/5 border-emerald-300 dark:border-emerald-500/20 text-emerald-800 dark:text-emerald-300'
-                    : 'bg-slate-50 dark:bg-slate-900/50 border-slate-200 dark:border-slate-800 text-slate-500 hover:text-slate-800 dark:hover:text-slate-300'
+                    ? 'bg-emerald-500/10 border-emerald-500/30 text-emerald-400'
+                    : 'theme-surface-muted theme-border theme-text-muted hover:theme-text'
                 }`}
               >
                 <div className="text-[10px] font-mono font-bold">
@@ -349,24 +335,24 @@ export default function CustomerJourney({
       )}
 
       {/* Previous / Next Controls */}
-      <div className="glass-panel rounded-2xl p-3 border border-slate-200 dark:border-slate-800 bg-white/80 dark:bg-slate-950/50 flex items-center justify-between shadow-sm">
+      <div className="glass-panel rounded-2xl p-3 flex items-center justify-between shadow-sm">
         <button
           onClick={goBack}
           disabled={currentStep === 1}
-          className="px-4 py-2.5 rounded-xl text-xs font-mono text-slate-600 dark:text-slate-400 hover:text-slate-950 dark:hover:text-white disabled:opacity-30 disabled:cursor-not-allowed flex items-center gap-2 transition cursor-pointer"
+          className="px-4 py-2.5 rounded-xl text-xs font-mono theme-text-muted hover:theme-text disabled:opacity-30 disabled:cursor-not-allowed flex items-center gap-2 transition cursor-pointer"
         >
           <ChevronLeft className="w-4 h-4" />
           Previous
         </button>
 
-        <div className="text-[10px] font-mono text-slate-500">
+        <div className="text-[10px] font-mono theme-text-muted">
           PAGE {currentStep} / {STEPS.length}
         </div>
 
         {currentStep < 7 ? (
           <button
             onClick={goNext}
-            className="px-4 py-2.5 rounded-xl bg-cyan-500 hover:bg-cyan-400 text-slate-950 font-bold text-xs font-mono flex items-center gap-2 transition shadow-sm cursor-pointer"
+            className="theme-primary-button px-4 py-2.5 rounded-xl font-bold text-xs font-mono flex items-center gap-2 transition shadow-sm cursor-pointer"
           >
             Next
             <ChevronRight className="w-4 h-4" />
@@ -374,7 +360,7 @@ export default function CustomerJourney({
         ) : (
           <button
             onClick={resetDemo}
-            className="px-4 py-2.5 rounded-xl bg-slate-200 dark:bg-slate-800 hover:bg-slate-300 dark:hover:bg-slate-700 text-slate-800 dark:text-white font-bold text-xs font-mono flex items-center gap-2 transition cursor-pointer"
+            className="px-4 py-2.5 rounded-xl theme-surface-muted theme-border hover:theme-border-strong theme-text font-bold text-xs font-mono flex items-center gap-2 transition cursor-pointer"
           >
             Restart
           </button>
@@ -385,22 +371,22 @@ export default function CustomerJourney({
       {humanHelpRequested && (
         <div className="fixed inset-0 z-50 flex items-center justify-center p-4 bg-slate-950/80 backdrop-blur-md animate-fadeIn">
           <div className="glass-panel rounded-3xl p-6 sm:p-8 max-w-md w-full border border-cyan-500/40 shadow-2xl text-center">
-            <div className="w-12 h-12 rounded-2xl bg-cyan-500/15 border border-cyan-500/30 flex items-center justify-center text-cyan-600 dark:text-cyan-400 mx-auto mb-4">
+            <div className="w-12 h-12 rounded-2xl bg-cyan-500/15 border border-cyan-500/30 flex items-center justify-center text-cyan-400 mx-auto mb-4">
               <PhoneCall className="w-6 h-6" />
             </div>
 
-            <h3 className="text-xl font-bold text-slate-900 dark:text-white">
+            <h3 className="text-xl font-bold theme-text">
               Human Specialist Requested
             </h3>
 
-            <p className="text-xs text-slate-600 dark:text-slate-300 leading-relaxed mt-3">
+            <p className="text-xs theme-text-secondary leading-relaxed mt-3">
               This hackathon prototype records the request locally for the demo.
               A real bank deployment would route the case to an authorized hardship specialist.
             </p>
 
             <button
               onClick={() => setHumanHelpRequested(false)}
-              className="mt-5 w-full py-2.5 rounded-xl bg-slate-200 dark:bg-slate-800 hover:bg-slate-300 dark:hover:bg-slate-700 text-slate-800 dark:text-white font-mono text-xs font-bold transition cursor-pointer"
+              className="mt-5 w-full py-2.5 rounded-xl theme-surface-muted theme-border theme-text font-mono text-xs font-bold transition cursor-pointer"
             >
               Close
             </button>
