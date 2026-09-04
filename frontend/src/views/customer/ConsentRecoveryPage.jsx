@@ -11,6 +11,7 @@ import RecoveryTracker from '../../components/customer/RecoveryTracker';
 import ConsentModal from '../../components/customer/ConsentModal';
 import LLMExplanationCard from '../../components/common/LLMExplanationCard';
 import CustomerTradeoffsCard from '../../components/common/CustomerTradeoffsCard';
+import FinancialResiliencePlanner from '../../components/resilience/FinancialResiliencePlanner';
 
 export default function ConsentRecoveryPage({
   data,
@@ -174,6 +175,11 @@ export default function ConsentRecoveryPage({
       </div>
 
       <RecoveryTracker customer={data} />
+      
+      <FinancialResiliencePlanner
+        customerData={data}
+        selectedIntervention={selectedIntervention}
+      />
 
       <div className="flex items-center justify-between">
         <button
