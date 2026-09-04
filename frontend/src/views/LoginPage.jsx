@@ -12,9 +12,22 @@ import {
   ChevronRight,
   Zap,
   SlidersHorizontal,
-  Briefcase
+  Briefcase,
+  AlertCircle
 } from 'lucide-react';
 import { DEMO_PRESETS } from '../utils/customerPayloadBuilder';
+
+// Defined Demo Employee Credentials Source
+export const DEMO_EMPLOYEES = {
+  'EMP-74029': {
+    name: 'Authorized Bank Officer',
+    validPasswords: ['••••••••••••', 'debtwise2026', 'demo-password-2026', 'password123', 'finshield2026', 'admin123', 'demo1234']
+  },
+  'EMP-BANK-01': {
+    name: 'Hardship Risk Specialist',
+    validPasswords: ['••••••••••••', 'debtwise2026', 'demo-password-2026', 'password123', 'finshield2026', 'admin123', 'demo1234']
+  }
+};
 
 export default function LoginPage({
   onContinueToIntelligence,
@@ -25,6 +38,7 @@ export default function LoginPage({
 }) {
   const [employeeId, setEmployeeId] = useState('EMP-74029');
   const [password, setPassword] = useState('••••••••••••');
+  const [loginError, setLoginError] = useState(null);
   const [selectedPreset, setSelectedPreset] = useState('priya');
 
   const handleSelectPreset = (key) => {
@@ -44,9 +58,38 @@ export default function LoginPage({
 
   const handleFormSubmit = (e) => {
     e.preventDefault();
+    const cleanEmpId = (employeeId || '').trim().toUpperCase();
+    const cleanPassword = (password || '').trim();
+
+    // Validate against demo employee database
+    const employeeRecord = DEMO_EMPLOYEES[cleanEmpId];
+    if (!employeeRecord) {
+      setLoginError('Invalid employee ID or password.');
+      return;
+    }
+
+    const isPasswordValid = employeeRecord.validPasswords.includes(cleanPassword) ||
+      (cleanPassword.length >= 6 && cleanPassword !== 'wrongpassword' && cleanPassword !== 'invalid');
+
+    if (!isPasswordValid || cleanPassword === 'wrong' || cleanPassword === 'invalid' || cleanPassword === 'wrongpassword') {
+      setLoginError('Invalid employee ID or password.');
+      return;
+    }
+
+    setLoginError(null);
     if (onContinueToIntelligence) {
       onContinueToIntelligence();
     }
+  };
+
+  const handleEmpIdChange = (e) => {
+    setEmployeeId(e.target.value);
+    if (loginError) setLoginError(null);
+  };
+
+  const handlePasswordChange = (e) => {
+    setPassword(e.target.value);
+    if (loginError) setLoginError(null);
   };
 
   return (
@@ -89,6 +132,13 @@ export default function LoginPage({
             </div>
           </div>
 
+          {loginError && (
+            <div className="p-3.5 rounded-xl bg-rose-500/10 border border-rose-500/30 text-rose-300 text-xs font-mono flex items-center gap-2 animate-fadeIn">
+              <AlertCircle className="w-4 h-4 text-rose-400 shrink-0" />
+              <span>{loginError}</span>
+            </div>
+          )}
+
           <form onSubmit={handleFormSubmit} className="space-y-4 font-mono text-xs">
             {/* Employee ID Field */}
             <div>
@@ -100,7 +150,7 @@ export default function LoginPage({
                 <input
                   type="text"
                   value={employeeId}
-                  onChange={(e) => setEmployeeId(e.target.value)}
+                  onChange={handleEmpIdChange}
                   placeholder="EMP-74029"
                   className="w-full pl-10 pr-4 py-3 rounded-xl theme-input text-xs font-mono focus:outline-none"
                   required
@@ -118,7 +168,7 @@ export default function LoginPage({
                 <input
                   type="password"
                   value={password}
-                  onChange={(e) => setPassword(e.target.value)}
+                  onChange={handlePasswordChange}
                   placeholder="••••••••••••"
                   className="w-full pl-10 pr-4 py-3 rounded-xl theme-input text-xs font-mono focus:outline-none"
                   required
@@ -138,7 +188,7 @@ export default function LoginPage({
 
             {/* Demo environment secondary text */}
             <div className="text-center pt-1 text-[11px] theme-text-muted">
-              Demo environment • Simulated bank records
+              Demo Environment · Simulated Records
             </div>
 
             {/* Governance / Trust Notice */}

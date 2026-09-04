@@ -72,7 +72,9 @@ export default function FinancialResiliencePlanner({
 
   // Interactive state
   const [monthlyContribution, setMonthlyContribution] = useState(defaultSurplus || 3358);
-  const [horizonYears, setHorizonYears] = useState(10); // 5 or 10 years
+  const [horizonMode, setHorizonMode] = useState('10'); // '5' | '10' | 'custom'
+  const [customYears, setCustomYears] = useState(7);
+  const horizonYears = horizonMode === '5' ? 5 : horizonMode === '10' ? 10 : Math.min(30, Math.max(1, Number(customYears) || 1));
   const [sipRate, setSipRate] = useState(10.0); // 10% annual return
   const [rdRate, setRdRate] = useState(7.0);   // 7% annual rate
   const [fdRate, setFdRate] = useState(7.0);   // 7% annual rate
@@ -90,7 +92,7 @@ export default function FinancialResiliencePlanner({
   const calculations = useMemo(() => {
     const P = Number(monthlyContribution);
     const T = Number(horizonYears);
-    const n = T * 12; // Total months
+    const n = Math.round(T * 12); // Total months
 
     // 1. SIP Calculation (Standard monthly compounding future value)
     // FV = P * [((1 + r)^n - 1) / r] * (1 + r)
@@ -282,23 +284,64 @@ export default function FinancialResiliencePlanner({
                 </div>
               </div>
 
-              {/* Horizon Selector (5Y vs 10Y) */}
-              <div className="flex items-center gap-2">
-                <span className="text-xs font-mono theme-text-muted">Horizon:</span>
-                <div className="inline-flex rounded-xl bg-slate-900/90 p-1 border theme-border font-mono text-xs">
-                  {[5, 10].map((yr) => (
+              {/* Flexible Investment Horizon Selector */}
+              <div className="flex flex-col sm:flex-row sm:items-center gap-2">
+                <span className="text-xs font-mono theme-text-muted">Investment Horizon:</span>
+                <div className="flex items-center gap-2 flex-wrap">
+                  <div className="inline-flex rounded-xl bg-slate-900/90 p-1 border theme-border font-mono text-xs">
                     <button
-                      key={yr}
-                      onClick={() => setHorizonYears(yr)}
-                      className={`px-3.5 py-1.5 rounded-lg font-bold transition cursor-pointer ${
-                        horizonYears === yr
+                      type="button"
+                      onClick={() => setHorizonMode('5')}
+                      className={`px-3 py-1.5 rounded-lg font-bold transition cursor-pointer ${
+                        horizonMode === '5'
                           ? 'bg-cyan-500 text-slate-950 shadow-sm'
                           : 'theme-text-muted hover:theme-text'
                       }`}
                     >
-                      {yr} Years
+                      5 Years
                     </button>
-                  ))}
+                    <button
+                      type="button"
+                      onClick={() => setHorizonMode('10')}
+                      className={`px-3 py-1.5 rounded-lg font-bold transition cursor-pointer ${
+                        horizonMode === '10'
+                          ? 'bg-cyan-500 text-slate-950 shadow-sm'
+                          : 'theme-text-muted hover:theme-text'
+                      }`}
+                    >
+                      10 Years
+                    </button>
+                    <button
+                      type="button"
+                      onClick={() => setHorizonMode('custom')}
+                      className={`px-3 py-1.5 rounded-lg font-bold transition cursor-pointer ${
+                        horizonMode === 'custom'
+                          ? 'bg-cyan-500 text-slate-950 shadow-sm'
+                          : 'theme-text-muted hover:theme-text'
+                      }`}
+                    >
+                      Custom
+                    </button>
+                  </div>
+
+                  {horizonMode === 'custom' && (
+                    <div className="inline-flex items-center gap-1.5 px-3 py-1 rounded-xl bg-slate-900/90 border border-cyan-500/50 text-xs font-mono animate-fadeIn">
+                      <input
+                        type="number"
+                        min="1"
+                        max="30"
+                        step="1"
+                        value={customYears}
+                        onChange={(e) => {
+                          const val = Math.min(30, Math.max(1, parseInt(e.target.value, 10) || 1));
+                          setCustomYears(val);
+                        }}
+                        className="w-12 px-1.5 py-0.5 text-center rounded bg-slate-800 border border-cyan-500/40 text-cyan-300 font-bold focus:outline-none focus:ring-1 focus:ring-cyan-400"
+                      />
+                      <span className="text-cyan-400 font-bold">Years</span>
+                      <span className="text-[10px] theme-text-muted">(1–30 yrs)</span>
+                    </div>
+                  )}
                 </div>
               </div>
             </div>
