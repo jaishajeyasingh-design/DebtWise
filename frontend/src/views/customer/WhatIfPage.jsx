@@ -90,6 +90,8 @@ export default function WhatIfPage({ data, selectedIntervention, onBack, onNext 
               <div className="mt-6">
                 <LLMExplanationCard
                   explanation={explanation}
+                  selectedIntervention={selectedIntervention}
+                  monthlyRelief={monthlyRelief}
                   mode="simulator"
                 />
               </div>

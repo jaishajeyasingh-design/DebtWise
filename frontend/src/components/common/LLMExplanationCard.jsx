@@ -27,7 +27,9 @@ export default function LLMExplanationCard({
   mode = 'full',
   title,
   collapsible = false,
-  className = ''
+  className = '',
+  selectedIntervention = null,
+  monthlyRelief = null
 }) {
   const [isOpen, setIsOpen] = useState(true);
 
@@ -138,7 +140,7 @@ export default function LLMExplanationCard({
             </div>
             <div>
               <span className="text-xs font-mono font-bold text-cyan-300 uppercase tracking-wider">
-                {title || 'Why This Option Was Selected'}
+                {title || 'Recommended Pathway'}
               </span>
             </div>
           </div>
@@ -155,6 +157,21 @@ export default function LLMExplanationCard({
   }
 
   if (mode === 'simulator') {
+    const interventionTitle = (selectedIntervention?.name || selectedIntervention?.title || selectedIntervention?.label || '').toLowerCase();
+    const interventionType = (selectedIntervention?.intervention_type || '').toLowerCase();
+    const explanationText = (explanation.what_we_can_do || explanation.summary || '');
+    const isTimingIntervention =
+      monthlyRelief === 0 ||
+      interventionType.includes('timing') ||
+      interventionTitle.includes('due date shift') ||
+      interventionTitle.includes('timing') ||
+      explanationText.toLowerCase().includes('due date shift') ||
+      explanationText.toLowerCase().includes('timing synchronization');
+
+    const displaySummary = isTimingIntervention && (monthlyRelief === 0 || monthlyRelief === null)
+      ? "This intervention does not reduce the EMI amount. Instead, it shifts the repayment date into the customer's verified post-salary window, reducing cash-flow timing pressure while keeping the repayment obligation unchanged."
+      : (explanation.what_we_can_do || explanation.summary);
+
     return (
       <div className={`p-5 rounded-2xl bg-violet-950/20 border border-violet-500/30 text-slate-200 ${className}`}>
         <div className="flex items-center justify-between gap-3 mb-2">
@@ -174,7 +191,7 @@ export default function LLMExplanationCard({
         </div>
 
         <p className="text-sm text-slate-200 leading-relaxed mt-2">
-          {explanation.what_we_can_do || explanation.summary}
+          {displaySummary}
         </p>
 
         <div className="mt-3 pt-3 border-t border-violet-500/10 text-xs text-slate-400">
