@@ -10,8 +10,8 @@ import { api } from './api/mockApi';
 import { buildCustomerTimeSeriesPayload } from './utils/customerPayloadBuilder';
 
 export default function App() {
-  // Primary Bank Operations workflow starts on 'intelligence'
-  const [activeView, setActiveView] = useState('intelligence'); // 'intelligence' | 'login' | 'onboarding' | 'journey' | 'dashboard'
+  // Primary Bank Operations workflow starts on 'login'
+  const [activeView, setActiveView] = useState('login'); // 'login' | 'intelligence' | 'onboarding' | 'journey' | 'dashboard'
   const [activeCustomerData, setActiveCustomerData] = useState(null);
   const [onboardingInitialData, setOnboardingInitialData] = useState({});
   const [isAnalyzing, setIsAnalyzing] = useState(false);
