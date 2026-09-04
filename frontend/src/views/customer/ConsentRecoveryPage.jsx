@@ -10,6 +10,7 @@ import {
 import RecoveryTracker from '../../components/customer/RecoveryTracker';
 import ConsentModal from '../../components/customer/ConsentModal';
 import LLMExplanationCard from '../../components/common/LLMExplanationCard';
+import CustomerTradeoffsCard from '../../components/common/CustomerTradeoffsCard';
 
 export default function ConsentRecoveryPage({
   data,
@@ -79,6 +80,14 @@ export default function ConsentRecoveryPage({
               {selectedIntervention.description ||
                 'Intervention selected for customer review.'}
             </p>
+          </div>
+        )}
+
+        {selectedIntervention && (
+          <div className="mb-6">
+            <CustomerTradeoffsCard
+              selectedIntervention={selectedIntervention}
+            />
           </div>
         )}
 

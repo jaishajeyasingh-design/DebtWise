@@ -1,6 +1,7 @@
 import React from 'react';
 import { ArrowLeft, ArrowRight, SlidersHorizontal, ShieldCheck } from 'lucide-react';
 import LLMExplanationCard from '../../components/common/LLMExplanationCard';
+import CustomerTradeoffsCard from '../../components/common/CustomerTradeoffsCard';
 
 export default function WhatIfPage({ data, selectedIntervention, onBack, onNext }) {
   const capacity = data?.capacity || {};
@@ -96,6 +97,12 @@ export default function WhatIfPage({ data, selectedIntervention, onBack, onNext 
                 />
               </div>
             )}
+
+            <div className="mt-6">
+              <CustomerTradeoffsCard
+                selectedIntervention={selectedIntervention}
+              />
+            </div>
 
             <div className="mt-6 grid grid-cols-1 sm:grid-cols-2 gap-4">
               <div className="p-5 rounded-2xl bg-slate-950/80 border border-slate-800">
