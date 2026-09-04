@@ -37,7 +37,16 @@ function formatINR(value) {
 function mapCandidate(candidate) {
   if (!candidate) return null;
 
-  const relief = money(candidate.estimated_monthly_relief);
+  const isTiming =
+    candidate.intervention_type === "SALARY_EMI_DATE_SYNCHRONIZATION" ||
+    candidate.intervention_type === "TIMING_SYNCHRONIZATION" ||
+    candidate.intervention_type === "7_DAY_GRACE_PERIOD_BUFFER" ||
+    candidate.intervention_type === "TIMING_DISCREPANCY_ALERT" ||
+    (candidate.title || "").toLowerCase().includes("due date shift") ||
+    (candidate.title || "").toLowerCase().includes("date sync") ||
+    (candidate.title || "").toLowerCase().includes("grace period");
+
+  const relief = isTiming ? 0 : money(candidate.estimated_monthly_relief);
   const emiAfter = money(candidate.estimated_emi_after);
 
   return {
@@ -61,10 +70,13 @@ function mapCandidate(candidate) {
     monthly_relief: relief,
     emi_after: emiAfter,
     monthly_payment_after: emiAfter,
-    impact: `₹${Math.round(relief).toLocaleString("en-IN")}/mo cash-flow relief`,
+    impact: isTiming
+      ? "Cash-flow timing improvement (zero EMI reduction)"
+      : `₹${Math.round(relief).toLocaleString("en-IN")}/mo cash-flow relief`,
     summary: candidate.description || candidate.reason,
     level_name: candidate.intervention_type ? candidate.intervention_type.replace(/_/g, " ") : `Level ${candidate.level}`,
     tier: candidate.requires_human_approval ? "TIER_B" : "TIER_A",
+    is_timing: isTiming,
   };
 }
 

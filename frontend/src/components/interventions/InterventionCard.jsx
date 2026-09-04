@@ -31,8 +31,26 @@ export default function InterventionCard({
 
   const currentObligation = Number(capacity?.current_obligations || 0);
   const safeCapacity = Number(capacity?.safe_emi || 0);
-  const monthlyRelief = Number(intervention.estimated_monthly_relief ?? intervention.monthly_relief ?? (currentObligation > monthly_payment_after ? currentObligation - monthly_payment_after : 0));
-  const postEmi = Number(monthly_payment_after > 0 ? monthly_payment_after : safeCapacity);
+
+  const isTimingIntervention =
+    Boolean(intervention.is_timing) ||
+    intervention_type === "SALARY_EMI_DATE_SYNCHRONIZATION" ||
+    intervention_type === "TIMING_SYNCHRONIZATION" ||
+    intervention_type === "7_DAY_GRACE_PERIOD_BUFFER" ||
+    intervention_type === "TIMING_DISCREPANCY_ALERT" ||
+    id.includes("DATE-SYNC") ||
+    id.includes("GRACE-BUFFER") ||
+    (title || "").toLowerCase().includes("due date shift") ||
+    (title || "").toLowerCase().includes("date sync") ||
+    (title || "").toLowerCase().includes("grace period");
+
+  const monthlyRelief = isTimingIntervention
+    ? 0
+    : Number(intervention.estimated_monthly_relief ?? intervention.monthly_relief ?? (currentObligation > monthly_payment_after ? currentObligation - monthly_payment_after : 0));
+
+  const postEmi = isTimingIntervention
+    ? (currentObligation > 0 ? currentObligation : Number(monthly_payment_after || 0))
+    : Number(monthly_payment_after > 0 ? monthly_payment_after : (currentObligation > 0 ? currentObligation : safeCapacity));
 
   const isTenureApplicable =
     id.includes('TEMP-EMI') ||
@@ -89,7 +107,7 @@ export default function InterventionCard({
             <div>
               <span className="text-[9px] text-emerald-400 uppercase block">MONTHLY RELIEF</span>
               <span className="text-xs sm:text-sm font-bold text-emerald-300">
-                {monthlyRelief > 0 ? `+₹${Math.round(monthlyRelief).toLocaleString('en-IN')}` : 'Timing Fix'}
+                {isTimingIntervention ? 'Timing Fix' : monthlyRelief > 0 ? `+₹${Math.round(monthlyRelief).toLocaleString('en-IN')}` : '₹0'}
               </span>
             </div>
           </div>
@@ -153,7 +171,11 @@ export default function InterventionCard({
         <div className="space-y-2 py-3 border-y border-slate-800/80 my-3 text-xs">
           <div className="flex items-start gap-2 text-slate-300">
             <span className="text-emerald-400 font-bold shrink-0">✔ Financial Impact:</span>
-            <span>{impact}</span>
+            <span>
+              {isTimingIntervention
+                ? "Cash-flow timing improvement (zero EMI reduction)"
+                : impact || (monthlyRelief > 0 ? `₹${Math.round(monthlyRelief).toLocaleString('en-IN')}/mo cash-flow relief` : "Sustainable cash-flow alignment")}
+            </span>
           </div>
           <div className="flex items-center gap-2 text-slate-400">
             <Clock className="w-3.5 h-3.5 text-cyan-400 shrink-0" />
