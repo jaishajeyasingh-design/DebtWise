@@ -96,6 +96,47 @@ export const DEMO_PRESETS = {
  * Translates single-point numbers and qualitative trends into realistic time-series.
  */
 export function buildCustomerTimeSeriesPayload(formData) {
+  // If formData already has complete 12-month series arrays (e.g. newly added customer or full record)
+  if (
+    Array.isArray(formData.income) &&
+    formData.income.length === 12 &&
+    Array.isArray(formData.essential_expenses) &&
+    Array.isArray(formData.obligations)
+  ) {
+    return {
+      customer_id: formData.customer_id || formData.customerId || "CUST_RECORD",
+      name: formData.name || "Customer",
+      age: Number(formData.age || 35),
+      salary_day: Number(formData.salary_day || formData.salaryDay || 1),
+      emi_due_day: Number(formData.emi_due_day || formData.emiDueDay || 5),
+      credit_limit: Number(formData.credit_limit || formData.creditLimit || 100000),
+      income: [...formData.income],
+      essential_expenses: [...formData.essential_expenses],
+      discretionary_expenses: Array.isArray(formData.discretionary_expenses)
+        ? [...formData.discretionary_expenses]
+        : Array(12).fill(Number(formData.discretionaryExpenses || 5000)),
+      obligations: [...formData.obligations],
+      total_debt: Array.isArray(formData.total_debt)
+        ? [...formData.total_debt]
+        : Array(12).fill(Number(formData.totalDebt || 200000)),
+      savings: Array.isArray(formData.savings)
+        ? [...formData.savings]
+        : Array(12).fill(Number(formData.savings || 20000)),
+      credit_balance: Array.isArray(formData.credit_balance)
+        ? [...formData.credit_balance]
+        : Array(12).fill(Number(formData.creditBalance || 20000)),
+      payment_delays: Array.isArray(formData.payment_delays)
+        ? [...formData.payment_delays]
+        : Array(12).fill(Number(formData.paymentDelaysCount || 0)),
+      overdraft_count: Array.isArray(formData.overdraft_count)
+        ? [...formData.overdraft_count]
+        : Array(12).fill(Number(formData.overdraftCount || 0)),
+      min_payment_flag: Array.isArray(formData.min_payment_flag)
+        ? [...formData.min_payment_flag]
+        : Array(12).fill(formData.minPaymentOnly ? 1 : 0)
+    };
+  }
+
   // If the user selected a canonical preset and did not override it
   if (formData.presetKey && DEMO_PRESETS[formData.presetKey] && !formData.isCustomized) {
     const preset = DEMO_PRESETS[formData.presetKey];
@@ -263,5 +304,93 @@ export function buildCustomerTimeSeriesPayload(formData) {
     payment_delays: paymentDelays,
     overdraft_count: overdraftSeries,
     min_payment_flag: minPaymentSeries
+  };
+}
+
+/**
+ * Creates a complete customer record with 12-month financial arrays from the Add Customer form.
+ */
+export function createCustomerFromForm(formValues) {
+  const N = 12;
+  const incomeVal = Math.max(1, Number(formValues.monthlyIncome || formValues.income || 60000));
+  const essentialVal = Math.max(0, Number(formValues.essentialExpenses || formValues.essential_expenses || 25000));
+  const discretionaryVal = Math.max(0, Number(formValues.discretionaryExpenses || formValues.discretionary_expenses || 5000));
+  const obligationsVal = Math.max(0, Number(formValues.monthlyObligations || formValues.obligations || 20000));
+  const totalDebtVal = Math.max(0, Number(formValues.totalDebt || formValues.total_debt || obligationsVal * 20));
+  const savingsVal = Math.max(0, Number(formValues.savings || 15000));
+  const creditLimitVal = Math.max(0, Number(formValues.creditLimit || formValues.credit_limit || 100000));
+  const creditBalanceVal = Math.max(0, Number(formValues.creditBalance || formValues.credit_balance || 25000));
+  const paymentDelays = Math.max(0, Math.min(12, Number(formValues.paymentDelays || formValues.payment_delays || 0)));
+  const overdraftCount = Math.max(0, Math.min(12, Number(formValues.overdraftCount || formValues.overdraft_count || 0)));
+  const minPaymentFlag = formValues.minPaymentFlag ? 1 : 0;
+  const salaryDay = Math.min(31, Math.max(1, Number(formValues.salaryDay || formValues.salary_day || 1)));
+  const emiDueDay = Math.min(31, Math.max(1, Number(formValues.emiDueDay || formValues.emi_due_day || 5)));
+  const age = Math.min(100, Math.max(18, Number(formValues.age || 35)));
+
+  const name = formValues.name?.trim() || "New Customer";
+  const customerId = formValues.customerId?.trim() || `CUST_${name.toUpperCase().replace(/\s+/g, '_')}_${Math.floor(100 + Math.random() * 900)}`;
+
+  // Build 12-month arrays
+  const incomeSeries = Array(N).fill(incomeVal);
+  const essentialSeries = Array(N).fill(essentialVal);
+  const discretionarySeries = Array(N).fill(discretionaryVal);
+  const obligationsSeries = Array(N).fill(obligationsVal);
+  const debtSeries = Array(N).fill(totalDebtVal);
+  const savingsSeries = Array(N).fill(savingsVal);
+  const creditSeries = Array(N).fill(creditBalanceVal);
+
+  const paymentDelaysSeries = Array(N).fill(0);
+  if (paymentDelays > 0) {
+    for (let i = Math.max(0, N - paymentDelays); i < N; i++) {
+      paymentDelaysSeries[i] = 1;
+    }
+  }
+
+  const overdraftSeries = Array(N).fill(0);
+  if (overdraftCount > 0) {
+    for (let i = Math.max(0, N - overdraftCount); i < N; i++) {
+      overdraftSeries[i] = 1;
+    }
+  }
+
+  const minPaymentSeries = Array(N).fill(minPaymentFlag);
+
+  // Compute DTI for badge/description
+  const dti = incomeVal > 0 ? ((obligationsVal / incomeVal) * 100).toFixed(0) : 0;
+  let archetype = "SIMULATED_RECORD";
+  let badge = `${dti}% DTI · Added Record`;
+  if (dti > 60) {
+    archetype = "HIGH_LEVERAGE";
+    badge = "High Leverage · Intake";
+  } else if (paymentDelays > 0 || overdraftCount > 0) {
+    archetype = "EARLY_STRAIN";
+    badge = "Early Strain · Intake";
+  } else {
+    badge = "Standard Intake · Simulated";
+  }
+
+  const description = `${name}, age ${age}. Net monthly income ₹${incomeVal.toLocaleString('en-IN')}, active EMIs ₹${obligationsVal.toLocaleString('en-IN')}/mo (${dti}% DTI), savings ₹${savingsVal.toLocaleString('en-IN')}.`;
+
+  return {
+    customer_id: customerId,
+    name,
+    age,
+    archetype,
+    badge,
+    description,
+    salary_day: salaryDay,
+    emi_due_day: emiDueDay,
+    credit_limit: creditLimitVal,
+    income: incomeSeries,
+    essential_expenses: essentialSeries,
+    discretionary_expenses: discretionarySeries,
+    obligations: obligationsSeries,
+    total_debt: debtSeries,
+    savings: savingsSeries,
+    credit_balance: creditSeries,
+    payment_delays: paymentDelaysSeries,
+    overdraft_count: overdraftSeries,
+    min_payment_flag: minPaymentSeries,
+    isCustom: true
   };
 }

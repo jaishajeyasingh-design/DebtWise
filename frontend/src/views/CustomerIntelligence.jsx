@@ -15,9 +15,11 @@ import {
   Info,
   SlidersHorizontal,
   Activity,
-  Clock
+  Clock,
+  UserPlus
 } from 'lucide-react';
 import { DEMO_PRESETS } from '../utils/customerPayloadBuilder';
+import AddCustomerModal from '../components/customer/AddCustomerModal';
 
 export default function CustomerIntelligence({
   onAnalyzeCustomer,
@@ -30,23 +32,41 @@ export default function CustomerIntelligence({
   const [searchQuery, setSearchQuery] = useState('');
   const [selectedPresetKey, setSelectedPresetKey] = useState('priya');
   const [processingStep, setProcessingStep] = useState(0);
+  const [isAddModalOpen, setIsAddModalOpen] = useState(false);
+  const [successBanner, setSuccessBanner] = useState(null);
 
-  const presetsList = Object.keys(DEMO_PRESETS).map((key) => ({
+  // Load any previously added custom customers from session/localStorage
+  const [customCustomers, setCustomCustomers] = useState(() => {
+    try {
+      const saved = localStorage.getItem('debtwise_custom_customers');
+      return saved ? JSON.parse(saved) : {};
+    } catch {
+      return {};
+    }
+  });
+
+  // Combine canonical demo presets with custom added customers
+  const allCustomers = {
+    ...DEMO_PRESETS,
+    ...customCustomers
+  };
+
+  const presetsList = Object.keys(allCustomers).map((key) => ({
     key,
-    ...DEMO_PRESETS[key]
+    ...allCustomers[key]
   }));
 
   const filteredPresets = presetsList.filter((c) => {
     const q = searchQuery.toLowerCase();
     return (
-      c.name.toLowerCase().includes(q) ||
-      c.customer_id.toLowerCase().includes(q) ||
-      c.archetype.toLowerCase().includes(q) ||
-      c.badge.toLowerCase().includes(q)
+      (c.name || '').toLowerCase().includes(q) ||
+      (c.customer_id || '').toLowerCase().includes(q) ||
+      (c.archetype || '').toLowerCase().includes(q) ||
+      (c.badge || '').toLowerCase().includes(q)
     );
   });
 
-  const selectedCustomer = DEMO_PRESETS[selectedPresetKey] || DEMO_PRESETS.priya;
+  const selectedCustomer = allCustomers[selectedPresetKey] || allCustomers.priya || presetsList[0];
 
   // Multi-step animated telemetry HUD during AI processing
   useEffect(() => {
@@ -69,6 +89,27 @@ export default function CustomerIntelligence({
     if (analysisError && onClearError) {
       onClearError();
     }
+  };
+
+  const handleCustomerAdded = (newCustomer) => {
+    const newKey = 'custom_' + (newCustomer.customer_id || `cust_${Date.now()}`).toLowerCase().replace(/[^a-z0-9]/g, '_');
+    const updated = {
+      ...customCustomers,
+      [newKey]: newCustomer
+    };
+    setCustomCustomers(updated);
+    try {
+      localStorage.setItem('debtwise_custom_customers', JSON.stringify(updated));
+    } catch (e) {
+      console.warn('Failed to save to localStorage:', e);
+    }
+    setSelectedPresetKey(newKey);
+    setIsAddModalOpen(false);
+    setSuccessBanner({
+      message: 'Customer added successfully',
+      name: newCustomer.name,
+      key: newKey
+    });
   };
 
   const handleExecuteAnalysis = () => {
@@ -99,13 +140,20 @@ export default function CustomerIntelligence({
             Customer Intelligence & Early Distress Triage
           </h1>
           <p className="theme-text-secondary text-xs sm:text-sm mt-1 max-w-3xl leading-relaxed">
-            DebtWise turns existing 12-month customer financial records into explainable distress diagnoses,
+            DebtWise turns 12-month customer financial records into explainable distress diagnoses,
             deterministic repayment capacity floors, and safe, human-governed intervention plans.
           </p>
         </div>
 
-        {/* Secondary Exception Intake Action */}
+        {/* Action Controls */}
         <div className="shrink-0 flex items-center gap-3">
+          <button
+            onClick={() => setIsAddModalOpen(true)}
+            className="px-4 py-2.5 rounded-xl bg-cyan-500 hover:bg-cyan-400 text-slate-950 font-mono text-xs font-bold flex items-center gap-2 transition shadow-md cursor-pointer"
+          >
+            <UserPlus className="w-4 h-4" />
+            <span>+ Add Customer</span>
+          </button>
           <button
             onClick={onStartManualIntake}
             className="px-4 py-2.5 rounded-xl theme-surface-muted theme-border theme-text hover:theme-border-strong font-mono text-xs flex items-center gap-2 transition shadow-sm cursor-pointer"
@@ -115,6 +163,33 @@ export default function CustomerIntelligence({
           </button>
         </div>
       </div>
+
+      {/* Success Notification Banner */}
+      {successBanner && (
+        <div className="p-4 rounded-2xl bg-emerald-500/10 border border-emerald-500/30 text-emerald-300 text-xs font-mono flex flex-col sm:flex-row sm:items-center justify-between gap-3 animate-fadeIn">
+          <div className="flex items-center gap-2">
+            <CheckCircle2 className="w-4 h-4 text-emerald-400 shrink-0" />
+            <span>
+              <strong>{successBanner.message}:</strong> {successBanner.name} has been added and selected. Ready for AI distress analysis.
+            </span>
+          </div>
+          <div className="flex items-center gap-3 shrink-0">
+            <button
+              onClick={handleExecuteAnalysis}
+              className="px-3 py-1.5 rounded-lg bg-emerald-500 hover:bg-emerald-400 text-slate-950 font-bold text-xs transition cursor-pointer flex items-center gap-1.5"
+            >
+              <Sparkles className="w-3.5 h-3.5" />
+              <span>Analyze with DebtWise AI</span>
+            </button>
+            <button
+              onClick={() => setSuccessBanner(null)}
+              className="text-[11px] underline hover:text-white cursor-pointer"
+            >
+              Dismiss
+            </button>
+          </div>
+        </div>
+      )}
 
       {analysisError && (
         <div className="p-4 rounded-2xl bg-rose-500/10 border border-rose-500/30 text-rose-300 text-xs font-mono flex items-center justify-between gap-3">
@@ -135,8 +210,8 @@ export default function CustomerIntelligence({
       <div className="grid grid-cols-1 lg:grid-cols-12 gap-8 items-start">
         {/* Left Column: Customer Case Triage Grid (7 cols) */}
         <div className="lg:col-span-7 space-y-4">
-          {/* Search Header */}
-          <div className="flex items-center justify-between gap-4">
+          {/* Search Header with + Add Customer & Dynamic Count */}
+          <div className="flex flex-col sm:flex-row items-stretch sm:items-center justify-between gap-3">
             <div className="relative flex-1">
               <Search className="w-4 h-4 absolute left-3.5 top-1/2 -translate-y-1/2 theme-text-muted" />
               <input
@@ -147,9 +222,18 @@ export default function CustomerIntelligence({
                 className="w-full pl-10 pr-4 py-2.5 rounded-xl theme-input text-xs font-mono focus:outline-none focus:ring-1 focus:ring-cyan-500 transition shadow-sm"
               />
             </div>
-            <span className="text-xs font-mono theme-text-muted shrink-0">
-              {filteredPresets.length} Cases Available
-            </span>
+            <div className="flex items-center gap-3 shrink-0">
+              <span className="text-xs font-mono theme-text-muted shrink-0">
+                {filteredPresets.length} {filteredPresets.length === 1 ? 'Customer' : 'Customers'} Available
+              </span>
+              <button
+                onClick={() => setIsAddModalOpen(true)}
+                className="px-3.5 py-2 rounded-xl bg-cyan-500 hover:bg-cyan-400 text-slate-950 font-mono text-xs font-bold flex items-center gap-1.5 transition shadow-sm cursor-pointer"
+              >
+                <UserPlus className="w-4 h-4" />
+                <span>+ Add Customer</span>
+              </button>
+            </div>
           </div>
 
           {/* Customer Case Cards */}
@@ -432,7 +516,16 @@ export default function CustomerIntelligence({
           </div>
         </div>
       </div>
+
+      {/* Add Customer Modal */}
+      <AddCustomerModal
+        isOpen={isAddModalOpen}
+        onClose={() => setIsAddModalOpen(false)}
+        onCustomerAdded={handleCustomerAdded}
+        existingCustomers={presetsList}
+      />
     </div>
   );
 }
+
 
