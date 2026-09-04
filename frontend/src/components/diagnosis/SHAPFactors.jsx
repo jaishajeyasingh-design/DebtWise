@@ -74,8 +74,8 @@ export default function SHAPFactors({ factors = [], className = "" }) {
                 <div
                   className={`h-full rounded-full transition-all duration-700 ${
                     isPos
-                      ? "bg-gradient-to-r from-amber-500 to-rose-500 shadow-[0_0_10px_rgba(244,63,94,0.3)]"
-                      : "bg-gradient-to-r from-emerald-500 to-teal-400 shadow-[0_0_10px_rgba(16,185,129,0.3)]"
+                      ? "bg-linear-to-r from-amber-500 to-rose-500 shadow-[0_0_10px_rgba(244,63,94,0.3)]"
+                      : "bg-linear-to-r from-emerald-500 to-teal-400 shadow-[0_0_10px_rgba(16,185,129,0.3)]"
                   }`}
                   style={{ width: `${barWidth}%` }}
                 ></div>

@@ -43,7 +43,7 @@ export default function SafetyRejection({ rejectionData, className = "" }) {
       : "Rejected by safety check because additional borrowing would escalate total debt burden beyond sustainable repayment capacity.");
 
   return (
-    <div className={`rounded-3xl p-6 sm:p-7 border-2 border-rose-500/50 bg-gradient-to-br from-rose-950/40 via-slate-900/90 to-slate-950/95 shadow-[0_0_35px_rgba(244,63,94,0.15)] relative overflow-hidden space-y-6 ${className}`}>
+    <div className={`rounded-3xl p-6 sm:p-7 border-2 border-rose-500/50 bg-linear-to-br from-rose-950/40 via-slate-900/90 to-slate-950/95 shadow-[0_0_35px_rgba(244,63,94,0.15)] relative overflow-hidden space-y-6 ${className}`}>
       {/* Top Banner Tag - Successful Safety Decision */}
       <div className="flex flex-wrap items-center justify-between gap-3 pb-3 border-b border-rose-500/20">
         <div className="flex items-center gap-2 px-3.5 py-1.5 rounded-full bg-rose-500/20 border border-rose-500/40 text-rose-300 font-mono text-xs font-bold shadow-sm">

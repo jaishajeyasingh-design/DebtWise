@@ -142,7 +142,7 @@ export default function ConsentModal({
               onClick={handleConfirm}
               className={`px-6 py-2.5 rounded-xl text-xs font-bold font-mono transition-all flex items-center justify-center gap-2 ${
                 agreedToTerms && !isSubmitting
-                  ? "bg-gradient-to-r from-cyan-500 to-blue-600 hover:from-cyan-400 hover:to-blue-500 text-slate-950 shadow-[0_0_20px_rgba(0,240,255,0.3)]"
+                  ? "bg-linear-to-r from-cyan-500 to-blue-600 hover:from-cyan-400 hover:to-blue-500 text-slate-950 shadow-[0_0_20px_rgba(0,240,255,0.3)]"
                   : "bg-slate-800 text-slate-500 cursor-not-allowed"
               }`}
             >

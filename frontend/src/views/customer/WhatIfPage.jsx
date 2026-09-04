@@ -18,7 +18,7 @@ export default function WhatIfPage({ data, selectedIntervention, onBack, onNext 
 
   return (
     <div className="space-y-6 animate-fadeIn">
-      <div className="glass-panel rounded-3xl p-6 sm:p-8 border border-violet-500/30 bg-gradient-to-br from-slate-950 via-slate-900 to-violet-950/20">
+      <div className="glass-panel rounded-3xl p-6 sm:p-8 border border-violet-500/30 bg-linear-to-br from-slate-950 via-slate-900 to-violet-950/20">
 
         <div className="flex flex-col sm:flex-row sm:items-start sm:justify-between gap-4 mb-6">
           <div>

@@ -16,7 +16,7 @@ export default function InterventionPage({
 
   return (
     <div className="space-y-6 animate-fadeIn">
-      <div className="glass-panel rounded-3xl p-6 sm:p-8 border border-cyan-500/30 bg-gradient-to-br from-slate-950 via-slate-900 to-cyan-950/10">
+      <div className="glass-panel rounded-3xl p-6 sm:p-8 border border-cyan-500/30 bg-linear-to-br from-slate-950 via-slate-900 to-cyan-950/10">
 
         <div className="flex flex-col sm:flex-row sm:items-start sm:justify-between gap-4 mb-6">
           <div>

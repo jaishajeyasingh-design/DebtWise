@@ -20,7 +20,7 @@ export default function Navbar({
           className="flex items-center gap-3 cursor-pointer select-none"
           onClick={() => setActiveView('dashboard')}
         >
-          <div className="w-10 h-10 rounded-xl bg-gradient-to-tr from-cyan-500 to-blue-600 flex items-center justify-center text-slate-950 font-black shadow-[0_0_15px_rgba(0,240,255,0.25)]">
+          <div className="w-10 h-10 rounded-xl bg-linear-to-tr from-cyan-500 to-blue-600 flex items-center justify-center text-slate-950 font-black shadow-[0_0_15px_rgba(0,240,255,0.25)]">
             <Shield className="w-6 h-6 fill-current" />
           </div>
           <div>
@@ -39,7 +39,7 @@ export default function Navbar({
             onClick={() => setActiveView('intelligence')}
             className={`px-3 sm:px-3.5 py-1.5 rounded-lg text-xs font-semibold flex items-center gap-1.5 transition-all cursor-pointer ${
               isCustomerPortal
-                ? "bg-gradient-to-r from-cyan-500 to-blue-600 text-slate-950 font-bold shadow-sm"
+                ? "bg-linear-to-r from-cyan-500 to-blue-600 text-slate-950 font-bold shadow-sm"
                 : "text-slate-400 hover:text-white"
             }`}
           >
@@ -52,7 +52,7 @@ export default function Navbar({
             onClick={() => setActiveView('journey')}
             className={`px-3 sm:px-3.5 py-1.5 rounded-lg text-xs font-semibold flex items-center gap-1.5 transition-all cursor-pointer ${
               isJourney
-                ? "bg-gradient-to-r from-cyan-400 to-emerald-400 text-slate-950 font-bold shadow-sm"
+                ? "bg-linear-to-r from-cyan-400 to-emerald-400 text-slate-950 font-bold shadow-sm"
                 : "text-slate-400 hover:text-white"
             }`}
           >
@@ -65,7 +65,7 @@ export default function Navbar({
             onClick={() => setActiveView('dashboard')}
             className={`px-3 sm:px-3.5 py-1.5 rounded-lg text-xs font-semibold flex items-center gap-1.5 transition-all cursor-pointer ${
               isDashboard
-                ? "bg-gradient-to-r from-blue-600 to-cyan-500 text-slate-950 font-bold shadow-sm"
+                ? "bg-linear-to-r from-blue-600 to-cyan-500 text-slate-950 font-bold shadow-sm"
                 : "text-slate-400 hover:text-white"
             }`}
           >

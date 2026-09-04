@@ -133,7 +133,7 @@ export default function DistressDiagnosis({ diagnosis, showProbabilities = true,
                   <div className="w-full h-1.5 bg-slate-800 rounded-full overflow-hidden">
                     <div
                       className={`h-full rounded-full transition-all duration-500 ${
-                        isTop ? "bg-gradient-to-r from-cyan-400 to-blue-500" : "bg-slate-600"
+                        isTop ? "bg-linear-to-r from-cyan-400 to-blue-500" : "bg-slate-600"
                       }`}
                       style={{ width: `${Math.max(4, probPct)}%` }}
                     ></div>

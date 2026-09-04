@@ -191,7 +191,7 @@ export default function CustomerJourney({
         <div className="flex flex-col lg:flex-row lg:items-center lg:justify-between gap-4">
 
           <div className="flex items-center gap-3">
-            <div className="w-11 h-11 rounded-xl bg-gradient-to-tr from-cyan-400 to-blue-600 flex items-center justify-center text-slate-950 font-bold shadow-sm">
+            <div className="w-11 h-11 rounded-xl bg-linear-to-tr from-cyan-400 to-blue-600 flex items-center justify-center text-slate-950 font-bold shadow-sm">
               <User className="w-5 h-5" />
             </div>
 
@@ -245,7 +245,7 @@ export default function CustomerJourney({
               <button
                 key={step.id}
                 onClick={() => setCurrentStep(step.id)}
-                className={`shrink-0 min-w-[115px] px-3 py-2.5 rounded-xl border transition text-left cursor-pointer ${
+                className={`shrink-0 min-w-28.75 px-3 py-2.5 rounded-xl border transition text-left cursor-pointer ${
                   active
                     ? 'bg-cyan-500/15 border-cyan-500/40 text-cyan-400 shadow-sm'
                     : complete
@@ -339,7 +339,7 @@ export default function CustomerJourney({
         <button
           onClick={goBack}
           disabled={currentStep === 1}
-          className="px-4 py-2.5 rounded-xl text-xs font-mono theme-text-muted hover:theme-text disabled:opacity-30 disabled:cursor-not-allowed flex items-center gap-2 transition cursor-pointer"
+          className="px-4 py-2.5 rounded-xl text-xs font-mono theme-text-muted hover:theme-text disabled:opacity-30 enabled:cursor-pointer disabled:cursor-not-allowed flex items-center gap-2 transition"
         >
           <ChevronLeft className="w-4 h-4" />
           Previous

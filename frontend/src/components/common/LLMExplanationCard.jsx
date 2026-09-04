@@ -216,7 +216,7 @@ export default function LLMExplanationCard({
 
   // Full composite mode
   return (
-    <div className={`glass-panel rounded-3xl p-6 border border-cyan-500/30 bg-gradient-to-br from-slate-950 via-slate-900 to-blue-950/20 shadow-xl ${className}`}>
+    <div className={`glass-panel rounded-3xl p-6 border border-cyan-500/30 bg-linear-to-br from-slate-950 via-slate-900 to-blue-950/20 shadow-xl ${className}`}>
       <div className="flex items-center justify-between gap-4 pb-4 border-b border-slate-800">
         <div className="flex items-center gap-3">
           <div className="w-9 h-9 rounded-xl bg-cyan-500/15 border border-cyan-500/30 flex items-center justify-center text-cyan-300 shadow-[0_0_12px_rgba(0,240,255,0.2)]">

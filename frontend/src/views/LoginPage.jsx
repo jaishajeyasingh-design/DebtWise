@@ -54,7 +54,7 @@ export default function LoginPage({
 
         <h1 className="text-3xl sm:text-5xl font-black text-white tracking-tight leading-tight">
           Diagnosis Before Treatment.<br />
-          <span className="text-transparent bg-clip-text bg-gradient-to-r from-cyan-400 via-blue-400 to-emerald-400">
+          <span className="text-transparent bg-clip-text bg-linear-to-r from-cyan-400 via-blue-400 to-emerald-400">
             Responsible Financial Intervention.
           </span>
         </h1>
@@ -70,7 +70,7 @@ export default function LoginPage({
         {/* Left Column: Bank Operations Console Launcher */}
         <div className="lg:col-span-5 glass-panel rounded-3xl p-6 sm:p-8 border theme-border shadow-xl space-y-6">
           <div className="flex items-center gap-3">
-            <div className="w-11 h-11 rounded-2xl bg-gradient-to-tr from-cyan-500 to-blue-600 flex items-center justify-center text-slate-950 font-black shadow-md">
+            <div className="w-11 h-11 rounded-2xl bg-linear-to-tr from-cyan-500 to-blue-600 flex items-center justify-center text-slate-950 font-black shadow-md">
               <Briefcase className="w-6 h-6" />
             </div>
             <div>
@@ -114,7 +114,7 @@ export default function LoginPage({
               type="button"
               onClick={onContinueToIntelligence}
               disabled={isAnalyzing}
-              className="w-full py-4 px-6 rounded-xl bg-gradient-to-r from-cyan-500 to-blue-600 hover:from-cyan-400 hover:to-blue-500 text-slate-950 font-bold text-sm font-mono flex items-center justify-center gap-2 transition shadow-[0_0_20px_rgba(0,240,255,0.25)] disabled:opacity-50 cursor-pointer"
+              className="w-full py-4 px-6 rounded-xl bg-linear-to-r from-cyan-500 to-blue-600 hover:from-cyan-400 hover:to-blue-500 text-slate-950 font-bold text-sm font-mono flex items-center justify-center gap-2 transition shadow-[0_0_20px_rgba(0,240,255,0.25)] disabled:opacity-50 cursor-pointer"
             >
               <span>Continue to Customer Intelligence</span>
               <ArrowRight className="w-4 h-4" />

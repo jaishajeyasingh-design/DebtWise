@@ -8,7 +8,7 @@ export default function AuditPage({ data, onBack }) {
 
   return (
     <div className="space-y-6 animate-fadeIn">
-      <div className="glass-panel rounded-3xl p-6 sm:p-8 border border-slate-700/60 bg-gradient-to-br from-slate-950 via-slate-900 to-blue-950/20">
+      <div className="glass-panel rounded-3xl p-6 sm:p-8 border border-slate-700/60 bg-linear-to-br from-slate-950 via-slate-900 to-blue-950/20">
 
         <div className="flex flex-col sm:flex-row sm:items-start sm:justify-between gap-4 mb-6">
           <div>

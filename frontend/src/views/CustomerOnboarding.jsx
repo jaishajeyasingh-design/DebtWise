@@ -736,7 +736,7 @@ export default function CustomerOnboarding({
               disabled={!formData.dataConsentAgreed || isAnalyzing}
               className={`px-7 py-3 rounded-xl font-bold text-xs font-mono flex items-center gap-2 transition ${
                 formData.dataConsentAgreed && !isAnalyzing
-                  ? 'bg-gradient-to-r from-cyan-400 to-blue-500 hover:from-cyan-300 hover:to-blue-400 text-slate-950 shadow-[0_0_20px_rgba(0,240,255,0.3)]'
+                  ? 'bg-linear-to-r from-cyan-400 to-blue-500 hover:from-cyan-300 hover:to-blue-400 text-slate-950 shadow-[0_0_20px_rgba(0,240,255,0.3)]'
                   : 'bg-slate-800 text-slate-500 cursor-not-allowed'
               }`}
             >

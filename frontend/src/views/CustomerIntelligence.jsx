@@ -144,7 +144,7 @@ export default function CustomerIntelligence({
                 value={searchQuery}
                 onChange={(e) => setSearchQuery(e.target.value)}
                 placeholder="Search customer ID (e.g. CUST_ARUN_42) or name..."
-                className="w-full pl-10 pr-4 py-2.5 rounded-xl bg-slate-900/90 border border-slate-700/80 text-white placeholder-slate-500 text-xs font-mono focus:outline-none focus:border-cyan-500 focus:ring-1 focus:ring-cyan-500 transition shadow-sm"
+                className="w-full pl-10 pr-4 py-2.5 rounded-xl theme-input text-xs font-mono focus:outline-none focus:ring-1 focus:ring-cyan-500 transition shadow-sm"
               />
             </div>
             <span className="text-xs font-mono text-slate-400 shrink-0">
@@ -165,7 +165,7 @@ export default function CustomerIntelligence({
                   onClick={() => handleSelectCustomer(c.key)}
                   className={`cursor-pointer rounded-2xl p-4 transition-all relative border ${
                     isSelected
-                      ? 'bg-gradient-to-b from-slate-900 to-slate-950 border-cyan-400/80 shadow-md ring-1 ring-cyan-400/50'
+                      ? 'bg-linear-to-b from-slate-900 to-slate-950 border-cyan-400/80 shadow-md ring-1 ring-cyan-400/50'
                       : 'bg-slate-900/40 hover:bg-slate-900/70 border-slate-800/80 hover:border-slate-700'
                   }`}
                 >
@@ -243,7 +243,7 @@ export default function CustomerIntelligence({
           <div className="glass-panel rounded-3xl p-6 sm:p-7 border border-cyan-500/30 bg-slate-950/95 shadow-xl space-y-6">
             <div className="flex items-center justify-between gap-3 border-b border-slate-800 pb-4">
               <div className="flex items-center gap-3">
-                <div className="w-11 h-11 rounded-2xl bg-gradient-to-tr from-cyan-500 to-blue-600 flex items-center justify-center text-slate-950 font-black shadow-md">
+                <div className="w-11 h-11 rounded-2xl bg-linear-to-tr from-cyan-500 to-blue-600 flex items-center justify-center text-slate-950 font-black shadow-md">
                   <UserCheck className="w-6 h-6" />
                 </div>
                 <div>
@@ -346,7 +346,7 @@ export default function CustomerIntelligence({
               <button
                 onClick={handleExecuteAnalysis}
                 disabled={isAnalyzing}
-                className="w-full py-4 px-6 rounded-2xl bg-gradient-to-r from-cyan-500 via-blue-500 to-emerald-500 hover:from-cyan-400 hover:to-emerald-400 text-slate-950 font-black text-sm font-mono flex items-center justify-center gap-3 transition shadow-[0_0_25px_rgba(0,240,255,0.25)] disabled:opacity-60 cursor-pointer"
+                className="w-full py-4 px-6 rounded-2xl bg-linear-to-r from-cyan-500 via-blue-500 to-emerald-500 hover:from-cyan-400 hover:to-emerald-400 text-slate-950 font-black text-sm font-mono flex items-center justify-center gap-3 transition shadow-[0_0_25px_rgba(0,240,255,0.25)] disabled:opacity-60 cursor-pointer"
               >
                 {isAnalyzing ? (
                   <>
